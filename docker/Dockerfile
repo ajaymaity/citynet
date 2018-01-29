@@ -31,8 +31,6 @@ RUN \
     rm -rf /var/cache/oracle-jdk8-installer
 
 # Add files.
-#ADD root/.bashrc /root/.bashrc
-#ADD root/.gitconfig /root/.gitconfig
 ADD dockertest.sh /root/dockertest.sh
 
 # Set environment variables.

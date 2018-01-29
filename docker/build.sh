@@ -9,9 +9,7 @@
 # (c) Cory <sgryco@gmail.com>
 
 
-
 docker image build . --network host -t citynet
 
 #unit test
-
 docker run --net host citynet bash /root/dockertest.sh
