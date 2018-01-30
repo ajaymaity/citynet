@@ -1,4 +1,4 @@
-erro3.5.2r() {
+error() {
    echo "ERROR in DOCKER UNIT TEST on line $1 !!!!!!" 
    exit -1
   }
@@ -33,4 +33,6 @@ python -c "print('Hello World')"
 [ "`python -c "import tensorflow; print(tensorflow.__version__)"`" == "1.5.0" ]
 [ "`python -c "import keras; print(keras.__version__)"`" == "2.1.3" ]
 [ "`python -c "import pycodestyle; print(pycodestyle.__version__)"`" == "2.3.1" ]
-#java -version
+[ `java -version 2>&1 | head -1 | cut -d' ' -f 3` == '"1.8.0_161"' ]
+
+echo "All tests Succeeded!"

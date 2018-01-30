@@ -9,7 +9,7 @@
 # (c) Cory <sgryco@gmail.com>
 
 # tag image
-docker tag citynet asegroup11/all_servers:citynet
+docker tag asegroup11/all_servers:citynet asegroup11/all_servers:citynet
 
 # push image
 docker push asegroup11/all_servers:citynet
