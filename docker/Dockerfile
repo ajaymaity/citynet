@@ -25,17 +25,20 @@ RUN \
   apt-get update &&\
   apt-get install -y build-essential && \
   apt-get install -y curl git htop man vim wget python3-pip postgresql && \
-  apt-get install -y gdal-bin python-gdal python3-gdal &&\
-  apt-get install -y nodejs npm&&\
+  apt-get install -y gdal-bin python3-gdal &&\
   rm -rf /var/lib/apt/lists/* &&\
   apt-get autoremove &&\
   apt-get clean &&\
   rm -rf /var/lib/apt/lists/*
 
+
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - &&\
+    apt-get install -y nodejs &&\
+    npm install -g mapbox-gl
+
+
 # Fix python default to 3
 RUN rm -f /usr/bin/python && ln -s /usr/bin/python3 /usr/bin/python
-
-
 ADD requirements.txt /root/requirements.txt
 RUN pip3 install -r /root/requirements.txt
 
