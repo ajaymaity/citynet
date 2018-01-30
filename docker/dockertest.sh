@@ -5,7 +5,16 @@ error() {
 trap error ERR
 
 
+# Timezone
+[ "`cat /etc/timezone`" == "Europe/Dublin" ]
 
+# PostGreSQL
+[ "`psql --version`" == 'psql (PostgreSQL) 9.5.10' ]
+
+# node js
+[ "`npm --version`" == '3.5.2' ]
+
+# python versions
 python --version
 [ `python3 --version | cut -d' ' -f2` == "3.5.2" ]
 python -c "print('Hello World')"
