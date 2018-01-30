@@ -15,8 +15,10 @@ RUN \
   apt-get install -y build-essential && \
   apt-get install -y software-properties-common && \
   apt-get install -y curl git htop man vim wget python3-pip && \
+  add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable &&\
+  apt update &&\
+  apt install -y gdal-bin python-gdal python3-gdal &&\
   rm -rf /var/lib/apt/lists/*
-
 # Fix python default to 3
 RUN rm -f /usr/bin/python && ln -s /usr/bin/python3 /usr/bin/python
 

@@ -14,4 +14,5 @@ python -c "print('Hello World')"
 [ "`python -c "import psycopg2; print(psycopg2.__version__)"`" == "2.7.3.2 (dt dec pq3 ext lo64)" ]
 [ "`python -c "import oauth2client; print(oauth2client.__version__)"`" == "4.1.2" ]
 [ "`python -c "import geojson; print(geojson.__version__)"`" == "2.3.0" ]
+[ "`python -c "import gdal; print(gdal.VersionInfo())"`" == "2020200" ]
 #java -version
