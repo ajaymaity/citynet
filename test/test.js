@@ -1,3 +1,4 @@
-var crappyFunc = function () {
-  var b = 10;
-}
+crappyFunc = function() {
+  b = 10;
+  return b;
+};
