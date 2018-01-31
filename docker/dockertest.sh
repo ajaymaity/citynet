@@ -35,6 +35,7 @@ python -c "print('Hello World')"
 [ "`python -c "import tensorflow; print(tensorflow.__version__)"`" == "1.5.0" ]
 [ "`python -c "import keras; print(keras.__version__)"`" == "2.1.3" ]
 [ "`python -c "import pycodestyle; print(pycodestyle.__version__)"`" == "2.3.1" ]
+[ "`python -c "import requests; print(requests.__version__)"`" == "2.18.4" ]
 [ `java -version 2>&1 | head -1 | cut -d' ' -f 3` == '"1.8.0_161"' ]
 
 echo "All tests Succeeded!"
