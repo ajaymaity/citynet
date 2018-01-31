@@ -1,13 +1,27 @@
 {
-  "name": "frontend",
+  "name": "citynet",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Install Hook ============",
+  "main": "src/frontend/index.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/aseproject11/citynet.git"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/aseproject11/citynet/issues"
+  },
+  "homepage": "https://gitlab.com/aseproject11/citynet#README",
+  "dependencies": {
+    "eslint": "^4.16.0"
+  },
   "devDependencies": {
     "eslint-config-google": "^0.9.1"
   }
