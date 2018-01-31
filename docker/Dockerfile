@@ -38,9 +38,6 @@ RUN \
   rm -rf /var/cache/oracle-jdk8-installer &&\
   rm -rf /var/lib/apt/lists/*
 
-RUN \
-    npm install -g mapbox-gl eslint
-
 
 # Fix python default to 3
 RUN rm -f /usr/bin/python && ln -s /usr/bin/python3 /usr/bin/python

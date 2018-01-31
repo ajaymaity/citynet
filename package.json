@@ -20,7 +20,8 @@
   },
   "homepage": "https://gitlab.com/aseproject11/citynet#README",
   "dependencies": {
-    "eslint": "^4.16.0"
+    "eslint": "^4.16.0",
+    "mapbox-gl": "^0.44.0"
   },
   "devDependencies": {
     "eslint-config-google": "^0.9.1"

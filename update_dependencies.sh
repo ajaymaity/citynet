@@ -10,3 +10,6 @@
 
 
 docker/run_inside_docker.sh npm install
+docker/run_inside_docker.sh test/test_dependencies.sh
+
+
