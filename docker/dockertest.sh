@@ -15,6 +15,8 @@ trap 'error $LINENO' ERR
 [ "`npm --version`" == '5.6.0' ]
 # mapbox
 [ "`npm -g list 2>/dev/null | grep "mapbox-gl" | head -1 | cut -d'@' -f 2`" == "0.44.0" ]
+# eslint
+[ "`npm -g list 2>/dev/null | grep "eslint" | head -1 | cut -d'@' -f 2`" == "4.16.0" ]
 
 # python versions
 python --version

@@ -13,5 +13,6 @@
 # -v bind host folder inside docker
 # -w workdir inside the docker
 
+path="$(dirname `readlink -m $0`)"
 
-docker run --net host --rm -v $PWD:/app -w /app asegroup11/all_servers:citynet "$@"
+docker run --net host --rm -v "${path}/..":/app -w /app asegroup11/all_servers:citynet "$@"

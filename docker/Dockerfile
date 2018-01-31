@@ -39,7 +39,7 @@ RUN \
   rm -rf /var/lib/apt/lists/*
 
 RUN \
-    npm install -g mapbox-gl
+    npm install -g mapbox-gl eslint
 
 
 # Fix python default to 3
