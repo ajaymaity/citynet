@@ -1,0 +1,8 @@
+#!/bin/bash
+
+path="$(dirname `readlink -m $0`)"
+set -e
+"${path}"/docker/run_inside_docker.sh ./.pre-commit-python
+"${path}"/docker/run_inside_docker.sh ./.pre-commit-eslint
+
+echo  -e "\033[42mCOMMIT TESTS SUCCEEDED\033[0m\n"
