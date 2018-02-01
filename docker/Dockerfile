@@ -44,6 +44,19 @@ RUN rm -f /usr/bin/python && ln -s /usr/bin/python3 /usr/bin/python
 ADD requirements.txt /root/requirements.txt
 RUN pip3 install -r /root/requirements.txt
 
+# Add VOLUMEs to allow backup of config, logs and databases
+VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
+#Configure postgres db
+USER postgres
+
+# Adjust PostgreSQL configuration so that remote connections to the
+# database are possible.
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.5/main/pg_hba.conf
+
+RUN echo "listen_addresses='*'" >> /etc/postgresql/9.5/main/postgresql.conf
+
+# Expose the PostgreSQL port
+EXPOSE 5432
 
 # Add files.
 ADD dockertest.sh /root/dockertest.sh
@@ -54,5 +67,6 @@ ENV HOME /root
 # Define working directory.
 WORKDIR /root
 
+USER root
 # Define default command.
 CMD ["bash"]

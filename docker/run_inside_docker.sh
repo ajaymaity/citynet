@@ -21,4 +21,8 @@ realpath "$0"
 
 path="$(dirname $(realpath $0))"
 
-docker run --net host -P --rm -v "${path}/..":/app -w /app asegroup11/all_servers:citynet "$@"
+echo "creating volumes if absent"
+docker volume create dm1
+docker volume create db2
+docker volume create db3
+docker run --net host -P --rm -i -v db1:/etc/postgresql -v db2:/var/log/postgresql -v db3:/var/lib/postgresql -v "${path}/..":/app -w /app asegroup11/all_servers:citynet "$@"
