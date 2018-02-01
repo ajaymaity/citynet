@@ -13,6 +13,12 @@
 # -v bind host folder inside docker
 # -w workdir inside the docker
 
-path="$(dirname `realpath $0`)"
+realpath() {
+    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+
+realpath "$0"
+
+path="$(dirname $(realpath $0))"
 
 docker run --net host -P --rm -v "${path}/..":/app -w /app asegroup11/all_servers:citynet "$@"

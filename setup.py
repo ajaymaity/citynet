@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='citynet',
     version='0.1',
-    packages=['citynet', 'citynet.src', 'citynet.src.backend'],
+    packages=['src', 'src.backend'],
     url='',
     license='',
     author='ASE Group 11',
