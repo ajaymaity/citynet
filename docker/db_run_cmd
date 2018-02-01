@@ -1,0 +1,7 @@
+sleep infinity & PID=$!
+trap "kill $PID" INT TERM
+
+/etc/init.d/postgresql start
+wait
+
+/etc/init.d/postgresql stop
