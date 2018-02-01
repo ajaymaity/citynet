@@ -8,7 +8,7 @@ def get_dbikes_stations():
            ''.format(dbikes_apikey))
     response = requests.get(url)
     dbikes_stations = response.json()
-    print("Hello")
+    print("Hello World, Bonjour à tous!")
     return dbikes_stations
 
 
