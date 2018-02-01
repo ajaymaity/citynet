@@ -6,13 +6,13 @@
 #
 # This Bash script was developped by Cory.
 #
-# (c) Cory <sgryco@gmail.com>
+# (c) Corentin Chéron <chronc@tcd.ie>
 
 # --rm: remove image after run
 # --net host copy host network connection
 # -v bind host folder inside docker
 # -w workdir inside the docker
 
-path="$(dirname `readlink -m $0`)"
+path="$(dirname `realpath $0`)"
 
-docker run --net host --rm -v "${path}/..":/app -w /app asegroup11/all_servers:citynet "$@"
+docker run --net host -P --rm -v "${path}/..":/app -w /app asegroup11/all_servers:citynet "$@"
