@@ -9,7 +9,7 @@ realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }
 path="$(dirname $(realpath $0))"
-root=${path}/..
+root=${path}/../..
 
 $root/docker/db_run.sh & PID=$!
 
