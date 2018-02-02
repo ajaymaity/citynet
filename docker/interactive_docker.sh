@@ -19,4 +19,4 @@ realpath() {
 
 path="$(dirname $(realpath $0))"
 
-docker run --net host -P --rm -i -v "${path}/..":/app -w /app asegroup11/all_servers:citynet "$@"
+docker run --net host -P --rm -it -v "${path}/..":/app -w /app asegroup11/all_servers:citynet "$@"
