@@ -34,6 +34,7 @@ RUN \
   apt-get update && \
   apt-get install -y --no-install-recommends build-essential oracle-java8-installer \
                      curl git htop man vim wget python3-pip postgresql postgis\
+                      postgresql-9.5-postgis-scripts postgresql-9.5-postgis-2.4 \
                      gdal-bin python3-gdal nodejs python3-psutil &&\
   rm -rf /var/lib/apt/lists/* &&\
   apt-get autoremove &&\

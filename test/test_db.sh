@@ -18,6 +18,10 @@ sleep 5
 $root/docker/run_inside_docker.sh \
   /bin/bash -c "PGPASSWORD=docker psql -h localhost -p 5432 -U docker -c 'SELECT * FROM USER;'"
 
+$root/docker/run_inside_docker.sh \
+  /bin/bash -c "PGPASSWORD=docker psql -h localhost -p 5432 -U docker -c 'CREATE EXTENSION postgis;'"
+$root/docker/run_inside_docker.sh \
+  /bin/bash -c "PGPASSWORD=docker psql -h localhost -p 5432 -U docker -c 'SELECT PostGIS_version();'"
 ret=$?
 pkill -SIGTERM -P $PID
 sleep 2
