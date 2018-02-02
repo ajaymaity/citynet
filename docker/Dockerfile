@@ -62,6 +62,8 @@ RUN echo "listen_addresses='*'" >> /etc/postgresql/9.5/main/postgresql.conf
 
 # Expose the PostgreSQL port
 EXPOSE 5432
+# Expose the django port
+EXPOSE 8000
 
 # Add files.
 ADD dockertest.sh /root/dockertest.sh
