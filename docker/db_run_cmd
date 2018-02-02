@@ -2,6 +2,7 @@ sleep infinity & PID=$!
 trap "kill $PID" INT TERM
 
 /etc/init.d/postgresql start
+echo "Press CTRL+C to stop postgres server..."
 wait
 
 /etc/init.d/postgresql stop
