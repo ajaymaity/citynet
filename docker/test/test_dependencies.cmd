@@ -1,5 +1,10 @@
+<<<<<<< 3c4cf6415274fe7438836a686d388f603ddad9f9:docker/test/test_dependencies.cmd
 error() {
    echo "ERROR in DOCKER UNIT TEST on line $1 !!!!!!"  > /dev/stderr
+=======
+aerror() {
+   echo "ERROR in DOCKER UNIT TEST on line $1 !!!!!!" 
+>>>>>>> :wq:docker/dockertest.sh
    exit -1
   }
 trap 'error $LINENO' ERR
@@ -43,7 +48,8 @@ python -c "print('Hello World')"
 [ "`python -c "import requests; print(requests.__version__)"`" == "2.18.4" ]
 [ "`python -c "import sphinx; print(sphinx.__version__)"`" == "1.6.7" ]
 [ "`pip3 show sphinx-js | grep '^Version:' | cut -d' ' -f 2`" == "2.3.1" ]
-
+[ "`python -c "import unittest; print(unittest.__version__)"`" == "2.1" ]
 [ `java -version 2>&1 | head -1 | cut -d' ' -f 3` == '"1.8.0_161"' ]
+
 
 echo "All tests Succeeded!"
