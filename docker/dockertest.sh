@@ -10,6 +10,9 @@ trap 'error $LINENO' ERR
 
 # PostGreSQL
 [ "`psql --version`" == 'psql (PostgreSQL) 9.5.10' ]
+/etc/init.d/postgresql start && sleep 2
+[ "`/etc/init.d/postgresql status | cut -d'(' -f 2 | cut -d')' -f 1 | cut -c 6-`" \
+  == "5432" ]
 
 # node js
 [ "`npm --version`" == '5.6.0' ]
