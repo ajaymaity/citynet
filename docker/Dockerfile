@@ -66,7 +66,7 @@ EXPOSE 5432
 EXPOSE 8000
 
 # Add files.
-ADD dockertest.sh /root/dockertest.sh
+ADD test/dockertest.sh /root/dockertest.sh
 
 # Set environment variables.
 ENV HOME /root
