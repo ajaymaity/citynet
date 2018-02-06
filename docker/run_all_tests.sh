@@ -16,12 +16,12 @@ realpath() {
 }
 
 path="$(dirname $(realpath $0))"
-root=${path}/../..
+root=${path}/..
 
 echo -e "\n********** RUNNING DOCKER TESTS **********"
-for i in $path/test_*.cmd; do
+for i in $path/test/test_*.cmd; do
   echo Running inside ephemeral docker $(basename $i)
-  $path/ephemeral_run.sh /bin/bash /app/docker/test/$(basename $i)  1>/dev/null
+  $path/test/ephemeral_run.sh /bin/bash /app/docker/test/$(basename $i)  1>/dev/null
 done
 
 echo -e  '\e[42mAll docker tests succeeded!\e[0m'

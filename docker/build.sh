@@ -12,4 +12,4 @@
 docker image build . --network host -t asegroup11/all_servers:citynet || exit -1
 
 #unit test
-test/run_all_tests.sh
+./run_all_tests.sh
