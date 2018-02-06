@@ -7,6 +7,15 @@ Install git commit hooks
 
 Docker
 ======
+Install docker from this [link](https://docs.docker.com/install/linux/docker-ce/ubuntu/#prerequisites).
+Once the package is install, follow the second [step](https://docs.docker.com/install/linux/linux-postinstall/).
+
+Pull the docker image
+----
+```
+docker pull asegroup11/all_servers:citynet
+```
+
 Build the docker image
 -----
 ```
@@ -14,7 +23,6 @@ cd docker
 ./build.sh
 
 ```
-
 
 Run a command inside the docker
 -----
