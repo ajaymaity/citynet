@@ -49,16 +49,15 @@ ADD requirements.txt /root/requirements.txt
 RUN pip3 install setuptools &&\
     pip3 install --no-cache-dir -r /root/requirements.txt
 
-# Add VOLUMEs to allow backup of config, logs and databases
-VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 #Configure postgres db
-USER postgres
 
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible.
 RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.5/main/pg_hba.conf
-
 RUN echo "listen_addresses='*'" >> /etc/postgresql/9.5/main/postgresql.conf
+
+# Add VOLUMEs to allow backup of config, logs and databases
+VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 
 # Expose the PostgreSQL port
 EXPOSE 5432
