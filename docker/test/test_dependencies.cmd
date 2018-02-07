@@ -1,5 +1,5 @@
 error() {
-   echo "ERROR in DOCKER UNIT TEST on line $1 !!!!!!" 
+   echo "ERROR in DOCKER UNIT TEST on line $1 !!!!!!"  > /dev/stderr
    exit -1
   }
 trap 'error $LINENO' ERR
@@ -41,6 +41,9 @@ python -c "print('Hello World')"
 [ "`python -c "import keras; print(keras.__version__)"`" == "2.1.3" ]
 [ "`python -c "import pycodestyle; print(pycodestyle.__version__)"`" == "2.3.1" ]
 [ "`python -c "import requests; print(requests.__version__)"`" == "2.18.4" ]
+[ "`python -c "import sphinx; print(sphinx.__version__)"`" == "1.6.7" ]
+[ "`pip3 show sphinx-js | grep '^Version:' | cut -d' ' -f 2`" == "2.3.1" ]
+
 [ `java -version 2>&1 | head -1 | cut -d' ' -f 3` == '"1.8.0_161"' ]
 
 echo "All tests Succeeded!"
