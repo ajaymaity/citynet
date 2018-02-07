@@ -5,7 +5,7 @@
 # Version: 1.0
 #
 error() {
-    echo -e  "\e[41mERROR in test file $2 on line $1"'!'"\e[0m"
+    echo -e  "\e[41mERROR in test file $2"'!'"\e[0m"
   exit -1
 }
 
@@ -21,7 +21,7 @@ root=${path}/..
 echo -e "\n********** RUNNING DOCKER TESTS **********"
 for i in $path/test/test_*.cmd; do
   echo Running inside ephemeral docker $(basename $i)
-  $path/test/ephemeral_run.sh /bin/bash /app/docker/test/$(basename $i)  1>/dev/null
+  $path/test/ephemeral_run.sh /bin/bash /app/docker/test/$(basename $i)
 done
 
 echo -e  '\e[42mAll docker tests succeeded!\e[0m'

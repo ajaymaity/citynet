@@ -8,8 +8,8 @@
 #
 # (c) Cory <sgryco@gmail.com>
 
-
-docker image build . --network host -t asegroup11/all_servers:citynet || exit -1
+docker_root=$(dirname $0)
+docker image build "$docker_root" --network host -t asegroup11/all_servers:citynet || exit -1
 
 #unit test
-./run_all_tests.sh
+./${docker_root}/run_all_tests.sh
