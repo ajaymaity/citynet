@@ -5,15 +5,9 @@
 # Version: 1.0
 #
 
+# from https://docs.djangoproject.com/en/2.0/intro/tutorial01/
+
 source /app/docker/test/create_tmp_db.cmd
-
-python docker/test/django_db/manage.py makemigrations
-python docker/test/django_db/manage.py migrate
-
-echo "from django.contrib.auth.models import User; \
-    User.objects.filter(email='admin@example.com').delete();\
-      User.objects.create_superuser('admin', 'admin@example.com', 'testadmin')" | \
-        python docker/test/django_db/manage.py shell
 
 python docker/test/django_db/manage.py runserver 0.0.0.0:8000 &>/dev/null & PID2=$!
 sleep 1.5
