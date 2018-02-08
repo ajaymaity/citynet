@@ -51,3 +51,11 @@ This will block the terminal until the server is stopped with CTRL+C
 ``` 
 docker/db_run.sh
 ```
+
+
+Run front-end
+======
+Run the server
+```
+front-end/run-fe-docker.sh
+```
