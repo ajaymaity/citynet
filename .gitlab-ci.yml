@@ -2,7 +2,6 @@ image: asegroup11/all_servers:citynet
 
 before_script:
   - python -V  # Print out python version for debugging
-  - pip3 install flake8 flake8-docstrings
 
 stages:
   - syntax
