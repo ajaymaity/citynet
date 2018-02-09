@@ -9,6 +9,7 @@
 # (c) Cory <sgryco@gmail.com>
 
 set -e 
+docker/run_all_tests.sh
 docker/run_inside_docker.sh bash -c "cd backend; python setup.py test"
 docker/run_inside_docker.sh bash -c "cd frontend; npm install && npm run test-ci"
 
