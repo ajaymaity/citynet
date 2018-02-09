@@ -2,18 +2,21 @@ image: asegroup11/all_servers:citynet
 
 before_script:
   - python -V                                   # Print out python version for debugging
+  - pip3 install flake8  # you can also use tox
+
+stages:
+  - build
+  - test
+
+build_backend:
+  stage: build
+  script:
+    - cd backend
+    - flake8 .
+    - python setup.py install
 
 test:
+  stage: test
   script:
-  - python test/test.py
-  - pip3 install flake8  # you can also use tox
-  - flake8 .
-install:
-  # Install unittest2pytest
-  - pip install -e .
-
-  # Install dependencies for tests.
-  - pip install -r tests/requirements_tests.txt | cat
-
-script:
-  - py.test -vv
+  - cd backend
+  - python setup.py test

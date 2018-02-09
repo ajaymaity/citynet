@@ -3,4 +3,7 @@ node_modules
 .*.swp
 .*.swo
 /.idea/workspace.xml
-build/*
+backend/build/
+/backend/.eggs/
+/backend/citynet_backend.egg-info/
+/backend/dist/
