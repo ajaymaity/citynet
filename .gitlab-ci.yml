@@ -17,5 +17,4 @@ build_backend:
 test:
   stage: test
   script:
-  - cd backend
-  - python setup.py test
+  - all_test.sh
