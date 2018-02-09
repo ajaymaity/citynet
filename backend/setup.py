@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 
-from setuptools import setup
+from setuptools import setup, find_packages
 import unittest
 import os
 
@@ -24,7 +24,8 @@ with open(docker_file) as f:
 setup(
     name='citynet-backend',
     version='0.1.0',
-    packages=['cityback'],
+    packages=find_packages('src'),  # include all packages under src
+    package_dir={'': 'src'},   # tell distutils packages are under src
     scripts=['bin/citynet_script.py'],
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
     long_description=open('README.txt').read(),
