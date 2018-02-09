@@ -10,6 +10,7 @@ def get_dbikes_stations():
     dbikes_stations = response.json()
     return dbikes_stations
 
+
 def get_apikey():
     return dbikes_apikey
 

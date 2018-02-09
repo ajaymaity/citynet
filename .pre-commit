@@ -2,7 +2,7 @@
 
 path="$(dirname `readlink -m $0`)"
 set -e
-"${path}"/docker/run_inside_docker.sh ./.pre-commit-python
+"${path}"/docker/run_inside_docker.sh bash -c "flake8 . && ./.pre-commit-python"
 
 # need eslint, check how to install it inside docker...
 #"${path}"/docker/run_inside_docker.sh ./.pre-commit-eslint
