@@ -5,15 +5,14 @@ before_script:
   - pip3 install flake8  # you can also use tox
 
 stages:
-  - build
+  - compile
   - test
 
 build_backend:
-  stage: build
+  stage: compile
   script:
     - cd backend
     - flake8 .
-    - python setup.py install
 
 test:
   stage: test
