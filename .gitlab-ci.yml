@@ -1,20 +1,15 @@
 image: asegroup11/all_servers:citynet
 
 before_script:
-  - python -V                                   # Print out python version for debugging
-  - pip3 install flake8  # you can also use tox
+  - python -V  # Print out python version for debugging
+  - pip3 install flake8 flake8-docstrings
 
 stages:
-  - compile
-  - test
+  - syntax
 
-build_backend:
-  stage: compile
+backend_syntax:
+  stage: syntax
   script:
     - cd backend
     - flake8 .
-
-test:
-  stage: test
-  script:
-  - bash all_test.sh from_docker
+    - bash all_test.sh from_docker
