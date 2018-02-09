@@ -17,4 +17,4 @@ build_backend:
 test:
   stage: test
   script:
-  - bash all_test.sh
+  - bash all_test.sh from_docker

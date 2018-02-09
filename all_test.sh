@@ -1,15 +1,14 @@
 #!/bin/bash
-
-# Base Script File (all_test.sh)
-# Created: Fri 09 Feb 2018 12:45:29 GMT
-# Version: 1.0
-#
-# This Bash script was developped by Cory.
-#
-# (c) Cory <sgryco@gmail.com>
+# Run all unit and integration tests.
+# option from_docker to run the test from docker. This will skip
+# the docker integration tests (docker/run_all_tests.sh)
 
 set -e 
-docker/run_all_tests.sh
-docker/run_inside_docker.sh bash -c "cd backend; python setup.py test"
-docker/run_inside_docker.sh bash -c "cd frontend; npm install && npm run test-ci"
-
+if [ "$1" == "from_docker" ]; then
+  (cd backend && python setup.py test)
+  (cd frontend && npm install && npm run test-ci)
+else
+  docker/run_all_tests.sh
+  docker/run_inside_docker.sh bash -c "cd backend; python setup.py test"
+  docker/run_inside_docker.sh bash -c "cd frontend; npm install && npm run test-ci"
+fi
