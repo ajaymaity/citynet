@@ -1,12 +1,13 @@
 #!/usr/bin/python
 # coding=utf-8
-
+"""Main package management file for the backend python package."""
 from setuptools import setup, find_packages
 import unittest
 import os
 
 
 def all_tests():
+    """Create a test suite with all files matching 'test/test_*.py'."""
     test_loader = unittest.TestLoader()
     test_suite = test_loader.discover('test', pattern='test_*.py')
     return test_suite
