@@ -6,9 +6,8 @@ before_script:
 stages:
   - syntax
 
-backend_syntax:
+syntax_tests:
   stage: syntax
   script:
-    - cd backend
-    - flake8 .
+    - flake8 backend
     - bash all_test.sh from_docker
