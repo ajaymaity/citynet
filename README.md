@@ -59,3 +59,12 @@ Run the server
 ```
 front-end/run-fe-docker.sh
 ```
+
+
+Make documentation
+====
+Run the following commands:
+```
+docker/run_inside_docker.sh bash -c "cd doc; make html"
+```
+Then browse the file `doc/build/html/index.html`
