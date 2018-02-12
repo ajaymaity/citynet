@@ -9,8 +9,13 @@ Welcome to Citynet's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
-
+   :maxdepth: 3
+.. automodule:: cityback
+   :members:
+   :inherited-members:
+.. automodule:: cityback.data_retrieval
+   :members:
+   :inherited-members:
 
 
 Indices and tables
@@ -19,4 +24,6 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
 

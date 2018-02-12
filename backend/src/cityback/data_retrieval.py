@@ -3,6 +3,8 @@
 import requests
 dbikes_apikey = '3665c1ce997b7a7d4384ea241251b2f606647b20'
 
+__all__ = ["get_dbikes_stations", "get_apikey"]
+
 
 def get_dbikes_stations():
     """Retrieve the raw json from the api."""
