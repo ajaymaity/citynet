@@ -8,3 +8,4 @@ backend/build/
 /backend/citynet_backend.egg-info/
 /backend/dist/
 *.egg-info/
+doc/build
