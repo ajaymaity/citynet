@@ -35,13 +35,14 @@ RUN \
   apt-get install -y --no-install-recommends build-essential oracle-java8-installer \
                      curl git htop man vim wget python3-pip postgresql postgis\
                       postgresql-9.5-postgis-scripts postgresql-9.5-postgis-2.4 \
-                     gdal-bin python3-gdal nodejs python3-psutil &&\
+                     gdal-bin python3-gdal nodejs python3-psutil tmux &&\
   rm -rf /var/lib/apt/lists/* &&\
   apt-get autoremove &&\
   apt-get clean &&\
   rm -rf /var/cache/oracle-jdk8-installer &&\
   rm -rf /var/lib/apt/lists/*
 
+ADD .tmux.conf /root/.tmux.conf
 
 # Fix python default to 3
 RUN rm -f /usr/bin/python && ln -s /usr/bin/python3 /usr/bin/python

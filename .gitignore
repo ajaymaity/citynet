@@ -9,3 +9,4 @@ backend/build/
 /backend/dist/
 *.egg-info/
 doc/build
+/celerybeat-schedule.db
