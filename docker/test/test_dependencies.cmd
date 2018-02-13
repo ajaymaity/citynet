@@ -46,5 +46,8 @@ python -c "print('Hello World')"
 python -c "import unittest"
 [ `java -version 2>&1 | head -1 | cut -d' ' -f 3` == '"1.8.0_161"' ]
 
+# test Rabbit MQ Server version
+dpkg -s rabbitmq-server | grep -i version | cut -d' ' -f 2
+[ "`dpkg -s rabbitmq-server | grep -i version | cut -d' ' -f 2`" == "3.5.7-1ubuntu0.16.04.2" ]
 
 echo "All tests Succeeded!"
