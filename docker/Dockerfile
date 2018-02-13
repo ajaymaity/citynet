@@ -49,6 +49,10 @@ ADD requirements.txt /root/requirements.txt
 RUN pip3 install setuptools &&\
     pip3 install --no-cache-dir -r /root/requirements.txt
 
+RUN locale-gen en_IE.UTF-8
+ENV LANG en_IE.UTF-8
+ENV LANGUAGE en_IE:en
+ENV LC_ALL en_IE.UTF-8
 #Configure postgres db
 
 # Adjust PostgreSQL configuration so that remote connections to the
