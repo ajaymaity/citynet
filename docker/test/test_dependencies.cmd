@@ -44,7 +44,6 @@ python -c "print('Hello World')"
 [ "`python -c "import sphinx; print(sphinx.__version__)"`" == "1.6.7" ]
 [ "`pip3 show sphinx-js | grep '^Version:' | cut -d' ' -f 2`" == "2.3.1" ]
 python -c "import unittest"
-[ `java -version 2>&1 | head -1 | cut -d' ' -f 3` == '"1.8.0_161"' ]
 
 
 echo "All tests Succeeded!"

@@ -28,14 +28,15 @@ RUN \
 # Install python, Java and nodejs.
 RUN \
   add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable &&\
-  echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
+  # echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
   curl -sL https://deb.nodesource.com/setup_8.x | bash - &&\
-  add-apt-repository -y ppa:webupd8team/java && \
+  # add-apt-repository -y ppa:webupd8team/java && \
   apt-get update && \
-  apt-get install -y --no-install-recommends build-essential oracle-java8-installer \
-                     curl git htop man vim wget python3-pip postgresql postgis\
+  apt-get install -y --no-install-recommends build-essential \
+                      curl git htop man vim wget python3-pip postgresql postgis\
                       postgresql-9.5-postgis-scripts postgresql-9.5-postgis-2.4 \
-                     gdal-bin python3-gdal nodejs python3-psutil tmux &&\
+                      gdal-bin python3-gdal nodejs python3-psutil tmux &&\
+
   rm -rf /var/lib/apt/lists/* &&\
   apt-get autoremove &&\
   apt-get clean &&\

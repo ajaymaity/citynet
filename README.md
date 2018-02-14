@@ -55,9 +55,10 @@ docker/db_run.sh
 
 Run front-end
 ======
+
 Run the server
 ```
-front-end/run-fe-docker.sh
+frontend/run-fe-docker.sh
 ```
 
 
@@ -81,5 +82,3 @@ Celery Task demo
 
 * Make sure RAbbitMq server is Running `rabbitmq-server -detached` 
 * Run `celery worker --loglevel=info -A cityback.data_scheduler.app  --beat`
-
-
