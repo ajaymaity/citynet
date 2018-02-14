@@ -64,17 +64,21 @@ front-end/run-fe-docker.sh
 Make documentation
 ====
 Run the following commands:
+
+
+Run Python
+======
 ```
 docker/run_inside_docker.sh bash -c "cd doc; make html"
-
-Run Python 
-----------
 ``` 
 pip3 install -e backend
 ```
+
 Run Celery 
 ----------
 Make sure RAbbitMq server is Running rabbitmq-server -detached by running in bash
 ```
 celery worker --loglevel=info -A module --beat
+
+
 Then browse the file `doc/build/html/index.html`
