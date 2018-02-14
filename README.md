@@ -69,7 +69,6 @@ docker/run_inside_docker.sh bash -c "cd doc; make html"
 
 Run Python 
 ------
-----
 ``` 
 pip3 install -e backend
 ```
