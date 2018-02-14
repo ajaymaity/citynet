@@ -15,7 +15,7 @@ app.conf.update(
         'display-every-3-seconds': {
             'task': 'data_scheduler.test',
             'schedule': datetime.timedelta(seconds=3),
-            'args': ('hello', )
+            'args': ('hello_world', )
         }
     }
 )
