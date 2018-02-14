@@ -69,18 +69,17 @@ docker/run_inside_docker.sh bash -c "cd doc; make html"
 Then browse the file `doc/build/html/index.html`
 ``` 
 
-Run Python
+Install the Cityback Python package in development mode
 ======
 
 ``` 
 pip3 install -e backend
 ```
 
-Run Celery
+Celery Task demo
 ======
 
-```
-Make sure RAbbitMq server is Running rabbitmq-server -detached by running in bash
-celery worker --loglevel=info -A module --beat
+* Make sure RAbbitMq server is Running `rabbitmq-server -detached` 
+* Run `celery worker --loglevel=info -A cityback.data_scheduler.app  --beat`
 
 
