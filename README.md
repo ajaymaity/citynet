@@ -72,6 +72,9 @@ Run Python
 ``` 
 pip3 install -e backend
 ```
-
+Run Celery 
+----------
+Make sure RAbbitMq server is Running rabbitmq-server -detached by running in bash
 ```
+celery worker --loglevel=info -A module --beat
 Then browse the file `doc/build/html/index.html`
