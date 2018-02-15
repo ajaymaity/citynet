@@ -53,7 +53,15 @@ docker/db_run.sh
 ```
 
 
-Run front-end
+Run frontend
+======
+
+Run the server
+```
+frontend/run-fe-docker.sh
+```
+
+Run Node realtime server
 ======
 
 Run the server

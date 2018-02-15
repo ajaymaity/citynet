@@ -11,6 +11,7 @@
     "axios": "^0.17.1",
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",
+    "cors": "^2.8.4",
     "debug": "~2.6.9",
     "express": "~4.15.5",
     "jade": "~1.11.0",
@@ -23,6 +24,7 @@
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "jest": "^22.2.2",
-    "mock-socket": "^7.1.0"
+    "mock-socket": "^7.1.0",
+    "chai": "^1.10.0"
   }
 }

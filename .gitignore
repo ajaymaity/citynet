@@ -10,3 +10,4 @@ backend/build/
 *.egg-info/
 doc/build
 /celerybeat-schedule.db
+__pycache__
