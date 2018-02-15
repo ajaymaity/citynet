@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "test": "jest",
-    "test-ci": "CI=true jest"
+    "test-ci": "CI=true jest --forceExit"
   },
   "dependencies": {
     "axios": "^0.17.1",
@@ -23,8 +23,10 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.1",
+    "chai": "^1.10.0",
+    "eslint": "^4.17.0",
+    "eslint-config-google": "^0.9.1",
     "jest": "^22.2.2",
-    "mock-socket": "^7.1.0",
-    "chai": "^1.10.0"
+    "mock-socket": "^7.1.0"
   }
 }

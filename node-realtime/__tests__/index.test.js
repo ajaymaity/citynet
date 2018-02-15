@@ -18,8 +18,7 @@ describe('Sockets', () => {
     client1 = io.connect(socketUrl, options);
       client1.on('FromAPI', function(msg) {
         console.log(msg);
-        expect(msg).to.equal('test');
-
+        expect(msg).to.equal(101);
         client1.disconnect();
         done();
       })

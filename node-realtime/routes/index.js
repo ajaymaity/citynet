@@ -8,16 +8,14 @@ var router = express.Router();
 // https://medium.com/@thejasonfile/fetch-vs-axios-js-for-making-http-requests-2b261cdd3af5
 
 module.exports = io => {
-
+	var localv = 100;
 	const getApiAndEmit = async socket => {
 	  try {
-	    const res = await axios.get(
-	      "https://api.darksky.net/forecast/326453a7139f863c15599146a608cdef/37.8267,-122.4233"
-	    ); // Getting the data from DarkSky
-	    console.log('tests');
-	    socket.emit('FromAPI', res.data.currently.temperature); // Emitting a new message. It will be consumed by the client
+	    localv += 1;
+	    console.log('tests ' + localv);
+	    socket.emit('FromAPI', localv); // Emitting a new message. It will be consumed by the client
 	  } catch (error) {
-	    console.error('Error:' + error);
+	    console.error('Error11:' + error);
 	  }
 	};
     
@@ -30,7 +28,8 @@ module.exports = io => {
 	  }
 	  interval = setInterval(() => getApiAndEmit(socket), 1000);
 	  socket.on("disconnect", () => {
-	    console.log("Client disconnected");
+	  	clearInterval(interval);
+          console.log("Client disconnected");
 	  });
 	});
 
