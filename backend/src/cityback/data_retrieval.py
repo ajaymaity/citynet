@@ -2,6 +2,7 @@
 
 import requests
 import logging
+from .config import get_private_config
 
 __all__ = ["DataRetrieval"]
 
@@ -11,8 +12,7 @@ class DataRetrieval:
 
     def __init__(self):
         """Constructor."""
-        # TODO move this API to a secure external configuration file
-        self.dbikes_apikey = '3665c1ce997b7a7d4384ea241251b2f606647b20'
+        self.dbikes_apikey = get_private_config()["dbikes_key"]
 
         self.BIKES_URL = dict(
             contracts="https://api.jcdecaux.com/vls/v1/contracts?apiKey="
