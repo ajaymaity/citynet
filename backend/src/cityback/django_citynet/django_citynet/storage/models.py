@@ -1,4 +1,6 @@
+# noqa
 from django.db import models
+
 
 # Create your models here.
 class DublinBikesStorage(models.Model):
@@ -6,8 +8,8 @@ class DublinBikesStorage(models.Model):
 
     def static_storage(self):
         """Store static data."""
-        number = models.IntegerField(primary_key=True)
-        latitude = models.FloatField()
-        longitude = models.FloatField()
-        name = models.CharField(max_length=30)
-        address = models.CharField(max_length=120)
+        self.number = models.IntegerField(primary_key=True)
+        self.latitude = models.FloatField()
+        self.longitude = models.FloatField()
+        self.name = models.CharField(max_length=30)
+        self.address = models.CharField(max_length=120)
