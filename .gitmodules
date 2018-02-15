@@ -1,3 +1,0 @@
-[submodule "config_private"]
-	path = config_private
-	url = git@gitlab.com:aseproject11/config_private.git
