@@ -1,21 +1,26 @@
+"""Hello World for Scheduling the basic celery sheduler."""
+
 from celery import Celery
-# from celery.schedules import crontab
 import datetime
+
 CELERY_TIMEZONE = 'UTC'
 CELERY_ENABLE_UTC = True
 app = Celery('data_scheduler', broker='amqp://guest@localhost//')
 
+
 @app.task
 def test(arg):
+    """Task to be scheduled."""
     print("inside task", arg)
     return arg
+
 
 app.conf.update(
     CELERY_BEAT_SCHEDULE={
         'display-every-3-seconds': {
             'task': 'data_scheduler.test',
             'schedule': datetime.timedelta(seconds=3),
-            'args': ('hello_world', )
+            'args': ('hello_world',)
         }
     }
 )
