@@ -28,10 +28,14 @@ class TestDataRetrieval(unittest.TestCase):
         """Check dynamic data retrieval objects."""
         dataRetrieval = DataRetrieval()
         stationsData = dataRetrieval.get_dynamic_data()
-        keysList = ["number", "last_update", "status", "banking", "available_bikes", "contract_name", "bonus", "available_bike_stands", "bike_stands"]
+        keysList = ["number", "last_update", "status",
+                    "banking", "available_bikes",
+                    "contract_name", "bonus",
+                    "available_bike_stands", "bike_stands"]
         for stationInfo in stationsData:
             keys = stationInfo.keys()
             self.assertEqual(set(keys), set(keysList))
+
 
 if __name__ == '__main__':
     unittest.main()
