@@ -7,34 +7,21 @@ from .config import get_private_config
 __all__ = ["DataRetrieval"]
 
 
-class DataRetrieval:
+class DataRetrieval(object):
     """Wrapper for data retrieval functionality."""
 
     def __init__(self):
-        """Constructor."""
-        self.dbikes_apikey = get_private_config()["dbikes_key"]
-
-        self.BIKES_URL = dict(
-            contracts="https://api.jcdecaux.com/vls/v1/contracts?apiKey="
-                      "{api_key:}",
-            station_info=("https://api.jcdecaux.com/vls/v1/stations/{"
-                          "station_number:}?"
-                          "contract={:contract_name}&apiKey={api_key:}"),
-            stations_list="https://api.jcdecaux.com/vls/v1/stations?apiKey="
-                          "{api_key:}",
-            stations_from_contract="https://api.jcdecaux.com/vls/v1/stations?"
-                                   "contract={contract_name:}"
-                                   "&apiKey={api_key:}",
-            static_stations_Dublin="https://developer.jcdecaux.com/rest/"
-                                   "vls/stations/Dublin.json")
+        """Empty, to be implemented by sub class."""
+        pass
 
     def get_json_from_url(self, url):
         """Get the json response from a url, log if error."""
         response = requests.get(url)
         if response.status_code != 200:
-            logging.error("Response {} from server "
-                          "when accessing url {}".format(
-                            response.status_code, url))
+            logging.error(
+                "Response {} from server "
+                "when accessing url {}".format(
+                    response.status_code, url))
             return None
         return response.json(encoding='utf-8')
 
@@ -43,6 +30,34 @@ class DataRetrieval:
         url = self.BIKES_URL["contracts"].format(api_key=self.dbikes_apikey)
         return self.get_json_from_url(url)
 
+
+class BikesRetrieval(DataRetrieval):
+    """Class Responsible to retrieve bikes data."""
+
+    BIKES_URL = dict(
+        contracts="https://api.jcdecaux.com/vls/v1/contracts?apiKey="
+                  "{api_key:}",
+        station_info=("https://api.jcdecaux.com/vls/v1/stations/{"
+                      "station_number:}?"
+                      "contract={:contract_name}&apiKey={api_key:}"),
+        stations_list="https://api.jcdecaux.com/vls/v1/stations?apiKey="
+                      "{api_key:}",
+        stations_from_contract="https://api.jcdecaux.com/vls/v1/stations?"
+                               "contract={contract_name:}"
+                               "&apiKey={api_key:}",
+        static_stations_Dublin="https://developer.jcdecaux.com/rest/"
+                               "vls/stations/Dublin.json")
+
+    def __init__(self, update_stations=True):
+        """Retrieve Dublin bikes key."""
+        super(BikesRetrieval).__init__()
+        self.dbikes_apikey = get_private_config()["dbikes_key"]
+        # if update stations:
+        # from storage import get_bike_stations, set_bike_stations
+        # stations = get_bike_stations
+        # if stations.last_update is None:
+        # update_bike_stations(self.get_static_data)
+
     def get_stations_list_from_contract(self, contract):
         """Get the json of all the stations of a contract."""
         url = self.BIKES_URL["stations_from_contract"].format(
@@ -50,7 +65,7 @@ class DataRetrieval:
         stations = self.get_json_from_url(url)
         return stations
 
-    def check_connectivity(self):
+    def check_connectivity_using_key(self):
         """
         Verify that the key is working by listing.
 
@@ -70,7 +85,7 @@ class DataRetrieval:
 
     def get_static_data(self):
         """Get static Dublin Bikes data."""
-        url = self.BIKES_URL["static_stations_Dublin"].\
+        url = self.BIKES_URL["static_stations_Dublin"]. \
             format(api_key=self.dbikes_apikey)
         return self.get_json_from_url(url)
 

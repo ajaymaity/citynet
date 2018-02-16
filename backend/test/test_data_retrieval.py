@@ -3,7 +3,7 @@
 """Test cases for the data retrieval part."""
 
 import unittest
-from cityback.data_retrieval import DataRetrieval
+from cityback.data_retrieval import BikesRetrieval
 
 
 class TestDataRetrieval(unittest.TestCase):
@@ -11,13 +11,13 @@ class TestDataRetrieval(unittest.TestCase):
 
     def test_api(self):
         """Check the connectivity using the Dublin bikes key."""
-        dataRetrieval = DataRetrieval()
+        dataRetrieval = BikesRetrieval()
         self.assertTrue(dataRetrieval.get_apikey().endswith("47b20"))
-        self.assertTrue(dataRetrieval.check_connectivity())
+        self.assertTrue(dataRetrieval.check_connectivity_using_key())
 
     def test_static_retrieval(self):
         """Check static data retrieval objects."""
-        dataRetrieval = DataRetrieval()
+        dataRetrieval = BikesRetrieval()
         stationsInfo = dataRetrieval.get_static_data()
         keysList = ["number", "longitude", "address", "latitude", "name"]
         for stationInfo in stationsInfo:
@@ -26,7 +26,7 @@ class TestDataRetrieval(unittest.TestCase):
 
     def test_dynamic_retrieval(self):
         """Check dynamic data retrieval objects."""
-        dataRetrieval = DataRetrieval()
+        dataRetrieval = BikesRetrieval()
         stationsData = dataRetrieval.get_dynamic_data()
         keysList = ["number", "last_update", "status",
                     "banking", "available_bikes",
