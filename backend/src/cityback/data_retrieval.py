@@ -95,10 +95,6 @@ class BikesRetrieval(DataRetrieval):
         contract = [c for c in contracts if c['name'] == "Dublin"]
         stations = self.get_stations_list_from_contract(contract[0]['name'])
 
-        deleteList = ["position", "address", "name"]
-        for station in stations:
-            for d in deleteList:
-                del station[d]
         return stations
 
     def get_apikey(self):
