@@ -3,6 +3,7 @@
 realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }
+
 path="$(dirname $(realpath $0))"/../..
 set -e
 "${path}"/docker/run_inside_docker.sh bash -c "(cd backend; flake8 .) && ./.pre-commit-python"

@@ -45,5 +45,8 @@ python -c "print('Hello World')"
 [ "`pip3 show sphinx-js | grep '^Version:' | cut -d' ' -f 2`" == "2.3.1" ]
 python -c "import unittest"
 
+# test Rabbit MQ Server version
+dpkg -s rabbitmq-server | grep -i version | cut -d' ' -f 2
+[ "`dpkg -s rabbitmq-server | grep -i version | cut -d' ' -f 2`" == "3.5.7-1ubuntu0.16.04.2" ]
 
 echo "All tests Succeeded!"
