@@ -3,15 +3,15 @@
 """Test cases for the data preprocessing part."""
 
 import unittest
-from cityback.data_preprocessing import add
+from cityback import data_processing
 
 
 class TestCelery(unittest.TestCase):
-    """Test the access key."""
+    """Test base Celery tasks."""
 
     def test_task(self):
-        """TODO."""
-        result = add.apply(args=(4, 4)).get()
+        """Test the add celery task with apply."""
+        result = data_processing.add.apply(args=(4, 4)).get()
         self.assertEqual(result, 8)
 
 
