@@ -15,7 +15,7 @@ app = Celery('cityback')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # Load task modules from all registered Django app configs.
-# app.autodiscover_tasks()
+app.autodiscover_tasks()
 # from celery.signals import celeryd_init
 
 # @celeryd_init.connect(sender='worker12@example.com')

@@ -2,7 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from cityback.retrieval.data_retrieval import BikesRetrieval
-from .models_bikes import DublinBikesStation
+from .models import DublinBikesStation
 from celery import shared_task
 
 
