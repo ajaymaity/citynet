@@ -90,3 +90,10 @@ Celery Task demo
 
 * Make sure RAbbitMq server is Running `rabbitmq-server -detached` 
 * Run `celery worker --loglevel=info -A cityback.data_scheduler.app  --beat`
+
+Django server
+======
+Run the Django server
+```
+cityback/run-django-server.sh
+```
