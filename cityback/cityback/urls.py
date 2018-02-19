@@ -16,10 +16,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from cityback.storage.tasks import update_stations
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 ]
 
-update_stations()
+
+# update_stations()

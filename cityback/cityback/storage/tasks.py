@@ -7,13 +7,13 @@ from celery import shared_task
 
 
 @shared_task
-def test_task():
+def test_task(param=""):
     """Print test."""
-    print("TEST!")
+    print("TEST!" + param)
     return 42
 
 
-# @shared_task
+@shared_task
 def update_stations():
     """
     Update the bike information in DB from json.
@@ -49,5 +49,5 @@ def update_stations():
             address=address,
             bonus=station['bonus']
         )
-        print("object={}, created={}".format(object, created))
+        # print("object={}, created={}".format(object, created))
     return "Update_stations: {} stations updated!".format(len(stations))
