@@ -10,7 +10,7 @@ if [ "$1" == "from_docker" ]; then
 else
 	docker/run_all_tests.sh
 fi
-$PRE "cd backend && python setup.py test"
+$PRE "cd cityback && python setup.py test"
 $PRE "cd frontend && npm install && npm run test-ci"
 $PRE "cd node-realtime && npm install && npm run test-ci"
 

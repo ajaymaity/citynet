@@ -11,3 +11,4 @@ backend/build/
 doc/build
 /celerybeat-schedule.db
 __pycache__
+migrations

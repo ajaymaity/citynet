@@ -1,7 +1,7 @@
 """All the celery tasks are defined here."""
 from __future__ import absolute_import, unicode_literals
 
-from cityback.data_retrieval import BikesRetrieval
+from cityback.retrieval.data_retrieval import BikesRetrieval
 from .models_bikes import DublinBikesStation
 from celery import shared_task
 
@@ -13,7 +13,7 @@ def test_task():
     return 42
 
 
-@shared_task
+# @shared_task
 def update_stations():
     """
     Update the bike information in DB from json.

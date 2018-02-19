@@ -23,10 +23,10 @@ with open(docker_file) as f:
 
 
 setup(
-    name='citynet-backend',
+    name='cityback',
     version='0.1.0',
-    packages=find_packages('src'),  # include all packages under src
-    package_dir={'': 'src'},   # tell distutils packages are under src
+    packages=find_packages('cityback'),  # include all packages under src
+    package_dir={'': 'cityback'},   # tell distutils packages are under src
     scripts=['bin/citynet_script.py'],
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
     long_description=open('README.txt').read(),

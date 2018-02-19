@@ -3,9 +3,9 @@ from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
 # set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_citynet.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cityback.settings')
 
-app = Celery('django_citynet')
+app = Celery('cityback')
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.

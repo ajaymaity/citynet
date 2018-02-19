@@ -82,7 +82,7 @@ Install the Cityback Python package in development mode
 ======
 
 ``` 
-pip3 install -e backend
+pip3 install -e cityback
 ```
 
 Celery Task demo

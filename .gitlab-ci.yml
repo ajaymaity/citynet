@@ -9,5 +9,5 @@ stages:
 syntax_tests:
   stage: syntax
   script:
-    - flake8 backend
+    - flake8 cityback
     - bash all_test.sh from_docker

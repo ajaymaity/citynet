@@ -3,7 +3,7 @@
 """Test cases for the data preprocessing part."""
 
 import unittest
-from cityback import data_processing
+from cityback.processing import data_processing
 
 
 class TestCelery(unittest.TestCase):

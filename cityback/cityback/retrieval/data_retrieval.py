@@ -2,7 +2,7 @@
 
 import requests
 import logging
-from .config import get_private_config
+from cityback.config import get_private_config
 
 __all__ = ["DataRetrieval"]
 

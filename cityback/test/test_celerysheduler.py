@@ -3,7 +3,7 @@
 """Test cases for the celery scheduler class."""
 import unittest
 
-from cityback.data_scheduler import test
+from cityback.scheduler.data_scheduler import test
 
 
 class TestMyCeleryWorker(unittest.TestCase):

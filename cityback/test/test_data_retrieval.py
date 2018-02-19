@@ -3,7 +3,7 @@
 """Test cases for the data retrieval part."""
 
 import unittest
-from cityback.data_retrieval import BikesRetrieval
+from cityback.retrieval.data_retrieval import BikesRetrieval
 
 
 class TestDataRetrieval(unittest.TestCase):
@@ -31,7 +31,8 @@ class TestDataRetrieval(unittest.TestCase):
         keysList = ["number", "last_update", "status",
                     "banking", "available_bikes",
                     "contract_name", "bonus",
-                    "available_bike_stands", "bike_stands"]
+                    "available_bike_stands", "bike_stands",
+                    "address", "name", "position"]
         for stationInfo in stationsData:
             keys = stationInfo.keys()
             self.assertEqual(set(keys), set(keysList))
