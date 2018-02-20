@@ -24,4 +24,4 @@ class DublinBikesStation(models.Model):
 #     last_update = models.DateField()
 #     available_bikes = models.IntegerField()
 #     available_bike_stands = models.IntegerField()
-#     bike_stands = models.IntegerField()   
+#     bike_stands = models.IntegerField()
