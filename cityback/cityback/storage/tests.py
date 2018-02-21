@@ -2,7 +2,7 @@
 from django.test import TestCase
 import json
 from cityback.storage.models import DublinBikesStation
-from cityback.storage.tasks import update_stations
+from cityback.storage.apps import update_stations
 import os
 
 
