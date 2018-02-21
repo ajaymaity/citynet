@@ -15,13 +15,17 @@ class DublinBikesStation(models.Model):
     contract_name = models.CharField(max_length=30)
     banking = models.BooleanField(default=False)
 
-# class DublinBikesStationRealTimeUpdate(models.Model):
-#     """A Dublin bikes station real time data."""
-#
-#     parent_station = models.ForeignKey(DublinBikesStation,
-#                                       on_delete=models.CASCADE)
-#     status = models.CharField(max_length=30)
-#     last_update = models.DateField()
-#     available_bikes = models.IntegerField()
-#     available_bike_stands = models.IntegerField()
-#     bike_stands = models.IntegerField()   
+    def __str__(self):
+        return "station no. %s named '%s'" % (self.station_number, self.name)
+
+class DublinBikesStationRealTimeUpdate(models.Model):
+    """A Dublin bikes station real time data."""
+
+    parent_station = models.ForeignKey(DublinBikesStation,
+                                      on_delete=models.CASCADE)
+    status = models.CharField(max_length=30)
+    last_update = models.CharField(max_length=20)
+    available_bikes = models.IntegerField()
+    available_bike_stands = models.IntegerField()
+    bike_stands = models.IntegerField()
+

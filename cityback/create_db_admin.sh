@@ -15,6 +15,7 @@ if [ "$a" != "yes" ]; then
 fi
 
 rm db.sqlite3
+find -name migrations -exec rm -rf {} \;
 python manage.py makemigrations
 python manage.py makemigrations storage
 python manage.py makemigrations scheduler
@@ -27,8 +28,4 @@ echo "from django.contrib.auth.models import User; \
   User.objects.create_superuser('admin', 'admin@example.com', 'adminadmin')" | \
   python manage.py shell
 
-rabbitmq-server -detached
-celery -A cityback worker --beat --detach
-
-python manage.py runserver 0.0.0.0:8000
 

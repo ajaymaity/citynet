@@ -34,46 +34,43 @@ def update_stations():
 
     bikes = BikesRetrieval()
     stations = bikes.get_dynamic_data()
+    objects={}
     for station in stations:
         object, created = DublinBikesStation.objects.update_or_create(
             station_number=station['number'],
-            latitude=station['position']['lat'],
-            longitude=station['position']['lng'],
-            name=station['name'],
-            address=station['address'],
-            bonus=station['bonus'],
-            contract_name = station['contract_name'],
-            banking = station['banking']
+            defaults= dict(
+                latitude=station['position']['lat'],
+                longitude=station['position']['lng'],
+                name=station['name'],
+                address=station['address'],
+                bonus=station['bonus'],
+                contract_name = station['contract_name'],
+                banking = station['banking']
+            )
         )
+        print(object)
+        objects[station['number']] = object
+
         # print("object={}, created={}".format(object, created))
 
-    # for station in stations:
-    #     object, created = DublinBikesStationRealTimeUpdate.objects.get_or_create(
-    #         station_number=station['number'],
-    #         latitude=station['position']['lat'],
-    #         longitude=station['position']['lng'],
-    #         name=station['name'],
-    #         address=station['address'],
-    #         bonus=station['bonus'],
-    #         contract_name=station['contract_name'],
-    #         banking=station['banking']
-    #     )
-    mystation = {'status': 'OPEN', 'bonus': False, 'address': 'Trinity tests',
-     'banking': True, 'bike_stands': 30,
-    'last_update': 1518777566000, 'available_bike_stands': 29,
-    'contract_name': 'Dublin',
-    'position': {'lat': 53.349562, 'lng': -6.278198},
-    'number': 42, 'available_bikes': 1,
-    'name': 'SMITHFIELD NORTH'}
-    station = mystation
-    object, created = DublinBikesStation.objects.update_or_create(
-        station_number=station['number'],
-        latitude=station['position']['lat'],
-        longitude=station['position']['lng'],
-        name=station['name'],
-        address=station['address'],
-        bonus=station['bonus'],
-        contract_name=station['contract_name'],
-        banking=station['banking']
-    )
+    for station in stations:
+        object, created = DublinBikesStationRealTimeUpdate.objects.get_or_create(
+            parent_station=objects[station['number']],
+            last_update=station['last_update'],
+            defaults=dict(
+                status=station['status'],
+                # last_update=station['position']['lng'],
+                available_bikes=station['available_bikes'],
+                available_bike_stands=station['available_bike_stands'],
+                bike_stands=station['bike_stands'],
+            )
+        )
+    # mystation = {'status': 'OPEN', 'bonus': False, 'address': 'Trinity tests',
+    #  'banking': True, 'bike_stands': 30,
+    # 'last_update': 1518777566000, 'available_bike_stands': 29,
+    # 'contract_name': 'Dublin',
+    # 'position': {'lat': 53.349562, 'lng': -6.278198},
+    # 'number': 42, 'available_bikes': 1,
+    # 'name': 'SMITHFIELD NORTH'}
+
     return "Update_stations: {} stations updated!".format(len(stations))
