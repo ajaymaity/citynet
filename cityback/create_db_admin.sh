@@ -16,6 +16,7 @@ fi
 
 rm db.sqlite3
 find -name migrations -exec rm -rf {} \;
+
 python manage.py makemigrations
 python manage.py makemigrations storage
 python manage.py makemigrations scheduler

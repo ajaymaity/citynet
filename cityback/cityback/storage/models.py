@@ -18,6 +18,7 @@ class DublinBikesStation(models.Model):
     def __str__(self):
         return "station no. %s named '%s'" % (self.station_number, self.name)
 
+
 class DublinBikesStationRealTimeUpdate(models.Model):
     """A Dublin bikes station real time data."""
 
@@ -28,4 +29,3 @@ class DublinBikesStationRealTimeUpdate(models.Model):
     available_bikes = models.IntegerField()
     available_bike_stands = models.IntegerField()
     bike_stands = models.IntegerField()
-
