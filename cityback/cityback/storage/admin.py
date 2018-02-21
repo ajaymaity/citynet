@@ -11,6 +11,7 @@ class StationAdmin(admin.ModelAdmin):
     list_display = [field.name for field in
                     DublinBikesStation._meta.get_fields()]
 
+
 class RTStationAdmin(admin.ModelAdmin):
     """Create the admin view of the stations."""
 

@@ -34,18 +34,18 @@ def update_stations():
 
     bikes = BikesRetrieval()
     stations = bikes.get_dynamic_data()
-    objects={}
+    objects = {}
     for station in stations:
         object, created = DublinBikesStation.objects.update_or_create(
             station_number=station['number'],
-            defaults= dict(
+            defaults=dict(
                 latitude=station['position']['lat'],
                 longitude=station['position']['lng'],
                 name=station['name'],
                 address=station['address'],
                 bonus=station['bonus'],
-                contract_name = station['contract_name'],
-                banking = station['banking']
+                contract_name=station['contract_name'],
+                banking=station['banking']
             )
         )
         print(object)
