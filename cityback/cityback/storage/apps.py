@@ -1,9 +1,8 @@
 """TODO."""
 
 from django.apps import AppConfig
-
-from cityback.retrieval.data_retrieval import BikesRetrieval
-from cityback.storage.models import DublinBikesStation, DublinBikesStationRealTimeUpdate
+from cityback.storage.models import (
+    DublinBikesStation, DublinBikesStationRealTimeUpdate)
 
 
 class StorageConfig(AppConfig):

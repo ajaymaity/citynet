@@ -1,7 +1,8 @@
 """Tests related to the storage module."""
 from django.test import TestCase
 import json
-from cityback.storage.models import DublinBikesStation
+from cityback.storage.models import (
+    DublinBikesStation, DublinBikesStationRealTimeUpdate)
 from cityback.storage.apps import update_stations
 import os
 
@@ -14,21 +15,15 @@ class BikeStationsTest(TestCase):
         self.stations = json.load(open(os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
             "test_data.json")))
-        for s1 in self.stations:
-            DublinBikesStation.objects.create(
-                station_number=s1["number"],
-                latitude=s1['position']['lat'],
-                longitude=s1['position']['lng'],
-                name=s1['name'],
-                address=s1['address'],
-                bonus=s1['bonus'],
-                contract_name=s1['contract_name'],
-                banking=s1['banking']
-            )
 
-    def test_correct_update(self):
+
+class CorrectUpdateTest(BikeStationsTest):
+    """Testing correct static data update."""
+
+    def runTest(self):
         """Correctly update values."""
         s1 = self.stations[0]
+        update_stations(self.stations)
         s2 = DublinBikesStation.objects.get(station_number=s1["number"])
         self.assertEqual(s1['name'], s2.name)
 
@@ -36,3 +31,53 @@ class BikeStationsTest(TestCase):
         update_stations([s1])
         s2 = DublinBikesStation.objects.get(station_number=s1["number"])
         self.assertEqual(s1['address'], s2.address)
+
+
+class CorrectRealTimeInsertTest(BikeStationsTest):
+    """Testing if realtime data is inserted correctly."""
+
+    def runTest(self):
+        """Correctly insert values."""
+        s1 = self.stations[0]
+        update_stations(self.stations)
+        dublin_static_object = DublinBikesStation.objects.get(
+            station_number=s1["number"])
+        s2 = DublinBikesStationRealTimeUpdate.objects.get(
+            parent_station=dublin_static_object)
+        self.assertEqual(s2.last_update, str(s1['last_update']))
+
+
+class InCorrectRealTimeUpdateTest(BikeStationsTest):
+    """Testing new dynamic data with same timestamp and station=> no update."""
+
+    def runTest(self):
+        """Correctly check and not update values."""
+        s1 = self.stations[0]
+        update_stations(self.stations)
+        s1['status'] = 'Test'
+        update_stations([s1])
+        dublin_static_object = DublinBikesStation.objects.get(
+            station_number=s1["number"])
+        s2 = DublinBikesStationRealTimeUpdate.objects.get(
+            parent_station=dublin_static_object, last_update=s1['last_update'])
+        self.assertNotEqual(s2.status, 'Test')
+
+
+class CorrectRealTimeUpdateTest(BikeStationsTest):
+    """Testing new dynamic data with new timestamp and station.
+
+    => insert the new data.
+    """
+
+    def runTest(self):
+        """Correctly update the real time values."""
+        s1 = self.stations[0]
+        update_stations(self.stations)
+        s1['status'] = 'Test'
+        s1['last_update'] = '1519141941001'  # changed timestamp
+        update_stations([s1])
+        dublin_static_object = DublinBikesStation.objects.get(
+            station_number=s1["number"])
+        s2 = DublinBikesStationRealTimeUpdate.objects.get(
+            parent_station=dublin_static_object, last_update=s1['last_update'])
+        self.assertEqual(s2.status, 'Test')

@@ -11,5 +11,3 @@ def periodic_station_update():
     bikes = BikesRetrieval()
     stations = bikes.get_dynamic_data()
     update_stations(stations)
-
-
