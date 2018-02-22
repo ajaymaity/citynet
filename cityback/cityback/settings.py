@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'cityback.retrieval',
     'cityback.scheduler',
     'django_celery_results',
+    'channels',
+    'cityback.dashboard',
 ]
 
 MIDDLEWARE = [
@@ -141,3 +143,11 @@ CELERY_RESULT_BACKEND = 'django-cache'
 # CELERY_ACCEPT_CONTENT = ['json']
 # CELERY_RESULT_BACKEND = 'db+sqlite:///results.sqlite'
 # CELERY_TASK_SERIALIZER = 'json'
+
+# Channel layer settings
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'asgiref.inmemory.ChannelLayer',
+        'ROUTING': 'cityback.routing.channel_routing',
+    },
+}

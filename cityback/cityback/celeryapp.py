@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
 import datetime
+
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cityback.settings')
 
@@ -26,6 +27,11 @@ app.conf.update(
         'update_stations-every-30-seconds': {
             'task': 'cityback.storage.tasks.periodic_station_update',
             'schedule': datetime.timedelta(seconds=30),
+            'args': ()
+        },
+        'run-random-number-generator-every-1-second': {
+            'task': 'cityback.dashboard.helpers.get_data',
+            'schedule': datetime.timedelta(seconds=1),
             'args': ()
         }
     }

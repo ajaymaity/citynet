@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index Page</title>
+    <script type="text/javascript">
+        function onOpen(evt) {
+            console.log("Conencted to websocket!");
+            websocket.send(JSON.stringify({data: "Hello"}));
+        }
+
+        function onMessage(evt) {
+            console.log(evt.data);
+            document.getElementById("rand").innerHTML = evt.data;
+        }
+
+        function setupWebSocket() {
+            websocket = new WebSocket("ws://localhost:3000/ws/");
+            websocket.onopen = function(evt) { onOpen(evt); };
+            websocket.onmessage = function(evt) { onMessage(evt); };
+        }
+
+        function runButton() {
+            websocket.send(JSON.stringify({data: "Sending button click!"}));
+        }
+
+        window.addEventListener("load", setupWebSocket);
+    </script>
+</head>
+<body>
+<h2>The random data is <span id="rand">0</span>.</h2>
+<button type="button" onclick="runButton()">Click Me!</button>
+</body>
+</html>
