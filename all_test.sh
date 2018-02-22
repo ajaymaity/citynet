@@ -9,7 +9,12 @@ if [ "$1" == "from_docker" ]; then
 	PRE="bash -c"
 fi
 $PRE "cd cityback && python setup.py test"
-$PRE "cd cityback && python manage.py test"
+$PRE "cd cityback && \
+  python manage.py makemigrations&&\
+  python manage.py makemigrations storage&&\
+  python manage.py makemigrations scheduler&&\
+  python manage.py makemigrations retrieval &&\
+  python manage.py test"
 $PRE "cd frontend && npm install && npm run test-ci"
 $PRE "cd node-realtime && npm install && npm run test-ci"
 
