@@ -5,7 +5,7 @@
     <title>Index Page</title>
     <script type="text/javascript">
         function onOpen(evt) {
-            console.log("Conencted to websocket!");
+            console.log("Connected to websocket!");
             websocket.send(JSON.stringify({data: "Hello"}));
         }
 
@@ -15,7 +15,7 @@
         }
 
         function setupWebSocket() {
-            websocket = new WebSocket("ws://localhost:3000/ws/");
+            websocket = new WebSocket("ws://localhost:8000/");
             websocket.onopen = function(evt) { onOpen(evt); };
             websocket.onmessage = function(evt) { onMessage(evt); };
         }

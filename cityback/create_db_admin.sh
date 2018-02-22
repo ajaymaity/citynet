@@ -21,6 +21,7 @@ python manage.py makemigrations
 python manage.py makemigrations storage
 python manage.py makemigrations scheduler
 python manage.py makemigrations retrieval
+python manage.py makemigrations dashboard
 python manage.py migrate
 
 echo "creating admin user: admin/adminadmin"
@@ -29,4 +30,7 @@ echo "from django.contrib.auth.models import User; \
   User.objects.create_superuser('admin', 'admin@example.com', 'adminadmin')" | \
   python manage.py shell
 
+service rabbitmq-server start
+celery -A cityback worker --beat --detach
 
+python manage.py runserver 0.0.0.0:8000

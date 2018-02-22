@@ -147,7 +147,11 @@ CELERY_RESULT_BACKEND = 'django-cache'
 # Channel layer settings
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'asgiref.inmemory.ChannelLayer',
+        # 'BACKEND': 'asgiref.inmemory.ChannelLayer',
         'ROUTING': 'cityback.routing.channel_routing',
+        "BACKEND": "asgi_rabbitmq.RabbitmqChannelLayer",
+        "CONFIG": {
+            "url": "amqp://guest:guest@localhost/%2F"
+        },
     },
 }

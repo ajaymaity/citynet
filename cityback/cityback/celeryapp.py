@@ -22,21 +22,27 @@ app.autodiscover_tasks()
 # @celeryd_init.connect(sender='worker12@example.com')
 # def configure_worker12(conf=None, **kwargs):
 
+# app.conf.update(
+#     CELERYBEAT_SCHEDULE={
+#         'update_stations-every-30-seconds': {
+#             'task': 'cityback.storage.tasks.update_stations',
+#             'schedule': datetime.timedelta(seconds=30),
+#             'args': ()
+#         },
+#     }
+# )
+
+
 app.conf.update(
     CELERYBEAT_SCHEDULE={
-        'update_stations-every-30-seconds': {
-            'task': 'cityback.storage.tasks.periodic_station_update',
-            'schedule': datetime.timedelta(seconds=30),
-            'args': ()
-        },
-        'run-random-number-generator-every-1-second': {
-            'task': 'cityback.dashboard.helpers.get_data',
+        'display-every-1-seconds': {
+            'task':
+                'cityback.dashboard.tasks.periodic_send_handler',
             'schedule': datetime.timedelta(seconds=1),
             'args': ()
         }
     }
 )
-
 
 @app.task(bind=True)
 def debug_task(self):
