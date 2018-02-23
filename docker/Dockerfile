@@ -30,7 +30,7 @@ RUN \
   add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable &&\
   curl -sL https://deb.nodesource.com/setup_8.x | bash - &&\
   apt-get update && \
-  apt-get install -y --no-install-recommends build-essential rabbitmq-server\
+  apt-get install -y --no-install-recommends build-essential rabbitmq-server redis-server\
                       curl git htop man vim wget python3-pip postgresql postgis\
                       postgresql-9.5-postgis-scripts postgresql-9.5-postgis-2.4 \
                       gdal-bin python3-gdal python3-dev nodejs python3-psutil tmux &&\

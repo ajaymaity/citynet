@@ -9,16 +9,17 @@
 
 source /app/docker/test/create_tmp_db.cmd
 
-python docker/test/django_db/manage.py runserver 0.0.0.0:8000 &>/dev/null & PID2=$!
+python docker/test/django_db/manage.py runserver  &>/dev/null & PID2=$!
 sleep 1.5
 
-ret=$(wget localhost:8000 --timeout 2 -qO- | grep 'It worked!')
+ret=$(wget 127.0.0.1:8000 --timeout 2 -qO- | grep 'successfully')
 
 # stopping django server
 pkill -SIGINT -P $PID2
 
 # stopping postgres server
 source /app/docker/test/stop_db.cmd
+sleep .5
 
 if [ "$ret" != "" ]; then
   echo $ret

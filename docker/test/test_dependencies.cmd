@@ -27,7 +27,8 @@ trap 'error $LINENO' ERR
 python --version
 [ `python --version | cut -d' ' -f2` == "3.5.2" ]
 python -c "print('Hello World')"
-[ "`python -c "import django; print(django.__version__)"`" == "1.11.6" ]
+[ "`python -c "import django; print(django.__version__)"`" == "2.0.2" ]
+[ "`python -c "import redis; print(redis.__version__)"`" == "2.10.6" ]
 [ "`python -c "import celery; print(celery.__version__)"`" == "4.1.0" ]
 [ "`python -c "import psycopg2; print(psycopg2.__version__)"`" == "2.7.3.2 (dt dec pq3 ext lo64)" ]
 [ "`python -c "import oauth2client; print(oauth2client.__version__)"`" == "4.1.2" ]
@@ -42,7 +43,7 @@ python -c "print('Hello World')"
 [ "`python -c "import pycodestyle; print(pycodestyle.__version__)"`" == "2.3.1" ]
 [ "`python -c "import requests; print(requests.__version__)"`" == "2.18.4" ]
 [ "`python -c "import sphinx; print(sphinx.__version__)"`" == "1.6.7" ]
-[ "`python -c "import channels; print(channels.__version__)"`" == "1.1.6" ]
+[ "`python -c "import channels; print(channels.__version__)"`" == "2.0.2" ]
 [ "`pip3 show sphinx-js | grep '^Version:' | cut -d' ' -f 2`" == "2.3.1" ]
 python -c "import unittest"
 
