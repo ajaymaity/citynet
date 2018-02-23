@@ -14,8 +14,10 @@ if [ "$a" != "yes" ]; then
   exit 0
 fi
 
-rm db.sqlite3
-find -name migrations -exec rm -rf {} \;
+set -e
+
+rm -f db.sqlite3
+find -name migrations -type d -exec rm -rf "{}" +
 
 python manage.py makemigrations
 python manage.py makemigrations storage
@@ -29,8 +31,3 @@ echo "from django.contrib.auth.models import User; \
   User.objects.filter(email='admin@example.com').delete();\
   User.objects.create_superuser('admin', 'admin@example.com', 'adminadmin')" | \
   python manage.py shell
-
-service rabbitmq-server start
-celery -A cityback worker --beat --detach
-
-python manage.py runserver 0.0.0.0:8000

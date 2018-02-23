@@ -48,3 +48,4 @@ app.conf.update(
 def debug_task(self):
     """Print debug task."""
     print('Request: {0!r}'.format(self.request))
+

@@ -133,7 +133,8 @@ STATIC_URL = '/static/'
 
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = True
-CELERY_BROKER_URL = 'pyamqp://guest@localhost//'
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_BACKEND = 'django-cache'
 
@@ -145,13 +146,21 @@ CELERY_RESULT_BACKEND = 'django-cache'
 # CELERY_TASK_SERIALIZER = 'json'
 
 # Channel layer settings
+# CHANNEL_LAYERS = {
+#     'default': {
+#         "BACKEND": "asgi_rabbitmq.RabbitmqChannelLayer",
+#         "CONFIG": {
+#             "url": "amqp://guest:guest@localhost/%2F"
+#         },
+#     },
+# }
 CHANNEL_LAYERS = {
-    'default': {
-        # 'BACKEND': 'asgiref.inmemory.ChannelLayer',
-        'ROUTING': 'cityback.routing.channel_routing',
-        "BACKEND": "asgi_rabbitmq.RabbitmqChannelLayer",
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "url": "amqp://guest:guest@localhost/%2F"
+            "hosts": [("127.0.0.1", 6379)],
         },
     },
 }
+ASGI_APPLICATION = "cityback.routing.application"
+
