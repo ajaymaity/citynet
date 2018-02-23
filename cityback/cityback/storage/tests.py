@@ -1,9 +1,11 @@
 """Tests related to the storage module."""
+
 from django.test import TestCase
 import json
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
 from cityback.storage.apps import update_stations
+import cityback.storage.apps as apps
 import os
 
 
@@ -81,3 +83,12 @@ class CorrectRealTimeUpdateTest(BikeStationsTest):
         s2 = DublinBikesStationRealTimeUpdate.objects.get(
             parent_station=dublin_static_object, last_update=s1['last_update'])
         self.assertEqual(s2.status, 'Test')
+
+
+class GetStations(BikeStationsTest):
+    """Testing getting stations from DB."""
+
+    def runTest(self):
+        """Get dynamic and static data."""
+        update_stations(self.stations)
+        apps.get_stations()
