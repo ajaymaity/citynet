@@ -4,11 +4,11 @@
 # Created: Fri 02 Feb 2018 09:33:16 GMT
 # Version: 1.0
 
-source /app/docker/test/cr
+source /app/docker/test/create_tmp_db.cmd
+
 #
 
-set -eeate_tmp_db.cmd
-
+set -e
 PGPASSWORD=docker psql -h localhost -p 5439 -U docker -c 'SELECT * FROM USER;'
 PGPASSWORD=docker psql -h localhost -p 5439 -U docker -c 'SELECT PostGIS_version();'
 ret=$?
