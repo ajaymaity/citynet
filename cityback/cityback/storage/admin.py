@@ -8,8 +8,8 @@ from .models import DublinBikesStation, DublinBikesStationRealTimeUpdate
 class StationAdmin(admin.ModelAdmin):
     """Create the admin view of the stations."""
 
-    list_display = [field.name for field in
-                    DublinBikesStation._meta.get_fields()]
+    # list_display = [field.name for field in
+    #                 DublinBikesStation._meta.get_fields()]
 
 
 class RTStationAdmin(admin.ModelAdmin):
@@ -19,8 +19,9 @@ class RTStationAdmin(admin.ModelAdmin):
                     DublinBikesStationRealTimeUpdate._meta.get_fields()]
 
 
-admin.site.register(DublinBikesStation, StationAdmin)
-admin.site.register(DublinBikesStationRealTimeUpdate, RTStationAdmin)
+# admin.site.register(DublinBikesStation, StationAdmin)
+# admin.site.register(DublinBikesStationRealTimeUpdate, RTStationAdmin)
 
-# modelLists = [DublinBikesStation, DublinBikesStationRealTimeUpdate]
-# admin.site.register(modelLists, StationAdmin)
+modelLists = [DublinBikesStation,
+              DublinBikesStationRealTimeUpdate]
+admin.site.register(modelLists, StationAdmin)

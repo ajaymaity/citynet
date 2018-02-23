@@ -14,6 +14,7 @@ if [ "$a" != "yes" ]; then
   exit 0
 fi
 
+celery multi stop worker1 --pidfile="/var/log/celery/%n.pid" 
 set -e
 
 rm -f db.sqlite3

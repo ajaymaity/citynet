@@ -8,6 +8,7 @@ from celery import shared_task
 @shared_task
 def periodic_station_update():
     """Retreive station and update in db."""
+    print("Updating stations...")
     bikes = BikesRetrieval()
     stations = bikes.get_dynamic_data()
     update_stations(stations)

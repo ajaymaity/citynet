@@ -9,5 +9,5 @@ celery multi start worker1 \
     --pidfile="/var/log/celery/%n.pid" \
     --logfile="/var/log/celery/%n.log"
 
-
-./daphne_run.sh
+python manage.py runserver 0.0.0.0:8000
+#./daphne_run.sh
