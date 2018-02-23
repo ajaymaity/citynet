@@ -19,11 +19,11 @@ def send_random(channel_name):
 def periodic_send_handler():
     clients = SocketClient.objects.all()
     for client in clients:
-        chan = Channel(client.channel_name)
         for i in range(100):
             a = random.randint(1, 100)
             try:
                 print("sending {} to {}".format(a, client.channel_name ))
+                chan = Channel(client.channel_name)
                 chan.send({"text": str(a)})
                 print("sent ", a)
             except:

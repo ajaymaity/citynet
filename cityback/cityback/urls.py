@@ -27,7 +27,8 @@ urlpatterns = [
 
 
 def clear_clients():
-    SocketClient.objects.all().delete()
+    if not SocketClient.DoesNotExist:
+        SocketClient.objects.all().delete()
 
 
-clear_clients()
+clear_clients() # TODO add chekc table exist else fails update
