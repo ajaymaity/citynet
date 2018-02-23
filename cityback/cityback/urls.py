@@ -17,8 +17,17 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from cityback.dashboard import views
+from cityback.dashboard.models import SocketClient
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'', views.index_view, name="Index Page"),
 ]
+
+
+def clear_clients():
+    SocketClient.objects.all().delete()
+
+
+clear_clients()
