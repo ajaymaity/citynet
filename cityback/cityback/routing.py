@@ -1,10 +1,10 @@
-from cityback.dashboard import consumers
+"""Routing files that redirects clients to consumers.
 
-from django.conf.urls import url
+See Channels documentation for detail.
+"""
 
-from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
-
+from channels.routing import ProtocolTypeRouter
+# from channels.auth import AuthMiddlewareStack
 from cityback.dashboard.consumers import ClientSocketConsumer
 
 
@@ -12,4 +12,3 @@ application = ProtocolTypeRouter({
     # WebSocket chat handler
     "websocket": ClientSocketConsumer,
 })
-

@@ -163,4 +163,3 @@ CHANNEL_LAYERS = {
     },
 }
 ASGI_APPLICATION = "cityback.routing.application"
-

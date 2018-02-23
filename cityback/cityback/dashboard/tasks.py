@@ -11,19 +11,14 @@ from celery.signals import celeryd_init
 
 @celeryd_init.connect(sender="celery@cityback_dev")
 def reset_client_list(sender=None, conf=None, **kwargs):
+    """Run at the start of the workers to remove all clients."""
     print("REMOVING ALL CLIENTS")
     SocketClient.objects.all().delete()
 
 
 @shared_task
-def send_random(channel_name):
-    a = random.randint(1, 100)
-    print("sending {}".format(a))
-    # Channel(channel_name).send({"text": str(a)})
-
-
-@shared_task
 def periodic_send_handler():
+    """Send periodic data to grou bike_group."""
     clients = SocketClient.objects.all()
 
     if len(clients) == 0:

@@ -4,6 +4,7 @@ import os
 from celery import Celery
 import datetime
 
+
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cityback.settings')
 
@@ -17,20 +18,17 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
-# from celery.signals import celeryd_init
 
-# @celeryd_init.connect(sender='worker12@example.com')
-# def configure_worker12(conf=None, **kwargs):
 
-# app.conf.update(
-#     CELERYBEAT_SCHEDULE={
-#         'update_stations-every-30-seconds': {
-#             'task': 'cityback.storage.tasks.update_stations',
-#             'schedule': datetime.timedelta(seconds=30),
-#             'args': ()
-#         },
-#     }
-# )
+app.conf.update(
+    CELERYBEAT_SCHEDULE={
+        'update_stations-every-30-seconds': {
+            'task': 'cityback.storage.tasks.update_stations',
+            'schedule': datetime.timedelta(seconds=30),
+            'args': ()
+        },
+    }
+)
 
 
 app.conf.update(
@@ -44,8 +42,8 @@ app.conf.update(
     }
 )
 
+
 @app.task(bind=True)
 def debug_task(self):
     """Print debug task."""
     print('Request: {0!r}'.format(self.request))
-

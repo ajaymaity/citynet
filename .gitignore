@@ -13,3 +13,5 @@ doc/build
 __pycache__
 migrations
 /cityback/db.sqlite3
+cityback/.eggs
+cityback/build
