@@ -19,12 +19,6 @@ def reset_client_list(sender=None, conf=None, **kwargs):
 @shared_task
 def periodic_send_handler():
     """Send periodic data to grou bike_group."""
-    clients = SocketClient.objects.all()
-
-    if len(clients) == 0:
-        print("Waiting for clients")
-        return
-
     channel_layer = get_channel_layer()
     print("sending 3 msgs")
     for i in range(3):

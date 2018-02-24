@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import re
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -159,7 +160,14 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("127.0.0.1", 6379)],
+            "capacity": 1000,
+            "channel_capacity": {
+                "http.request": 200,
+                "http.response!*": 10,
+                re.compile(r"^websocket.send\!.+"): 30,
+            },
         },
     },
 }
+
 ASGI_APPLICATION = "cityback.routing.application"
