@@ -15,3 +15,4 @@ migrations
 /cityback/db.sqlite3
 cityback/.eggs
 cityback/build
+celerybeat-schedule.db
