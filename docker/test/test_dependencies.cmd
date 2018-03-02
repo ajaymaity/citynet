@@ -45,6 +45,7 @@ python -c "print('Hello World')"
 [ "`python -c "import sphinx; print(sphinx.__version__)"`" == "1.6.7" ]
 [ "`python -c "import channels; print(channels.__version__)"`" == "2.0.2" ]
 [ "`pip3 show sphinx-js | grep '^Version:' | cut -d' ' -f 2`" == "2.3.1" ]
+[ "`nginx -v 2>&1 | cut -d' ' -f 3`" == "nginx/1.10.3" ]
 python -c "import unittest"
 
 # test Rabbit MQ Server version

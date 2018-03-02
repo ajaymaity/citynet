@@ -33,7 +33,7 @@ RUN \
   apt-get install -y --no-install-recommends build-essential rabbitmq-server redis-server\
                       curl git htop man vim wget python3-pip postgresql postgis\
                       postgresql-9.5-postgis-scripts postgresql-9.5-postgis-2.4 \
-                      gdal-bin python3-gdal python3-dev nodejs python3-psutil tmux &&\
+                      gdal-bin python3-gdal python3-dev nodejs python3-psutil tmux nginx &&\
   rm -rf /var/lib/apt/lists/* &&\
   apt-get autoremove &&\
   apt-get clean &&\
