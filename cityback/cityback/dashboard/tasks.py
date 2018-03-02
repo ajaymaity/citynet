@@ -5,27 +5,32 @@ from celery import shared_task
 import random
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from cityback.dashboard.models import SocketClient
+# from cityback.dashboard.models import SocketClient
 from celery.signals import celeryd_init
+import asyncio
 
 
 @celeryd_init.connect(sender="celery@cityback_dev")
 def reset_client_list(sender=None, conf=None, **kwargs):
     """Run at the start of the workers to remove all clients."""
     print("REMOVING ALL CLIENTS")
-    SocketClient.objects.all().delete()
+    # SocketClient.objects.all().delete()
+    # manually remove all previous clients connected to a group.
+    channel_layer = get_channel_layer()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(channel_layer.flush())
 
 
 @shared_task
 def periodic_send_handler():
     """Send periodic data to grou bike_group."""
     channel_layer = get_channel_layer()
-    print("sending 3 msgs")
-    for i in range(3):
+    print("sending 1 msgs")
+    for i in range(1):
         a = random.randint(1, 100)
         async_to_sync(channel_layer.group_send)(
             "bike_group", {
                 "type": "group.send",
-                "text": str(a)}
+                "text": "VALUE=" + str(a)}
         )
-    print("done 3")
+    print("done 1")

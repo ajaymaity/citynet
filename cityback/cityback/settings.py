@@ -134,7 +134,9 @@ STATIC_URL = '/static/'
 
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = True
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672/'
+
 
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_BACKEND = 'django-cache'
@@ -160,11 +162,11 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("127.0.0.1", 6379)],
-            "capacity": 1000,
+            "capacity": 20000,
             "channel_capacity": {
-                "http.request": 200,
-                "http.response!*": 10,
-                re.compile(r"^websocket.send\!.+"): 30,
+                "http.request": 10000,
+                "http.response!*": 10000,
+                re.compile(r"^websocket.send\!.+"): 10000,
             },
         },
     },

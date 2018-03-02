@@ -3,12 +3,15 @@
 See Channels documentation for detail.
 """
 
-from channels.routing import ProtocolTypeRouter
+from channels.routing import ProtocolTypeRouter, URLRouter
 # from channels.auth import AuthMiddlewareStack
-from cityback.dashboard.consumers import ClientSocketConsumer
+from django.urls import path
 
+from cityback.dashboard.consumers import ClientSocketConsumer
 
 application = ProtocolTypeRouter({
     # WebSocket chat handler
-    "websocket": ClientSocketConsumer,
+    "websocket": URLRouter([
+        path('ws/', ClientSocketConsumer)
+    ]),
 })
