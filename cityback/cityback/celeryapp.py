@@ -27,10 +27,10 @@ app.conf.update(
             'schedule': datetime.timedelta(seconds=10),
             'args': ()
         },
-        'display-every-1-seconds': {
+        'display-every-2-seconds': {
             'task':
                 'cityback.dashboard.tasks.periodic_send_handler',
-            'schedule': datetime.timedelta(seconds=1),
+            'schedule': datetime.timedelta(seconds=2),
             'args': ()
         }
     }

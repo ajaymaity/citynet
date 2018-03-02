@@ -1,19 +1,28 @@
 """All the celery tasks are defined here."""
 from __future__ import absolute_import, unicode_literals
 
-from celery import shared_task
+import asyncio
 import random
-from channels.layers import get_channel_layer
+
 from asgiref.sync import async_to_sync
+from celery import shared_task
 # from cityback.dashboard.models import SocketClient
 from celery.signals import celeryd_init
-import asyncio
+from channels.layers import get_channel_layer
 
 
-@celeryd_init.connect(sender="celery@cityback_dev")
+# @celeryd_init.connect("worker1@cityback_dev")
+# noinspection PyUnusedLocal
+@celeryd_init.connect
 def reset_client_list(sender=None, conf=None, **kwargs):
-    """Run at the start of the workers to remove all clients."""
-    print("REMOVING ALL CLIENTS")
+    """
+    Run at the start of the worker1 to remove all previous clients.
+
+    The worker need to be called worker1 at startup
+    for example: celery multi start worker1 -A cityback --beat
+    """
+    print("sender={}:REMOVING ALL CLIENTS, flushing redis".format(
+        sender))
     # SocketClient.objects.all().delete()
     # manually remove all previous clients connected to a group.
     channel_layer = get_channel_layer()
@@ -23,14 +32,12 @@ def reset_client_list(sender=None, conf=None, **kwargs):
 
 @shared_task
 def periodic_send_handler():
-    """Send periodic data to grou bike_group."""
+    """Send periodic data to group bike_group."""
     channel_layer = get_channel_layer()
-    print("sending 1 msgs")
-    for i in range(1):
+    nMsg = 10
+    for i in range(nMsg):
         a = random.randint(1, 100)
         async_to_sync(channel_layer.group_send)(
-            "bike_group", {
-                "type": "group.send",
-                "text": "VALUE=" + str(a)}
-        )
-    print("done 1")
+            "bike_group", {"type": "group.send",
+                           "text": "VALUE=" + str(a)})
+    print("done sending group msg x{}".format(nMsg))

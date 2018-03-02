@@ -2,7 +2,7 @@
 
 # message routers
 service redis-server start
-service rabbitmq-server start
+#service rabbitmq-server start
 
 # celery tasks
 mkdir -p /var/log/celery
@@ -19,6 +19,6 @@ daphne -p 8000 -b 0.0.0.0 cityback.asgi:application -v 1
 echo "Stopping all servers"
 celery multi stop worker1 --pidfile="/var/log/celery/%n.pid"
 
-service redis-server stop
-service rabbitmq-server stop
+redis-cli shutdown
+#service rabbitmq-server stop
 

@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-import re
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -134,12 +133,11 @@ STATIC_URL = '/static/'
 
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = True
-# CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672/'
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
 
 CELERY_RESULT_BACKEND = 'django-db'
-CELERY_RESULT_BACKEND = 'django-cache'
+# CELERY_RESULT_BACKEND = 'django-cache'
 
 
 #: Only add pickle to this list if your broker is secured
@@ -149,25 +147,17 @@ CELERY_RESULT_BACKEND = 'django-cache'
 # CELERY_TASK_SERIALIZER = 'json'
 
 # Channel layer settings
-# CHANNEL_LAYERS = {
-#     'default': {
-#         "BACKEND": "asgi_rabbitmq.RabbitmqChannelLayer",
-#         "CONFIG": {
-#             "url": "amqp://guest:guest@localhost/%2F"
-#         },
-#     },
-# }
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("127.0.0.1", 6379)],
-            "capacity": 20000,
-            "channel_capacity": {
-                "http.request": 10000,
-                "http.response!*": 10000,
-                re.compile(r"^websocket.send\!.+"): 10000,
-            },
+            # "capacity": 20000,
+            # "channel_capacity": {
+            #     "http.request": 10000,
+            #     "http.response!*": 10000,
+            #     re.compile(r"^websocket.send\!.+"): 10000,
+            # },
         },
     },
 }
