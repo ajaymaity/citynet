@@ -19,5 +19,11 @@ realpath() {
 
 path="$(dirname $(realpath $0))"
 
-docker pull asegroup11/all_servers:citynet
+# in dev mode, run the local image, dont download image from the server
+if [ "$1" = "dev" ]; then
+  shift
+  echo "Running local docker image, when changes are validated, don't forget to push the image."
+else
+  docker pull asegroup11/all_servers:citynet
+fi
 docker run --hostname "cityback_dev" -p 5432:5432 -p 8000:8000 -p 3000:3000 -p 3001:3001 --rm -it -v "${path}/..":/app -w /app asegroup11/all_servers:citynet "$@"
