@@ -14,8 +14,8 @@ celery multi start worker1 \
     --logfile="/var/log/celery/%n.log"
 
 # daphne start here, django runserver fails somehow
-#python manage.py runserver 0.0.0.0:8000
-daphne -p 8000 -b 0.0.0.0 cityback.asgi:application -v 1
+python manage.py runserver 0.0.0.0:8000 -v 1
+#daphne -p 8000 -b 0.0.0.0 cityback.asgi:application -v 1
 echo "Stopping all servers"
 celery multi stop worker1 --pidfile="/var/log/celery/%n.pid"
 
