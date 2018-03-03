@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/citynet.iml" filepath="$PROJECT_DIR$/.idea/citynet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../config_private_citynet/.idea/config_private_citynet.iml" filepath="$PROJECT_DIR$/../config_private_citynet/.idea/config_private_citynet.iml" />
     </modules>
   </component>
 </project>

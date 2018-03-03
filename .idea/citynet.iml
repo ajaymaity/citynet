@@ -18,6 +18,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Remote Python 3.5.2 Docker (asegroup11/all_servers:citynet)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="config_private_citynet" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />

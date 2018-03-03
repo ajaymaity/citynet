@@ -33,7 +33,7 @@ docker volume inspect db3 &>/dev/null || docker volume create db3
 docker volume inspect nginx_conf &>/dev/null || docker volume create nginx_conf
 docker volume inspect letsencrypt &>/dev/null || docker volume create letsencrypt
 
-docker run --hostname "cityback_dev" -p 443:443 -p 80:80 --rm -it -v db1:/etc/postgresql \
+docker run --hostname "cityback_prod" -p 443:443 -p 80:80 --rm -it -v db1:/etc/postgresql \
   -v db2:/var/log -v db3:/var/lib/postgresql \
   -v nginx_conf:/etc/nginx/ \
   -v letsencrypt:/etc/letsencrypt/ \
