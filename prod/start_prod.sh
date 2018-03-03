@@ -7,6 +7,7 @@ source /app/config_private/bash_import_secret
 #create log directories
 mkdir -p /var/log/celery /var/log/redis
 chown -R redis /var/log/redis
+chown -R postgres /var/log/postgresql
 
 # start db
 service postgresql restart
@@ -18,6 +19,7 @@ python /app/cityback/manage.py makemigrations scheduler
 python /app/cityback/manage.py makemigrations retrieval
 python /app/cityback/manage.py makemigrations dashboard
 python /app/cityback/manage.py migrate
+python /app/cityback/manage.py collectstatic --noinput
 
 # message routers
 service redis-server restart

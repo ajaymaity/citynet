@@ -26,6 +26,10 @@ server {
         proxy_set_header Upgrade websocket;
         proxy_set_header Connection upgrade;
       }
+    location /static/ {
+        autoindex on;
+        root   /var/www/;
+     }
     location / {
        	    proxy_pass http://127.0.0.1:8000;
             proxy_http_version 1.1;
@@ -64,6 +68,6 @@ mv myssl.crt /etc/nginx/ssl/certs/
 
 echo "Copying key (myssl.key) to /etc/nginx/ssl/private/"
 mkdir -p  /etc/nginx/ssl/private
-cp myssl.key /etc/nginx/ssl/private/
+mv myssl.key /etc/nginx/ssl/private/
 
 nginx -t
