@@ -4,7 +4,7 @@ import requests
 import logging
 from cityback.config import get_private_config
 
-__all__ = ["DataRetrieval"]
+__all__ = ["DataRetrieval", "BikesRetrieval"]
 
 
 class DataRetrieval(object):

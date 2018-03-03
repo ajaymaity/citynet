@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # coding=utf-8
 """Main package management file for the backend python package."""
-from setuptools import setup, find_packages
+from setuptools import setup
 import unittest
 import os
 
@@ -25,9 +25,9 @@ with open(docker_file) as f:
 setup(
     name='cityback',
     version='0.1.0',
-    packages=find_packages('cityback'),  # include all packages under src
-    package_dir={'': 'cityback'},   # tell distutils packages are under src
-    scripts=['bin/cityback_script.py'],
+    packages=['cityback'],  # include all packages under src
+    # package_dir={'': 'cityback'},   # tell distutils packages are under src
+    scripts=['bin/cityback_get_bike_json.py'],
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
     long_description=open('README.txt').read(),
     install_requires=requirements,
