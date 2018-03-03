@@ -15,7 +15,12 @@
         }
 
         function setupWebSocket() {
-            websocket = new WebSocket("ws://localhost:8000/ws/");
+            if (window.location.protocol != "https:") {
+                prefix = "ws";
+            }else{
+                prefix = "wss";
+            }
+            websocket = new WebSocket(prefix + "://"  + location.host + "/ws/");
             websocket.onopen = function(evt) { onOpen(evt); };
             websocket.onmessage = function(evt) { onMessage(evt); };
         }

@@ -55,17 +55,26 @@ ENV LC_ALL en_IE.UTF-8
 
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible.
-RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.5/main/pg_hba.conf
-RUN echo "listen_addresses='*'" >> /etc/postgresql/9.5/main/postgresql.conf
+# RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.5/main/pg_hba.conf
+# RUN echo "listen_addresses='*'" >> /etc/postgresql/9.5/main/postgresql.conf
+
+# add let's encrypt bot
+RUN \
+  add-apt-repository -y ppa:certbot/certbot &&\
+  apt-get update && \
+  apt-get install -y python3-certbot-nginx &&\
+  apt-get autoremove &&\
+  apt-get clean &&\
+  rm -rf /var/lib/apt/lists/*
 
 # Add VOLUMEs to allow backup of config, logs and databases
-VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
+VOLUME  ["/etc/postgresql", "/var/log", "/var/lib/postgresql", "/etc/nginx"]
 
-# Expose the PostgreSQL port
-EXPOSE 5432
+# ADD
+RUN useradd -c 'Daphne user' -m -d /home/daphne -s /bin/bash daphne
 
-# Expose the django port
-EXPOSE 8000
+# Expose the web ports
+EXPOSE 80 443
 
 # Set environment variables.
 ENV HOME /root

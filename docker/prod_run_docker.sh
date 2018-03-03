@@ -18,12 +18,21 @@ realpath() {
 }
 
 path="$(dirname $(realpath $0))"
+
+# in dev mode, run the local image, dont download image from the server
+if [ "$1" = "dev" ]; then
+  shift
+  echo "Running local docker image, when changes are validated, don't forget to push the image."
+else
+  docker pull asegroup11/all_servers:citynet
+fi
 #create volume if non existant
 docker volume inspect db1 &>/dev/null || docker volume create db1
 docker volume inspect db2 &>/dev/null || docker volume create db2
 docker volume inspect db3 &>/dev/null || docker volume create db3
+docker volume inspect nginx_conf &>/dev/null || docker volume create nginx_conf
 
-docker run --net host -P --rm -i -v db1:/etc/postgresql \
+docker run --hostname "cityback_dev" -p 443:443 -p 80:80 --rm -it -v db1:/etc/postgresql \
   -v db2:/var/log -v db3:/var/lib/postgresql \
-  -v "${path}/..":/app -w /app asegroup11/all_servers:citynet \
-  "$@"
+  -v nginx_conf:/etc/nginx/ \
+ -v "${path}/..":/app -w /app asegroup11/all_servers:citynet "$@"

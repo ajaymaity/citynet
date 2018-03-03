@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import ast
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,13 +21,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'e(l(earh23inam!br%-dd%@c5z(_esulairx35nkmx4f(9h(i5'
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'e(l(earh23inam!br%-dd%@c5z(_esulairx35nkmx4f(9h(i5')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
 
-ALLOWED_HOSTS = []
 
+ALLOWED_HOSTS = ast.literal_eval(os.environ.get('DJANGO_HOST', "[]"))
 
 # Application definition
 
@@ -80,12 +83,26 @@ WSGI_APPLICATION = 'cityback.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+dbuser = os.environ.get('PGUSER1', "")
+dbpassword = os.environ.get('PGPASSWORD', "")
+if dbuser != "" and dbpassword != "":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'prod',
+            'USER': dbuser,
+            'PASSWORD': dbpassword,
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation
