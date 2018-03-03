@@ -31,9 +31,11 @@ docker volume inspect db1 &>/dev/null || docker volume create db1
 docker volume inspect db2 &>/dev/null || docker volume create db2
 docker volume inspect db3 &>/dev/null || docker volume create db3
 docker volume inspect nginx_conf &>/dev/null || docker volume create nginx_conf
+docker volume inspect letsencrypt &>/dev/null || docker volume create letsencrypt
 
 docker run --hostname "cityback_dev" -p 443:443 -p 80:80 --rm -it -v db1:/etc/postgresql \
   -v db2:/var/log -v db3:/var/lib/postgresql \
   -v nginx_conf:/etc/nginx/ \
+  -v letsencrypt:/etc/letsencrypt/ \
   -v "${path}/../../config_private_citynet/":/app/config_private/ \
  -v "${path}/..":/app -w /app asegroup11/all_servers:citynet "$@"
