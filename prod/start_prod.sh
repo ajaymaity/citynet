@@ -38,7 +38,6 @@ celery multi start worker1 \
 service nginx restart
 
 # daphne start here
-#python manage.py runworker????
 daphne -p 8000 -b 127.0.0.1 cityback.asgi:application -v 1
 echo "Stopping all servers"
 celery multi stop worker1 --pidfile="/var/log/celery/%n.pid"
