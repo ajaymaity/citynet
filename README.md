@@ -37,22 +37,41 @@ docker/interactive_docker.sh
 ```
 
 
-PostgresSQL DB
+Running Servers locally
 ======
-Create db
+Start a demo in Dev mode. 
 ------
+Run demo.sh which will ask to setup
+the project in development mode and then the project can be run on localhost
+by typing [localhost:8000](http://localhost:8000) in browser.
+
 ```
-docker/db_create.sh 
+docker/interactive_docker.sh
+./demo.sh
 ```
 
-Run db
+Start in Prod mode. 
 ------
+* Run the docker for production-
+```
+docker/prod_run_docker.sh
+```
+* Run following command for creating the database -
+```
+prod/create_prod_db.sh
+```
+* Setup the nginx server by typing the following command-
+```
+prod/setup_nginx.sh
+```
+* Start the prod server by typing the following command-
+```
+prod/start_dev.sh
+```
+Now access the server by typing [localhost](http://localhost) in browser.
 This will block the terminal until the server is stopped with CTRL+C
-``` 
-docker/db_run.sh
-```
 
-
+<!--
 Run frontend
 ======
 
@@ -68,7 +87,7 @@ Run the server
 ```
 frontend/run-fe-docker.sh
 ```
-
+--status>
 
 Make documentation
 ====
