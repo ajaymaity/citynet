@@ -6,7 +6,6 @@ import random
 
 from asgiref.sync import async_to_sync
 from celery import shared_task
-# from cityback.dashboard.models import SocketClient
 from celery.signals import celeryd_init
 from channels.layers import get_channel_layer
 

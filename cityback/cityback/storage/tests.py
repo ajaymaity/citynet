@@ -91,4 +91,4 @@ class GetStations(BikeStationsTest):
     def runTest(self):
         """Get dynamic and static data."""
         update_stations(self.stations)
-        apps.get_stations()
+        apps.getLattestStationsFromDB()

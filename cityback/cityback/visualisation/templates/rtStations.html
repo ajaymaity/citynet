@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Display a map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+    <link href="static/styles/style.css" rel="stylesheet"/>
+</head>
+<body>
+
+<div id='map'></div>
+<button type="button" onclick="runButton()">Debug Mode</button>
+The debug mode is <span id="dbg">false</span>.
+<div>Icons made by <a href="https://www.flaticon.com/authors/nikita-golubev" title="Nikita Golubev">Nikita Golubev</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+<script type="text/javascript">
+
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYXNlcHJvamVjdGdyb3VwMTEiLCJhIjoiY2pkdWE2dHRuMTVmODMzbGxzY3htNzVmZCJ9.rp6HgWPAmVtqsQ9pOR4PdA';
+
+    let map = new mapboxgl.Map({
+        container: 'map', // container id
+        style: 'mapbox://styles/aseprojectgroup11/cjduauper516m2rt5grsw7eji', // stylesheet location
+        center: [-6.272, 53.351], // starting position [lng, lat]
+        zoom: 12, // starting zoom
+    });
+
+    // Add zoom and rotation controls to the map.
+    map.addControl(new mapboxgl.NavigationControl());
+
+    var stations_val = {{ stations|safe }};
+    console.log(stations_val)
+    // add markers to map
+    stations_val.forEach(function(station) {
+
+        // create a HTML element for each feature
+        var el = document.createElement('div');
+        el.className = 'marker';
+        el.id = station.station_number;
+        el.bikes = 0;
+        el.textContent = ("S" + station.station_number +
+            ",B:" + station.available_bikes + ", S:" +
+            station.available_bike_stands);
+
+        // make a marker for each feature and add to the map
+        new mapboxgl.Marker(el)
+            .setLngLat([station.longitude, station.latitude])
+            .addTo(map);
+    });
+  function onOpen(evt) {
+        console.log("Connected to websocket!");
+        websocket.send(JSON.stringify({data: "Hello"}));
+    }
+    var num = 99;
+  var debug = false;
+    function onMessage(evt) {
+        console.log("data_received")
+        stations_val = JSON.parse(evt.data).stations;
+        var updated = "";
+        stations_val.forEach(function(station) {
+            // create a HTML element for each feature
+
+            var el = document.getElementById(station.station_number);
+            if(debug && station.station_number == 21){
+                el.textContent = ("S" + station.station_number +
+                    ",B:" + num + ", S:" +
+                    station.available_bike_stands);
+                el.className = "markerbicycle";
+                num++;
+            }else {
+                el.textContent = ("S" + station.station_number +
+                    ",B:" + station.available_bikes + ", S:" +
+                    station.available_bike_stands);
+                updated += station.station_number + " ";
+            }
+        });
+        {#document.getElementById("rand").innerHTML = updated;#}
+
+    }
+
+    function setupWebSocket() {
+        if (window.location.protocol != "https:") {
+            prefix = "ws";
+        }else{
+            prefix = "wss";
+        }
+        websocket = new WebSocket(prefix + "://"  + location.host + "/ws/rtStations");
+        websocket.onopen = function(evt) { onOpen(evt); };
+        websocket.onmessage = function(evt) { onMessage(evt); };
+    }
+
+    function runButton() {
+        debug = !debug;
+        document.getElementById("dbg").innerHTML = debug;
+    }
+    window.addEventListener("load", setupWebSocket);
+
+</script>
+</body>
+</html>

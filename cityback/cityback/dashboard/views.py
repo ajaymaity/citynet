@@ -2,6 +2,6 @@
 from django.shortcuts import render
 
 
-def index_view(request):
+def rtDemo(request):
     """Serve the index."""
-    return render(request, "index.html", {})
+    return render(request, "rtDemo.html", {})

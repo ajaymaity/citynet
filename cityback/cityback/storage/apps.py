@@ -57,7 +57,7 @@ def update_stations(stations):
     return "Update_stations: {} stations updated!".format(len(stations))
 
 
-def get_stations():
+def getLattestStationsFromDB():
     """
     Update the bike information in DB from json.
 
@@ -70,6 +70,7 @@ def get_stations():
     bikes_static = DublinBikesStation.objects.all()
     latest_bikes = []
     for bike_static in bikes_static:
+        # TODO: Change the way of getting the lattest station update
         bikes_real = bike_static.dublinbikesstationrealtimeupdate_set.all()
         max_latest_update = -1
         latest_bikes_real = None
@@ -94,5 +95,5 @@ def get_stations():
             "bike_stands": latest_bikes_real.bike_stands
         })
 
-    print(latest_bikes)
+    # print(latest_bikes)
     return latest_bikes

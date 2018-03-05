@@ -18,6 +18,7 @@ python /app/cityback/manage.py makemigrations storage
 python /app/cityback/manage.py makemigrations scheduler
 python /app/cityback/manage.py makemigrations retrieval
 python /app/cityback/manage.py makemigrations dashboard
+python /app/cityback/manage.py makemigrations visualisation
 python /app/cityback/manage.py migrate
 python /app/cityback/manage.py collectstatic --noinput
 

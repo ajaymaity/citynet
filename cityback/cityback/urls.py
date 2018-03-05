@@ -16,12 +16,13 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from cityback.visualisation.views import indexView
-from cityback.dashboard import views
+from cityback.visualisation.views import rtStations
+from cityback.dashboard.views import rtDemo
 
 
 urlpatterns = [
+    url(r'^admin/', admin.site.urls),
     url(r'^admin', admin.site.urls),
-    url(r'', views.index_view, name="Index Page"),
-    url(r'rtdemo', indexView)
+    url(r'^rtdemo', rtDemo),
+    url(r'', rtStations, name="Index Page"),
 ]

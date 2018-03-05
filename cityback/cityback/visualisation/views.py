@@ -1,12 +1,14 @@
 """Rendering of views done in this module."""
 
 from django.shortcuts import render
-from cityback.storage.apps import get_stations
+from cityback.storage.apps import getLattestStationsFromDB
 import json
 
 
-def indexView(request):
+def rtStations(request):
     """Create your views here."""
-    print(get_stations())
+    # print(getLattestStationsFromDB())
     return render(
-        request, "index.html", {"stations": json.dumps(get_stations())})
+        request, "rtStations.html", {
+            "stations":
+                json.dumps(getLattestStationsFromDB())})

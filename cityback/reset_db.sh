@@ -10,21 +10,24 @@
 
 echo "This will delete the sqlite database do you want to proceed? (yes)"
 read a
-if [ "$a" != "yes" ]; then
-  exit 0
+if [ "$a" == "yes" ]; then
+    echo "deleting database"
+    celery multi stop worker1 --pidfile="/var/log/celery/%n.pid"
+    rm -f db.sqlite3
+    find -name migrations -type d -exec rm -rf "{}" +
+else
+    celery multi stop worker1 --pidfile="/var/log/celery/%n.pid"
 fi
 
-celery multi stop worker1 --pidfile="/var/log/celery/%n.pid" 
 set -e
 
-rm -f db.sqlite3
-find -name migrations -type d -exec rm -rf "{}" +
 
 python manage.py makemigrations
 python manage.py makemigrations storage
 python manage.py makemigrations scheduler
 python manage.py makemigrations retrieval
 python manage.py makemigrations dashboard
+python manage.py makemigrations visualisation
 python manage.py migrate
 
 echo "creating admin user: admin/adminadmin"
