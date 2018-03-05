@@ -62,7 +62,7 @@ prod/create_prod_db.sh
 ```
 * Setup the nginx server by typing the following command-
 ```
-prod/setup_nginx.sh
+prod/setup_nginx.sh local
 ```
 * Start the prod server by typing the following command-
 ```
