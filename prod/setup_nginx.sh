@@ -1,7 +1,10 @@
 #!/bin/bash
 
-server="www.citynet.online citynet.online"
-
+if [ "$1" == "local" ]; then
+  server="localhost"
+else
+  server="www.citynet.online citynet.online"
+fi
 echo "Configuring with server=$server"
 
 cat > /etc/nginx/sites-enabled/default <<EOF
