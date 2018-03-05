@@ -20,9 +20,9 @@ The debug mode is <span id="dbg">false</span>.
 
     let map = new mapboxgl.Map({
         container: 'map', // container id
-        style: 'mapbox://styles/aseprojectgroup11/cjduauper516m2rt5grsw7eji', // stylesheet location
-        center: [-6.272, 53.351], // starting position [lng, lat]
-        zoom: 12, // starting zoom
+        style: 'mapbox://styles/aseprojectgroup11/cjdyqc4ce377n2sqij5ark9hb', // stylesheet location
+        center: [-6.264, 53.346], // starting position [lng, lat]
+        zoom: 13.25, // starting zoom
     });
 
     // Add zoom and rotation controls to the map.
@@ -38,6 +38,30 @@ The debug mode is <span id="dbg">false</span>.
         el.className = 'marker';
         el.id = station.station_number;
         el.bikes = 0;
+
+{% comment %}        console.log(station.available_bikes);
+        console.log(station.available_bike_stands);
+        console.log(station.bike_stands);
+        console.log('');{% endcomment %}
+
+        var percent_available_bikes = station.available_bikes * 100 / station.bike_stands;
+        if (percent_available_bikes == 0) {
+
+            el.style.backgroundColor = 'red';
+        }
+        else if (percent_available_bikes <= 33) {
+
+            el.style.backgroundColor = 'orange';
+        }
+        else if (percent_available_bikes <= 67) {
+
+            el.style.backgroundColor = 'yellow';
+        }
+        else {
+
+            el.style.backgroundColor = 'green';
+        }
+
         el.textContent = ("S" + station.station_number +
             ",B:" + station.available_bikes + ", S:" +
             station.available_bike_stands);
@@ -47,6 +71,7 @@ The debug mode is <span id="dbg">false</span>.
             .setLngLat([station.longitude, station.latitude])
             .addTo(map);
     });
+
   function onOpen(evt) {
         console.log("Connected to websocket!");
         websocket.send(JSON.stringify({data: "Hello"}));
@@ -61,6 +86,24 @@ The debug mode is <span id="dbg">false</span>.
             // create a HTML element for each feature
 
             var el = document.getElementById(station.station_number);
+            var percent_available_bikes = station.available_bikes * 100 / station.bike_stands;
+            if (percent_available_bikes == 0) {
+
+                el.style.backgroundColor = 'red';
+            }
+            else if (percent_available_bikes <= 33) {
+
+                el.style.backgroundColor = 'orange';
+            }
+            else if (percent_available_bikes <= 67) {
+
+                el.style.backgroundColor = 'yellow';
+            }
+            else {
+
+                el.style.backgroundColor = 'green';
+            }
+
             if(debug && station.station_number == 21){
                 el.textContent = ("S" + station.station_number +
                     ",B:" + num + ", S:" +

@@ -25,4 +25,5 @@ def periodic_station_update():
     async_to_sync(channel_layer.group_send)(
             "stationUpdateGroup", {"type": "group.send",
                                    "text": data})
+
     print("done sending bike station update.")

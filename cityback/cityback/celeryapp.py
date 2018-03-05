@@ -22,12 +22,12 @@ app.autodiscover_tasks()
 
 app.conf.update(
     CELERYBEAT_SCHEDULE={
-        'update_stations-every-30-seconds': {
+        'update_stations-every-10-seconds': {
             'task': 'cityback.storage.tasks.periodic_station_update',
             'schedule': datetime.timedelta(seconds=10),
             'args': ()
         },
-        'display-every-2-seconds': {
+        'realtime-demo-every-2-seconds': {
             'task':
                 'cityback.dashboard.tasks.periodic_send_handler',
             'schedule': datetime.timedelta(seconds=2),
