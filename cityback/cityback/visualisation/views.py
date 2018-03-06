@@ -2,13 +2,15 @@
 
 from django.shortcuts import render
 from cityback.storage.apps import getLattestStationsFromDB
+from cityback.visualisation.apps import convertToGeoJson
 import json
 
 
 def rtStations(request):
     """Create your views here."""
-    # print(getLattestStationsFromDB())
+
+    latestStations = getLattestStationsFromDB()
     return render(
         request, "rtStations.html", {
             "stations":
-                json.dumps(getLattestStationsFromDB())})
+                json.dumps(convertToGeoJson(latestStations))})

@@ -8,6 +8,7 @@ from cityback.storage.apps import update_stations
 from celery import shared_task
 from cityback.storage.apps import getLattestStationsFromDB
 from asgiref.sync import async_to_sync
+from cityback.visualisation.apps import convertToGeoJson
 import json
 
 
@@ -19,7 +20,8 @@ def periodic_station_update():
     stations = bikes.get_dynamic_data()
     update_stations(stations)
 
-    data = json.dumps({"stations": getLattestStationsFromDB()})
+    latestStations = getLattestStationsFromDB()
+    data = json.dumps({"stations": convertToGeoJson(latestStations)})
     channel_layer = get_channel_layer()
 
     async_to_sync(channel_layer.group_send)(
