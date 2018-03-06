@@ -1,4 +1,5 @@
 """Tests related to the storage module."""
+import datetime
 
 from django.test import TestCase
 import json
@@ -46,7 +47,9 @@ class CorrectRealTimeInsertTest(BikeStationsTest):
             station_number=s1["number"])
         s2 = DublinBikesStationRealTimeUpdate.objects.get(
             parent_station=dublin_static_object)
-        self.assertEqual(s2.last_update, str(s1['last_update']))
+        self.assertEqual(s2.last_update, datetime.datetime.utcfromtimestamp(
+            s1['last_update']/1000).replace(
+                    tzinfo=datetime.timezone.utc))
 
 
 class InCorrectRealTimeUpdateTest(BikeStationsTest):
@@ -61,7 +64,10 @@ class InCorrectRealTimeUpdateTest(BikeStationsTest):
         dublin_static_object = DublinBikesStation.objects.get(
             station_number=s1["number"])
         s2 = DublinBikesStationRealTimeUpdate.objects.get(
-            parent_station=dublin_static_object, last_update=s1['last_update'])
+            parent_station=dublin_static_object,
+            last_update=datetime.datetime.utcfromtimestamp
+            (s1['last_update']/1000).replace(
+                    tzinfo=datetime.timezone.utc))
         self.assertNotEqual(s2.status, 'Test')
 
 
@@ -76,12 +82,15 @@ class CorrectRealTimeUpdateTest(BikeStationsTest):
         s1 = self.stations[0]
         update_stations(self.stations)
         s1['status'] = 'Test'
-        s1['last_update'] = '1519141941001'  # changed timestamp
+        s1['last_update'] = 1519141942000  # changed timestamp
         update_stations([s1])
         dublin_static_object = DublinBikesStation.objects.get(
             station_number=s1["number"])
         s2 = DublinBikesStationRealTimeUpdate.objects.get(
-            parent_station=dublin_static_object, last_update=s1['last_update'])
+            parent_station=dublin_static_object,
+            last_update=datetime.datetime.utcfromtimestamp
+            (s1['last_update']/1000).replace(
+                    tzinfo=datetime.timezone.utc))
         self.assertEqual(s2.status, 'Test')
 
 
