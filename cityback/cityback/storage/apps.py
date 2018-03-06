@@ -1,4 +1,5 @@
 """TODO."""
+import datetime
 
 from django.apps import AppConfig
 from cityback.storage.models import (
@@ -44,7 +45,9 @@ def update_stations(stations):
         object, created = (
             DublinBikesStationRealTimeUpdate.objects.get_or_create(
                 parent_station=objects[station['number']],
-                last_update=station['last_update'],
+                last_update=datetime.datetime.utcfromtimestamp(
+                    station['last_update']/1000).replace(
+                    tzinfo=datetime.timezone.utc),
                 defaults=dict(
                     status=station['status'],
                     # last_update=station['position']['lng'],
@@ -72,10 +75,11 @@ def getLattestStationsFromDB():
     for bike_static in bikes_static:
         # TODO: Change the way of getting the lattest station update
         bikes_real = bike_static.dublinbikesstationrealtimeupdate_set.all()
-        max_latest_update = -1
+        max_latest_update = datetime.datetime.utcfromtimestamp(0).replace(
+            tzinfo=datetime.timezone.utc)
         latest_bikes_real = None
         for bike_real in bikes_real:
-            if (int(bike_real.last_update) > int(max_latest_update)):
+            if (bike_real.last_update > max_latest_update):
                 max_latest_update = bike_real.last_update
                 latest_bikes_real = bike_real
 
@@ -89,7 +93,7 @@ def getLattestStationsFromDB():
             "contract_name": bike_static.contract_name,
             "banking": bike_static.banking,
             "status": latest_bikes_real.status,
-            "last_update": latest_bikes_real.last_update,
+            "last_update": latest_bikes_real.last_update.isoformat(),
             "available_bikes": latest_bikes_real.available_bikes,
             "available_bike_stands": latest_bikes_real.available_bike_stands,
             "bike_stands": latest_bikes_real.bike_stands

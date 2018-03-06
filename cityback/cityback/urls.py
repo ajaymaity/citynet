@@ -19,10 +19,8 @@ from django.contrib import admin
 from cityback.visualisation.views import rtStations
 from cityback.dashboard.views import rtDemo
 
-
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^admin', admin.site.urls),
+    url(r'^admin/', admin.site.urls, name="admin"),
     url(r'^rtdemo', rtDemo),
     url(r'', rtStations, name="Index Page"),
 ]
