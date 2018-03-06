@@ -44,6 +44,14 @@ python -c "print('Hello World')"
 [ "`python -c "import requests; print(requests.__version__)"`" == "2.18.4" ]
 [ "`python -c "import sphinx; print(sphinx.__version__)"`" == "1.6.7" ]
 [ "`python -c "import channels; print(channels.__version__)"`" == "2.0.2" ]
+[ "`python -c "import dash; print(dash.__version__)"`" == "0.21.0" ]
+[ "`python -c "import dash-core-components; print(dash-core-components.__version__)"`" == "0.20.2" ]
+[ "`python -c "import dash-html-components; print(dash-html-components.__version__)"`" == "0.9.0" ]
+[ "`python -c "import dash-renderer; print(dash-html-components.__version__)"`" == "0.11.3"]
+[ "`python -c "import plotly; print(plotly.__version__)"`" == "2.4.1"]
+
+
+
 [ "`pip3 show sphinx-js | grep '^Version:' | cut -d' ' -f 2`" == "2.3.1" ]
 [ "`nginx -v 2>&1 | cut -d' ' -f 3`" == "nginx/1.10.3" ]
 python -c "import unittest"
