@@ -5,7 +5,7 @@ from django.test import TestCase
 import json
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
-from cityback.storage.apps import update_stations
+from cityback.storage.apps import update_stations, getLattestStationsFromDB
 import cityback.storage.apps as apps
 import os
 
@@ -50,6 +50,7 @@ class CorrectRealTimeInsertTest(BikeStationsTest):
         self.assertEqual(s2.last_update, datetime.datetime.utcfromtimestamp(
             s1['last_update']/1000).replace(
                     tzinfo=datetime.timezone.utc))
+# DublinBikesStation.objects.all()
 
 
 class InCorrectRealTimeUpdateTest(BikeStationsTest):
@@ -101,3 +102,49 @@ class GetStations(BikeStationsTest):
         """Get dynamic and static data."""
         update_stations(self.stations)
         apps.getLattestStationsFromDB()
+
+
+class GetLattestStationsFromDBTest(BikeStationsTest):
+    """Testing latest stations fetch from DB."""
+
+    def runTest(self):
+        """
+        Update the bike information in DB from json.
+
+        First, update the list of existing stations
+        then update the bike information for all stations.
+
+        :param station_list: a list of stations dict
+        :return:
+        """
+        update_stations(self.stations)
+        bikes_static = DublinBikesStation.objects.all()
+        latest_bikes = []
+        for bike_static in bikes_static:
+            # TODO: Change the way of getting the lattest station update
+            bikes_real = bike_static.dublinbikesstationrealtimeupdate_set.all()
+            max_latest_update = datetime.datetime.utcfromtimestamp(0).replace(
+                tzinfo=datetime.timezone.utc)
+            latest_bikes_real = None
+            for bike_real in bikes_real:
+                if (bike_real.last_update > max_latest_update):
+                    max_latest_update = bike_real.last_update
+                    latest_bikes_real = bike_real
+
+            latest_bikes.append({
+                "station_number": bike_static.station_number,
+                "latitude": bike_static.latitude,
+                "longitude": bike_static.longitude,
+                "name": bike_static.name,
+                "status": latest_bikes_real.status,
+                "last_update": latest_bikes_real.last_update,
+                "available_bikes": latest_bikes_real.available_bikes,
+                "available_bike_stands": latest_bikes_real.
+                available_bike_stands,
+                "bike_stands": latest_bikes_real.bike_stands
+            })
+
+        ground_truth_bike = latest_bikes
+        latest_bikes = getLattestStationsFromDB()
+        # print(latest_bikes)
+        self.assertEqual(ground_truth_bike, latest_bikes)

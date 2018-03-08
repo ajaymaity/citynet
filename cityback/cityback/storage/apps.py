@@ -70,33 +70,30 @@ def getLattestStationsFromDB():
     :param station_list: a list of stations dict
     :return:
     """
-    bikes_static = DublinBikesStation.objects.all()
+    bikes_station = DublinBikesStation.objects.raw(
+        '''select station_number, latitude, longitude, name, status,
+          available_bikes, available_bike_stands, bike_stands,
+          max(last_update) as last_update from storage_dublinbikesstation
+inner join storage_dublinbikesstationrealtimeupdate
+on storage_dublinbikesstation.station_number =
+storage_dublinbikesstationrealtimeupdate.parent_station_id
+group by station_number''')
     latest_bikes = []
-    for bike_static in bikes_static:
+    for bikes in bikes_station:
         # TODO: Change the way of getting the lattest station update
-        bikes_real = bike_static.dublinbikesstationrealtimeupdate_set.all()
-        max_latest_update = datetime.datetime.utcfromtimestamp(0).replace(
-            tzinfo=datetime.timezone.utc)
-        latest_bikes_real = None
-        for bike_real in bikes_real:
-            if (bike_real.last_update > max_latest_update):
-                max_latest_update = bike_real.last_update
-                latest_bikes_real = bike_real
 
         latest_bikes.append({
-            "station_number": bike_static.station_number,
-            "latitude": bike_static.latitude,
-            "longitude": bike_static.longitude,
-            "name": bike_static.name,
-            "address": bike_static.address,
-            "bonus": bike_static.bonus,
-            "contract_name": bike_static.contract_name,
-            "banking": bike_static.banking,
-            "status": latest_bikes_real.status,
-            "last_update": latest_bikes_real.last_update.isoformat(),
-            "available_bikes": latest_bikes_real.available_bikes,
-            "available_bike_stands": latest_bikes_real.available_bike_stands,
-            "bike_stands": latest_bikes_real.bike_stands
+            "station_number": bikes.station_number,
+            "latitude": bikes.latitude,
+            "longitude": bikes.longitude,
+            "name": bikes.name,
+            "status": bikes.status,
+            "last_update": datetime.datetime.strptime
+            (bikes.last_update, "%Y-%m-%d %H:%M:%S").replace(
+                    tzinfo=datetime.timezone.utc),
+            "available_bikes": bikes.available_bikes,
+            "available_bike_stands": bikes.available_bike_stands,
+            "bike_stands": bikes.bike_stands
         })
 
     # print(latest_bikes)
