@@ -121,7 +121,6 @@ class GetLattestStationsFromDBTest(BikeStationsTest):
         bikes_static = DublinBikesStation.objects.all()
         latest_bikes = []
         for bike_static in bikes_static:
-            # TODO: Change the way of getting the lattest station update
             bikes_real = bike_static.dublinbikesstationrealtimeupdate_set.all()
             max_latest_update = datetime.datetime.utcfromtimestamp(0).replace(
                 tzinfo=datetime.timezone.utc)
@@ -137,7 +136,7 @@ class GetLattestStationsFromDBTest(BikeStationsTest):
                 "longitude": bike_static.longitude,
                 "name": bike_static.name,
                 "status": latest_bikes_real.status,
-                "last_update": latest_bikes_real.last_update,
+                "last_update": latest_bikes_real.last_update.isoformat(),
                 "available_bikes": latest_bikes_real.available_bikes,
                 "available_bike_stands": latest_bikes_real.
                 available_bike_stands,

@@ -77,20 +77,28 @@ def getLattestStationsFromDB():
 inner join storage_dublinbikesstationrealtimeupdate
 on storage_dublinbikesstation.station_number =
 storage_dublinbikesstationrealtimeupdate.parent_station_id
-group by station_number''')
+group by station_number, latitude, longitude, name, status, available_bikes,
+available_bike_stands, bike_stands''')
     latest_bikes = []
     for bikes in bikes_station:
         # TODO: Change the way of getting the lattest station update
 
+        last_update = bikes.last_update
+        if type(last_update) != str:
+            last_update = last_update.isoformat()
+        else:
+            # import ipdb; ipdb.set_trace()
+            last_update = datetime.datetime.strptime(
+                last_update, "%Y-%m-%d %H:%M:%S").replace(
+                tzinfo=datetime.timezone.utc)
+            last_update = last_update.isoformat()
         latest_bikes.append({
             "station_number": bikes.station_number,
             "latitude": bikes.latitude,
             "longitude": bikes.longitude,
             "name": bikes.name,
             "status": bikes.status,
-            "last_update": datetime.datetime.strptime
-            (bikes.last_update, "%Y-%m-%d %H:%M:%S").replace(
-                    tzinfo=datetime.timezone.utc),
+            "last_update": last_update,
             "available_bikes": bikes.available_bikes,
             "available_bike_stands": bikes.available_bike_stands,
             "bike_stands": bikes.bike_stands
