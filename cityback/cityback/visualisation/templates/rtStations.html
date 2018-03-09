@@ -13,7 +13,6 @@
 <div id='map'></div>
 <button type="button" onclick="runButton()">Debug Mode</button>
 The debug mode is <span id="dbg">false</span>.
-<div>Icons made by <a href="https://www.flaticon.com/authors/nikita-golubev" title="Nikita Golubev">Nikita Golubev</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 <script type="text/javascript">
 
     // create mapbox object
@@ -39,6 +38,9 @@ The debug mode is <span id="dbg">false</span>.
             geoProperty['occupancyChanged'] = 0;
             previousOccuapancy[i] = geoProperty['occupancy'];
         }
+
+        console.log('***************');
+        console.log(geoFeatures);
 
         map.addSource('bikesource', {type: 'geojson', data: geojson});
         map.addLayer({
@@ -67,8 +69,8 @@ The debug mode is <span id="dbg">false</span>.
                     property: 'occupancyChanged',
                     type: 'exponential',
                     stops: [
-                        [0, 1],
-                        [1, 3]
+                        [0, 3],
+                        [1, 7]
                     ]
                 },
                 "circle-stroke-color": '#000'
@@ -87,12 +89,12 @@ The debug mode is <span id="dbg">false</span>.
     var vacancy = -1;
     function onMessage(evt) {
 
-        console.log("data_received")
+        console.log("data_received");
         svals = JSON.parse(evt.data).stations;
         var updated = "";
 
         geoFeatures = svals['features'];
-        console.log(previousOccuapancy);
+        console.log(geoFeatures);
         for (var i = 0; i < geoFeatures.length; i++) {
 
             var geoProperty = geoFeatures[i]['properties'];

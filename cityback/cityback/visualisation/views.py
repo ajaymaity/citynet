@@ -9,6 +9,7 @@ import json
 def rtStations(request):
     """Create your views here."""
     latestStations = getLattestStationsFromDB()
+    # latestStations = []
     return render(
         request, "rtStations.html", {
             "stations":

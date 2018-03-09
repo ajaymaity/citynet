@@ -35,4 +35,5 @@ def convertToGeoJson(data):
             }
         }
         geojson['features'].append(newFeature)
+        # geojson['name'] =
     return geojson
