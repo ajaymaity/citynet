@@ -9,10 +9,13 @@ if [ "$1" == "from_docker" ]; then
 	PRE="bash -c"
 fi
 $PRE "cd cityback && python setup.py test"
-$PRE "cd cityback && \
-  python manage.py makemigrations &&\
-  python manage.py migrate &&\
+echo "Running Django tests on SQlit DB"
+$PRE "cd cityback && python manage.py test"
+echo "Running Django tests on the POSTGRES DB"
+$PRE "
+  source config_private/bash_import_secret &&
+  prod/create_prod_db.sh --force > /dev/null &&\
+  cd cityback && \
   python manage.py test"
 $PRE "cd frontend && npm install && npm run test-ci"
 $PRE "cd node-realtime && npm install && npm run test-ci"
-

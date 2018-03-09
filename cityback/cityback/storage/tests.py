@@ -146,7 +146,9 @@ class GetLattestStationsFromDBTest(BikeStationsTest):
                 "bike_stands": latest_bikes_real.bike_stands
             })
 
-        ground_truth_bike = latest_bikes
-        latest_bikes = getLattestStationsFromDB()
+        ground_truth_bike = sorted(latest_bikes,
+                                   key=lambda x: x["station_number"])
+        latest_bikes = sorted(getLattestStationsFromDB(),
+                              key=lambda x: x["station_number"])
         # print(latest_bikes)
         self.assertEqual(ground_truth_bike, latest_bikes)

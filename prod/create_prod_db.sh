@@ -5,10 +5,12 @@ set -e
 source /app/config_private/bash_import_secret
 
 echo "This will delete the current POSTGRESQL database!"
-echo "Do you want to proceed? (yes)"
-read a
-if [ "$a" != "yes" ]; then
-  exit 0
+if [ "$1" != "--force" ]; then
+  echo "Do you want to proceed? (yes)"
+  read a
+  if [ "$a" != "yes" ]; then
+    exit 0
+  fi
 fi
 
 # clear existing cluster
