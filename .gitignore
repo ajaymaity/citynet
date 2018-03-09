@@ -11,7 +11,6 @@ backend/build/
 doc/build
 /celerybeat-schedule.db
 __pycache__
-migrations
 /cityback/db.sqlite3
 cityback/.eggs
 cityback/build

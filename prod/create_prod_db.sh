@@ -29,8 +29,8 @@ psql --command "CREATE USER $PGUSER1 WITH SUPERUSER PASSWORD '$PGPASSWORD' ;" &&
 psql -h localhost -p 5432 -U $PGUSER1 prod -c 'CREATE EXTENSION postgis;'
 EOF
 
-#remove existing migrations
-find /app/cityback/cityback -name migrations -type d -exec rm -rf "{}" +
+# do not remove existing migrations, they should be remove manually
+# find /app/cityback/cityback -name migrations -type d -exec rm -rf "{}" +
 
 python /app/cityback/manage.py makemigrations
 python /app/cityback/manage.py migrate
