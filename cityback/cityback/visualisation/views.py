@@ -1,14 +1,14 @@
 """Rendering of views done in this module."""
 
 from django.shortcuts import render
-from cityback.storage.apps import getLattestStationsFromDB
+from cityback.storage.apps import getLatestStationsFromDB
 from cityback.visualisation.apps import convertToGeoJson
 import json
 
 
 def rtStations(request):
     """Create your views here."""
-    latestStations = getLattestStationsFromDB()
+    latestStations = getLatestStationsFromDB()
     # latestStations = []
     return render(
         request, "rtStations.html", {

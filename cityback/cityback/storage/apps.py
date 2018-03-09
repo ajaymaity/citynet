@@ -19,7 +19,7 @@ def update_stations(stations):
     First, update the list of existing stations
     then update the bike information for all stations.
 
-    :param station_list: a list of stations dict
+    :param station: a list of stations dict
     :return:
     """
     objects = {}
@@ -39,15 +39,11 @@ def update_stations(stations):
         )
         objects[station['number']] = object
 
-        # print("object={}, created={}".format(object, created))
-
     for station in stations:
         object, created = (
             DublinBikesStationRealTimeUpdate.objects.get_or_create(
                 parent_station=objects[station['number']],
-                last_update=datetime.datetime.utcfromtimestamp(
-                    float(station['last_update'])/1000.).replace(
-                    tzinfo=datetime.timezone.utc),
+                last_update=getDateTimeFromTimeStampMS(station['last_update']),
                 defaults=dict(
                     status=station['status'],
                     available_bikes=station['available_bikes'],
@@ -59,15 +55,18 @@ def update_stations(stations):
     return "Update_stations: {} stations updated!".format(len(stations))
 
 
-def getLattestStationsFromDB():
+def getDateTimeFromTimeStampMS(timestamp):
+    """Convert timestamp in milisecond to datetime object."""
+    return datetime.datetime.utcfromtimestamp(
+                    float(timestamp) / 1000.).replace(
+                    tzinfo=datetime.timezone.utc)
+
+
+def getLatestStationsFromDB():
     """
-    Update the bike information in DB from json.
+    Retrieve the lattest information for every stations.
 
-    First, update the list of existing stations
-    then update the bike information for all stations.
-
-    :param station_list: a list of stations dict
-    :return:
+    :return: list of dict
     """
     bikes_station = DublinBikesStation.objects.raw(
         '''select station_number, latitude, longitude, name, status,
@@ -93,7 +92,6 @@ storage_dublinbikesstationrealtimeupdate.id;
         if type(last_update) != str:
             last_update = last_update.isoformat()
         else:
-            # import ipdb; ipdb.set_trace()
             last_update = datetime.datetime.strptime(
                 last_update, "%Y-%m-%d %H:%M:%S").replace(
                 tzinfo=datetime.timezone.utc)
@@ -112,3 +110,27 @@ storage_dublinbikesstationrealtimeupdate.id;
 
     # print(latest_bikes)
     return latest_bikes
+
+
+def getBikesTimeRange():
+    """
+    Get the time range available for the bike updates.
+
+    :return: tuple first, last timestamp in string iso format
+    """
+    times = DublinBikesStationRealTimeUpdate.objects.raw(
+        '''select id, last_update from
+            storage_dublinbikesstationrealtimeupdate
+            order BY last_update DESC limit 1''')
+    lastTime = times[0].last_update
+    if type(lastTime) != str:
+        lastTime = lastTime.isoformat()
+    times = DublinBikesStationRealTimeUpdate.objects.raw(
+         '''select id, last_update from
+            storage_dublinbikesstationrealtimeupdate
+            order BY last_update ASC limit 1''')
+    startTime = times[0].last_update
+    if type(startTime) != str:
+        startTime = startTime.isoformat()
+
+    return startTime, lastTime

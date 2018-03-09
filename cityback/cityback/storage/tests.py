@@ -5,7 +5,8 @@ from django.test import TestCase
 import json
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
-from cityback.storage.apps import update_stations, getLattestStationsFromDB
+from cityback.storage.apps import update_stations, getLatestStationsFromDB
+from cityback.storage.apps import getBikesTimeRange, getDateTimeFromTimeStampMS
 import cityback.storage.apps as apps
 import os
 
@@ -104,7 +105,7 @@ class GetStations(BikeStationsTest):
     def runTest(self):
         """Get dynamic and static data."""
         update_stations(self.stations)
-        apps.getLattestStationsFromDB()
+        apps.getLatestStationsFromDB()
 
 
 class GetLattestStationsFromDBTest(BikeStationsTest):
@@ -148,7 +149,21 @@ class GetLattestStationsFromDBTest(BikeStationsTest):
 
         ground_truth_bike = sorted(latest_bikes,
                                    key=lambda x: x["station_number"])
-        latest_bikes = sorted(getLattestStationsFromDB(),
+        latest_bikes = sorted(getLatestStationsFromDB(),
                               key=lambda x: x["station_number"])
         # print(latest_bikes)
         self.assertEqual(ground_truth_bike, latest_bikes)
+
+
+class GetStationsTimeRange(BikeStationsTest):
+    """Testing bikes time range."""
+
+    def runTest(self):
+        """Get dynamic and static data."""
+        update_stations(self.stations_multiple)
+        range1 = getBikesTimeRange()
+        times = [getDateTimeFromTimeStampMS(s["last_update"])
+                 for s in self.stations_multiple]
+        range2 = (min(times).isoformat(),
+                  max(times).isoformat())
+        self.assertEqual(range1, range2)
