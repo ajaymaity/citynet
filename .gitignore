@@ -15,4 +15,3 @@ __pycache__
 cityback/.eggs
 cityback/build
 celerybeat-schedule.db
-/config_private/bash_import_secret
