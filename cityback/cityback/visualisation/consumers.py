@@ -2,6 +2,8 @@
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
+from cityback.visualisation.apps import getLatestStationJSON
+
 
 class RTStationsConsumer(WebsocketConsumer):
     """Define the consumer for bikes clients."""
@@ -12,6 +14,8 @@ class RTStationsConsumer(WebsocketConsumer):
         self.accept()
         async_to_sync(self.channel_layer.group_add)(
             "stationUpdateGroup", self.channel_name)
+
+        self.send(text_data=getLatestStationJSON())
         print("New client to RTstations")
 
     def receive(self, text_data=None, bytes_data=None):

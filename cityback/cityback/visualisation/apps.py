@@ -1,6 +1,9 @@
 """TODO."""
+import json
 
 from django.apps import AppConfig
+
+from cityback.storage.apps import getLatestStationsFromDB
 
 
 class VisualisationConfig(AppConfig):
@@ -37,3 +40,14 @@ def convertToGeoJson(data):
         geojson['features'].append(newFeature)
         # geojson['name'] =
     return geojson
+
+
+def getLatestStationJSON():
+    """
+    Get the json formatted last station updates.
+
+    @:return json of the stations updates
+    """
+    latestStations = getLatestStationsFromDB()
+    data = json.dumps({"stations": convertToGeoJson(latestStations)})
+    return data
