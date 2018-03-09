@@ -18,6 +18,9 @@ class BikeStationsTest(TestCase):
         self.stations = json.load(open(os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
             "test_data.json")))
+        self.stations_multiple = json.load(open(os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "test_data_multiple.json")))
 
 
 class CorrectUpdateTest(BikeStationsTest):
@@ -117,7 +120,7 @@ class GetLattestStationsFromDBTest(BikeStationsTest):
         :param station_list: a list of stations dict
         :return:
         """
-        update_stations(self.stations)
+        update_stations(self.stations_multiple)
         bikes_static = DublinBikesStation.objects.all()
         latest_bikes = []
         for bike_static in bikes_static:
