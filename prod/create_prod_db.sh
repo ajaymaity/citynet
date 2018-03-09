@@ -1,8 +1,10 @@
 #!/bin/bash
 
 set -e
+
+path=$(dirname $0)/..
 # import PGUSER PGPASSWORD DJANGO_ADMIN DJANGO_PASSWORD
-source /app/config_private/bash_import_secret
+source $path/config_private/bash_import_secret
 
 echo "This will delete the current POSTGRESQL database!"
 if [ "$1" != "--force" ]; then
@@ -34,9 +36,9 @@ EOF
 # do not remove existing migrations, they should be remove manually
 # find /app/cityback/cityback -name migrations -type d -exec rm -rf "{}" +
 
-python /app/cityback/manage.py makemigrations
-python /app/cityback/manage.py migrate
+python $path/cityback/manage.py makemigrations
+python $path/cityback/manage.py migrate
 echo "from django.contrib.auth.models import User; \
   User.objects.filter(email='admin@example.com').delete();\
   User.objects.create_superuser('$DJANGO_ADMIN', 'admin@example.com', '$DJANGO_PASSWORD')" | \
-  python /app/cityback/manage.py shell
+  python $path/cityback/manage.py shell
