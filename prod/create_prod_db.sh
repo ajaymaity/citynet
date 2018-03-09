@@ -26,9 +26,9 @@ service postgresql start
 su postgres <<EOF
 psql --command "CREATE USER $PGUSER1 WITH SUPERUSER PASSWORD '$PGPASSWORD' ;" &&\
     echo "User created..." && \
-    createdb -O $PGUSER1 prod &&\
+    createdb -O $PGUSER1 $PGDB &&\
     echo "db created..." && \
-psql -h localhost -p 5432 -U $PGUSER1 prod -c 'CREATE EXTENSION postgis;'
+psql -h localhost -p 5432 -U $PGUSER1 $PGDB -c 'CREATE EXTENSION postgis;'
 EOF
 
 # do not remove existing migrations, they should be remove manually

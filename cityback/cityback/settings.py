@@ -86,11 +86,12 @@ WSGI_APPLICATION = 'cityback.wsgi.application'
 
 dbuser = os.environ.get('PGUSER1', "")
 dbpassword = os.environ.get('PGPASSWORD', "")
-if dbuser != "" and dbpassword != "":
+dbname = os.environ.get('PGDB', "")
+if dbuser != "" and dbpassword != "" and dbname != "":
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'prod',
+            'NAME': dbname,
             'USER': dbuser,
             'PASSWORD': dbpassword,
             'HOST': '127.0.0.1',
