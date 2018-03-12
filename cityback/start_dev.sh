@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# start postgresql server
+service postgresql start
+
 # message routers
 service redis-server start
 #service rabbitmq-server start

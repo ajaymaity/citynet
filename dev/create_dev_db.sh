@@ -7,46 +7,32 @@
 #   host  all  all 0.0.0.0/0 md5
 
 ## Dumping data
-# Change all METHOD to md5 -- not peer 
-# Run --> PGPASSWORD=django psql -U django -d dev -f dump.sql 
+# Change all METHOD to md5 -- not peer
+# Run --> PGPASSWORD=django psql -U django -d dev -f dump.sql
 
 # ----------------------------------------------
 
 set -e
 
-path=$(dirname $0)/..
-# import PGUSER PGPASSWORD DJANGO_ADMIN DJANGO_PASSWORD
-source $path/dev/db_source
-
-echo "This will delete the current POSTGRESQL database!"
-if [ "$1" != "--force" ]; then
-  echo "Do you want to proceed? (yes)"
-  read a
-  if [ "$a" != "yes" ]; then
-    exit 0
-  fi
+if [ "$1" == "" ]; then
+    echo "Creating empty database"
+else
+    echo "Importing db from $1"
 fi
 
-# clear existing cluster
-pg_dropcluster --stop 9.5 main
+path=$(dirname $0)/..
+source $path/prod/create_prod_db.sh
 
-# create new one
-pg_createcluster  9.5 main
-
-# start db
-service postgresql start
-
-# create tmpdb
+pgconf="/etc/postgresql/9.5/main/pg_hba.conf"
+if [ "`tail -1 ${pgconf} | cut -c 1`" == "#" ]; then
+ echo "host  all  all 0.0.0.0/0 md5" >> ${pgconf}
+fi
+if [ "$1" != "" ]; then
+    echo "Importing database $1"
 su postgres <<EOF
-psql --command "CREATE USER $PGUSER1 WITH SUPERUSER PASSWORD '$PGPASSWORD' ;" &&\
-    echo "User created..." && \
-    createdb -O $PGUSER1 $PGDB &&\
-    echo "db created..." && \
-psql -h localhost -p 5432 -U $PGUSER1 $PGDB -c 'CREATE EXTENSION postgis;'
+    psql -d $PGDB -f $1
 EOF
-
-# do not remove existing migrations, they should be remove manually
-# find /app/cityback/cityback -name migrations -type d -exec rm -rf "{}" +
+fi
 
 python $path/cityback/manage.py makemigrations
 python $path/cityback/manage.py migrate
