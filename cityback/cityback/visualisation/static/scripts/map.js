@@ -4,6 +4,7 @@ var firstJson = undefined;
 var debug = false;
 var map;
 
+
 function updateMap(geoStation) {
     geoFeatures = geoStation['features'];
     for (let i = 0; i < geoFeatures.length; i++) {
@@ -19,6 +20,7 @@ function updateMap(geoStation) {
     map.getSource('bikesource').setData(geoStation);
 }
 
+var date_Time_Of_Index = [];
 function onMessage(evt) {
     console.log('data_received');
     let svals = JSON.parse(evt.data);
@@ -33,6 +35,16 @@ function onMessage(evt) {
         console.log('data=' + JSON.stringify(svals))
         switch (svals.type){
             case "timeRange":
+                slider = document.getElementById('slider');
+                slider.min = 0;
+                slider.max = svals.nbIntervals - 1;
+                slider.value = slider.max;
+                date_Time_Of_Index = svals.dateTimeOfIndex;
+                var event = new Event('input', {
+                    'bubbles': true,
+                    'cancelable': true
+                });
+                slider.dispatchEvent(event)
                 break;
             case "dateTime":
                 break;
@@ -64,18 +76,20 @@ function pressButton() {
     document.getElementById('dbg').innerHTML = debug;
 }
 
+
 function setupSlider() {
     document.getElementById('slider').addEventListener('input', function(e) {
         var value = parseInt(e.target.value);
         // update the map
         websocket.send(JSON.stringify({type: "getMapAtTime", dateTime: value}));
 
-        // converting 0-23 hour to AMPM format
-        var ampm = value >= 12 ? 'PM' : 'AM';
-        var hour12 = value % 12 ? value % 12 : 12;
+        if(value in date_Time_Of_Index){
+            datetime = date_Time_Of_Index[value]
+            // update text in the UI
+            document.getElementById('active-hour').innerText = datetime;
 
-        // update text in the UI
-        document.getElementById('active-hour').innerText = hour12 + ampm;
+        }
+
     });
 
 }

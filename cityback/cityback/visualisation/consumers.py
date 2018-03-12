@@ -6,19 +6,26 @@ from asgiref.sync import async_to_sync
 
 from cityback.storage.apps import getBikesTimeRange
 from cityback.visualisation.apps import getLatestStationJSON
+from datetime import timedelta
 
 
 class RTStationsConsumer(WebsocketConsumer):
     """Define the consumer for bikes clients."""
 
-    def send_time_range(self, size=3600):
+    def send_time_range(self, size=60):
         """Send time range to the js client."""
+        format = "%Y-%m-%d %H:%M"
         timeRange = getBikesTimeRange()
         number = int((timeRange[1] - timeRange[0]).total_seconds() / size)
+        times = []
+        for i in range(number - 1):
+            times.append((timeRange[0] + timedelta(seconds=size * i)
+                          ).strftime(format))
+        times.append((timeRange[1]).strftime(format))
+
         data = {"type": "timeRange",
-                "begin": timeRange[0].strftime("%Y-%M-%d %H:%m:%S"),
-                "end": timeRange[1].strftime("%Y-%M-%d %H:%m:%S"),
-                'nbIntervals': number}
+                'nbIntervals': number,
+                'dateTimeOfIndex': times}
         self.send(text_data=json.dumps(data))
 
     def send_bikes_at_time(self, text_data):
