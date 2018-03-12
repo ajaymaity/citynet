@@ -4,8 +4,8 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
-from cityback.storage.apps import getBikesTimeRange
-from cityback.visualisation.apps import getLatestStationJSON
+from cityback.storage.apps import getBikesTimeRange, getBikesAtTime
+from cityback.visualisation.apps import getLatestStationJSON, convertToGeoJson
 from datetime import timedelta
 
 
@@ -27,14 +27,16 @@ class RTStationsConsumer(WebsocketConsumer):
                 'nbIntervals': number,
                 'dateTimeOfIndex': times}
         self.send(text_data=json.dumps(data))
+        # distinctTimes = getBikesDistinctTimes()
 
     def send_bikes_at_time(self, text_data):
         """Send the bikes at specific time to the js client."""
         dateTime = text_data.get("dateTime", None)
         if dateTime is None:
             return
+
         data = {"type": "mapAtTime",
-                "value": dateTime}
+                "value": convertToGeoJson(getBikesAtTime(dateTime))}
         self.send(text_data=json.dumps(data))
 
     def connect(self):

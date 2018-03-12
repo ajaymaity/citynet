@@ -17,7 +17,8 @@ function updateMap(geoStation) {
             previousOccuapancy[i] = geoProperty['occupancy'];
         }
     }
-    map.getSource('bikesource').setData(geoStation);
+    if (mapLoaded && firstJson)
+        map.getSource('bikesource').setData(geoStation);
 }
 
 var date_Time_Of_Index = [];
@@ -32,7 +33,7 @@ function onMessage(evt) {
         }
     }
     if("type" in svals){
-        console.log('data=' + JSON.stringify(svals))
+        // console.log('data=' + JSON.stringify(svals))
         switch (svals.type){
             case "timeRange":
                 slider = document.getElementById('slider');
@@ -40,13 +41,13 @@ function onMessage(evt) {
                 slider.max = svals.nbIntervals - 1;
                 slider.value = slider.max;
                 date_Time_Of_Index = svals.dateTimeOfIndex;
-                var event = new Event('input', {
-                    'bubbles': true,
-                    'cancelable': true
-                });
-                slider.dispatchEvent(event)
+                var event = new Event('input');
+                slider.dispatchEvent(event);
                 break;
-            case "dateTime":
+            case "mapAtTime":
+                console.log('Updating data...');
+                console.log(svals.value);
+                updateMap(svals.value);
                 break;
         }
     }
@@ -80,14 +81,13 @@ function pressButton() {
 function setupSlider() {
     document.getElementById('slider').addEventListener('input', function(e) {
         var value = parseInt(e.target.value);
-        // update the map
-        websocket.send(JSON.stringify({type: "getMapAtTime", dateTime: value}));
-
         if(value in date_Time_Of_Index){
             datetime = date_Time_Of_Index[value]
             // update text in the UI
             document.getElementById('active-hour').innerText = datetime;
 
+            // update the map
+            websocket.send(JSON.stringify({type: "getMapAtTime", dateTime: datetime}));
         }
 
     });
