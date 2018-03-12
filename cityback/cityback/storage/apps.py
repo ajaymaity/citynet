@@ -124,13 +124,13 @@ def getBikesTimeRange():
             order BY last_update DESC limit 1''')
     lastTime = times[0].last_update
     if type(lastTime) != str:
-        lastTime = lastTime.isoformat()
+        lastTime = lastTime
     times = DublinBikesStationRealTimeUpdate.objects.raw(
          '''select id, last_update from
             storage_dublinbikesstationrealtimeupdate
             order BY last_update ASC limit 1''')
     startTime = times[0].last_update
     if type(startTime) != str:
-        startTime = startTime.isoformat()
+        startTime = startTime
 
     return startTime, lastTime
