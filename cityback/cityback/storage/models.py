@@ -2,6 +2,7 @@
 from django.db import models
 
 
+
 # Create your models here.
 class DublinBikesStation(models.Model):
     """A Dublin bikes station."""
@@ -29,4 +30,5 @@ class DublinBikesStationRealTimeUpdate(models.Model):
     last_update = models.DateTimeField(null=True)
     available_bikes = models.IntegerField()
     available_bike_stands = models.IntegerField()
+    #have to check this
     bike_stands = models.IntegerField()
