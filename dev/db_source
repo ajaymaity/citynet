@@ -1,0 +1,8 @@
+export PGUSER1=django
+export PGPASSWORD=django
+export DJANGO_ADMIN=admin
+export DJANGO_PASSWORD=adminadmin
+export DJANGO_SECRET_KEY=UR4932REZ0edej43295410fdsafEJsncafanFEA
+export DJANGO_HOST="['*']"
+export PGDB=dev
+echo "Development Config imported"'!'
