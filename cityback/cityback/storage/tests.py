@@ -164,6 +164,5 @@ class GetStationsTimeRange(BikeStationsTest):
         range1 = getBikesTimeRange()
         times = [getDateTimeFromTimeStampMS(s["last_update"])
                  for s in self.stations_multiple]
-        range2 = (min(times).isoformat(),
-                  max(times).isoformat())
+        range2 = (min(times), max(times))
         self.assertEqual(range1, range2)

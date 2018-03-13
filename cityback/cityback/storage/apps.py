@@ -4,6 +4,7 @@ import datetime
 from django.apps import AppConfig
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
+from django.db.models import Func, F
 
 
 class StorageConfig(AppConfig):
@@ -188,10 +189,15 @@ def getBikesTimeRange():
 
 def getBikesDistinctTimes():
     """Get all distinct bike times."""
-    times = DublinBikesStationRealTimeUpdate.objects.raw(
-        '''select id, last_update from
-            storage_dublinbikesstationrealtimeupdate
-        ''')
+    # times = DublinBikesStationRealTimeUpdate.objects.raw(
+    #     '''select id, last_update from
+    #         storage_dublinbikesstationrealtimeupdate
+    #     ''')
 
-    for time in times:
-        print(str(time.id) + ' ' + str(time.last_update))
+    times = DublinBikesStationRealTimeUpdate.objects.annotate(
+        min_field=Func(F('last_update'), function='MIN'))
+
+    timesmax = DublinBikesStationRealTimeUpdate.objects.annotate(
+        min_field=Func(F('last_update'), function='MAX'))
+    for time in list(times) + list(timesmax):
+        print(str(time.id) + ' ' + str(time.min_field))
