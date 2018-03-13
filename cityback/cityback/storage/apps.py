@@ -1,5 +1,5 @@
 """TODO."""
-import datetime
+from datetime import timedelta, datetime
 
 from django.apps import AppConfig
 from cityback.storage.models import (
@@ -169,22 +169,43 @@ def getBikesTimeRange():
 
     :return: tuple first, last timestamp in string iso format
     """
-    times = DublinBikesStationRealTimeUpdate.objects.raw(
-        '''select id, last_update from
-            storage_dublinbikesstationrealtimeupdate
-            order BY last_update DESC limit 1''')
-    lastTime = times[0].last_update
-    if type(lastTime) != str:
-        lastTime = lastTime
-    times = DublinBikesStationRealTimeUpdate.objects.raw(
-         '''select id, last_update from
-            storage_dublinbikesstationrealtimeupdate
-            order BY last_update ASC limit 1''')
-    startTime = times[0].last_update
-    if type(startTime) != str:
-        startTime = startTime
+    times = DublinBikesStationRealTimeUpdate.objects.annotate(
+        min_field=Func(F('last_update'), function='MIN'))
+
+    timesmax = DublinBikesStationRealTimeUpdate.objects.annotate(
+        max_field=Func(F('last_update'), function='MAX'))
+
+    startTime = list(times)[0].min_field
+    lastTime = list(timesmax)[0].max_field
 
     return startTime, lastTime
+
+
+# class RoundTime(Func)
+#     function = 'ROUNDTIME'
+#     def __init__(self, datetime, **extra):
+#         pass
+#     def as_postgresql(selfself, compiler, connection):
+#         return self.as_sql(compiler, connection, function=)
+
+#    CREATE FUNCTION date_round(base_date timestamptz, round_interval INTERVAL) RETURNS timestamptz AS $BODY$
+# SELECT TO_TIMESTAMP((EXTRACT(epoch FROM $1)::INTEGER + EXTRACT(epoch FROM $2)::INTEGER / 2)
+#                 / EXTRACT(epoch FROM $2)::INTEGER * EXTRACT(epoch FROM $2)::INTEGER)
+# $BODY$ LANGUAGE SQL STABLE;
+
+
+def roundTime(dt=None, roundTo=60):
+   """Round a datetime object to any time laps in seconds
+   dt : datetime.datetime object, default now.
+   roundTo : Closest number of seconds to round to, default 1 minute.
+   Author: Thierry Husson 2012 - Use it as you want but don't blame me.
+   """
+   if dt == None : dt = datetime.datetime.now()
+   dt = dt.replace(tzinfo=None)
+   seconds = (dt - dt.min).seconds
+   # // is a floor division, not a comment on following line:
+   rounding = (seconds+roundTo/2) // roundTo * roundTo
+   return dt + timedelta(0,rounding-seconds,-dt.microsecond)
 
 
 def getBikesDistinctTimes():
@@ -194,10 +215,18 @@ def getBikesDistinctTimes():
     #         storage_dublinbikesstationrealtimeupdate
     #     ''')
 
-    times = DublinBikesStationRealTimeUpdate.objects.annotate(
-        min_field=Func(F('last_update'), function='MIN'))
-
-    timesmax = DublinBikesStationRealTimeUpdate.objects.annotate(
-        min_field=Func(F('last_update'), function='MAX'))
-    for time in list(times) + list(timesmax):
-        print(str(time.id) + ' ' + str(time.min_field))
+    # times = DublinBikesStationRealTimeUpdate.objects.annotate(
+    #         rounded_time=(
+    #         roundTime(F('last_update'), 3600)
+    #     )
+    # )
+    times = DublinBikesStationRealTimeUpdate.objects.only(
+        'last_update').distinct()
+    times = sorted(list(set(roundTime(t.last_update) for t in times)))
+    for time in times:
+        print(time)
+        # print("{} {} {}".format(
+        #     time.id,
+        #     time.last_update,
+        #     roundTime(time.last_update)
+        # ))
