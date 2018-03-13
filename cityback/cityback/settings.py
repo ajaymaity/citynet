@@ -84,16 +84,19 @@ WSGI_APPLICATION = 'cityback.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-dbuser = os.environ.get('PGUSER1', "")
-dbpassword = os.environ.get('PGPASSWORD', "")
-dbname = os.environ.get('PGDB', "")
-if dbuser != "" and dbpassword != "" and dbname != "":
+db_user = os.environ.get('PGUSER1', "")
+db_password = os.environ.get('PGPASSWORD', "")
+db_name = os.environ.get('PGDB', "")
+if db_user == "":
+    raise ValueError("PGUSER1 not defined, did you import settings?")
+
+if db_user != "" and db_password != "" and db_name != "":
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': dbname,
-            'USER': dbuser,
-            'PASSWORD': dbpassword,
+            'NAME': db_name,
+            'USER': db_user,
+            'PASSWORD': db_password,
             'HOST': '127.0.0.1',
             'PORT': '5432',
         }

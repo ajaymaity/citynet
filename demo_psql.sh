@@ -6,7 +6,9 @@ path=$(dirname $0)
 source $path/config_private/bash_import_secret
 
 cd cityback
-#reset the DB
+
+./manage.py makemigrations
+./manage.py migrate
 
 # start all the servers in dev mode
 ./start_dev.sh
