@@ -125,9 +125,9 @@ def getBikesAtTime(dateTime):
 inner join (
 select  max(id) as id, parent_station_id, max(last_update) as last_update from
             storage_dublinbikesstationrealtimeupdate
-            where last_update <= "''' +
+            where last_update <= \'''' +
         dateTime +
-        '''"group by parent_station_id)
+        '''\' group by parent_station_id)
 as sub_query
     on  storage_dublinbikesstation.station_number =
 sub_query.parent_station_id
