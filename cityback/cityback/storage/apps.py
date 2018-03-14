@@ -258,6 +258,8 @@ def getCompressedBikeUpdates(stations=[1], time_delta_s=3600):
     counts[empty] = 1
     occupancy /= counts
     # interpolate
+    if len(occupancy) == 0:
+        return times, occupancy
     fill = occupancy[0]
     for i in range(occupancy.shape[0]):
         if empty[i]:

@@ -18,6 +18,10 @@ class RTStationsConsumer(WebsocketConsumer):
     def send_time_range(self, size=60):
         """Send time range to the js client."""
         start, end = getBikesTimeRange()
+        if start is None or end is None:
+            # TODO make a real log
+            print("No data provided in Get time range")
+            return
         number = int((end - start).total_seconds() / size)
         times = []
         for i in range(number - 1):
@@ -49,6 +53,7 @@ class RTStationsConsumer(WebsocketConsumer):
                            "labels": [t.strftime(self.format) for t in times],
                            "occupancy": occupancy.tolist(),
                            "time_delta_s": time_delta_s})
+        print("Send chart data")
         self.send(text_data=data)
 
     def connect(self):
