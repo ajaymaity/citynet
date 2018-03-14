@@ -18,12 +18,7 @@ realpath() {
 }
 
 path="$(dirname $(realpath $0))"
-#create volume if non existant
-docker volume inspect db1 &>/dev/null || docker volume create db1
-docker volume inspect db2 &>/dev/null || docker volume create db2
-docker volume inspect db3 &>/dev/null || docker volume create db3
 
-docker run --net host -P --rm -i -v db1:/etc/postgresql \
-  -v db2:/var/log -v db3:/var/lib/postgresql \
+docker run --net host -P --rm -i  \
   -v "${path}/..":/app -w /app asegroup11/all_servers:citynet \
   "$@"
