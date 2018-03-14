@@ -24,16 +24,15 @@ cd docker
 
 ```
 
-Run a command inside the docker
------
-```
-docker/run_inside_docker.sh python test/test.py 
-```
-
 Run an interactive shell inside the docker
 -----
+* for development
 ```
-docker/interactive_docker.sh
+dev/run_dev_docker.sh 
+```
+* for production
+```
+prod/prod_run_docker.sh
 ```
 
 
@@ -41,14 +40,17 @@ Running Servers locally
 ======
 Start a demo in Dev mode. 
 ------
-Run demo.sh which will ask to setup
-the project in development mode and then the project can be run on localhost
-by typing [localhost:8000](http://localhost:8000) in browser.
+Run inside the dev docker:
+* import / create database
+```
+dev/create_dev_db.sh dump.sql
+```
+* Run all the servers and workers
+```
+./demo_psql.sh
+```
+Go to [localhost:8000](http://localhost:8000) in browser.
 
-```
-docker/interactive_docker.sh
-./demo.sh
-```
 
 Start in Prod mode. 
 ------
@@ -71,23 +73,6 @@ prod/start_dev.sh
 Now access the server by typing [localhost](http://localhost) in browser.
 This will block the terminal until the server is stopped with CTRL+C
 
-<!--
-Run frontend
-======
-
-Run the server
-```
-frontend/run-fe-docker.sh
-```
-
-Run Node realtime server
-======
-
-Run the server
-```
-frontend/run-fe-docker.sh
-```
---status>
 
 Make documentation
 ====
