@@ -209,12 +209,20 @@ def getBikesDistinctTimes(time_delta_s=60):
     #         roundTime(F('last_update'), 3600)
     #     )
     # )
-    times = DublinBikesStationRealTimeUpdate.objects.only(
-        'last_update').distinct()
-    times = sorted(list(set(roundTime(t.last_update, time_delta_s)
-                            for t in times)))
-    # for time in times:
-    #     print(time)
+    # before optimisation: 2.22s
+    # after raw sql + python round: 1.8s
+    # with pure sql rounding, tuned 0.54s
+
+    start = time.time()
+    times = DublinBikesStationRealTimeUpdate.objects.raw('''
+        select 1 as id, rdate from (select DISTINCT
+        date_round(last_update, '{} seconds') as rdate
+        from storage_dublinbikesstationrealtimeupdate) as foo
+        order by rdate
+        '''.format(time_delta_s))
+    times = [t.rdate.replace(tzinfo=None) for t in times]
+    end = time.time()
+    print("query distinct times took: {}s".format(end - start))
     return times
 
 

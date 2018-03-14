@@ -5,7 +5,8 @@ service postgresql start
 
 # message routers
 service redis-server start
-#service rabbitmq-server start
+./manage.py makemigrations
+./manage.py migrate
 
 # celery tasks
 mkdir -p /var/log/celery
