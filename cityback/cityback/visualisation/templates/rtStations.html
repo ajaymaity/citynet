@@ -7,6 +7,7 @@
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
     <link href="static/styles/style.css" rel="stylesheet"/>
+    <script src="static/scripts/Chart.bundle.js"></script>
 </head>
 <body>
 
@@ -15,7 +16,7 @@
 <div id='console'>
     <h1>Dublin Bikes stations activity</h1>
     <div class='session'>
-        <h2>Casualty</h2>
+        <h2>Legend TBD:</h2>
         <div class='row colors'>
         </div>
         <div class='row labels'>
@@ -43,8 +44,20 @@
 <div class="aftermap">
 <button type="button" onclick="pressButton()">Debug Mode</button>
 The debug mode is <span id="dbg">false</span>.
+    <div style="width:75%;">
+        <canvas id="canvas"></canvas>
+    </div>
+    <br>
+    <br>
+    <button id="randomizeData">Randomize Data</button>
+    <button id="addDataset">Add Dataset</button>
+    <button id="removeDataset">Remove Dataset</button>
+    <button id="addData">Add Data</button>
+    <button id="removeData">Remove Data</button>
 </div>
+<script type="text/javascript" src="static/scripts/socket.js"></script>
 <script type="text/javascript" src="static/scripts/map.js"></script>
+<script type="text/javascript" src="static/scripts/chart.js"></script>
 </body>
 </html>
 </html>

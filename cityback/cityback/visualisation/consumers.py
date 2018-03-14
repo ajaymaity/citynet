@@ -4,7 +4,8 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
-from cityback.storage.apps import getBikesTimeRange, getBikesAtTime
+from cityback.storage.apps import getBikesTimeRange, getBikesAtTime, \
+    getCompressedBikeUpdates
 from cityback.visualisation.apps import getLatestStationJSON, convertToGeoJson
 from datetime import timedelta
 
@@ -12,16 +13,17 @@ from datetime import timedelta
 class RTStationsConsumer(WebsocketConsumer):
     """Define the consumer for bikes clients."""
 
+    format = "%Y-%m-%d %H:%M"
+
     def send_time_range(self, size=60):
         """Send time range to the js client."""
-        format = "%Y-%m-%d %H:%M"
-        timeRange = getBikesTimeRange()
-        number = int((timeRange[1] - timeRange[0]).total_seconds() / size)
+        start, end = getBikesTimeRange()
+        number = int((end - start).total_seconds() / size)
         times = []
         for i in range(number - 1):
-            times.append((timeRange[0] + timedelta(seconds=size * i)
-                          ).strftime(format))
-        times.append((timeRange[1]).strftime(format))
+            times.append((start + timedelta(seconds=size * i)
+                          ).strftime(self.format))
+        times.append(end.strftime(self.format))
 
         data = {"type": "timeRange",
                 'nbIntervals': number,
@@ -39,6 +41,16 @@ class RTStationsConsumer(WebsocketConsumer):
                 "value": convertToGeoJson(getBikesAtTime(dateTime))}
         self.send(text_data=json.dumps(data))
 
+    def send_test_chart(self, time_delta_s=3600):
+        """Tmp function to get first chart."""
+        times, occupancy = getCompressedBikeUpdates(
+            time_delta_s=time_delta_s)
+        data = json.dumps({"type": "chart",
+                           "labels": [t.strftime(self.format) for t in times],
+                           "occupancy": occupancy.tolist(),
+                           "time_delta_s": time_delta_s})
+        self.send(text_data=data)
+
     def connect(self):
         """On connection, add to group."""
         # Called on connection. Either call
@@ -47,6 +59,7 @@ class RTStationsConsumer(WebsocketConsumer):
             "stationUpdateGroup", self.channel_name)
 
         self.send(text_data=getLatestStationJSON())
+        self.send_test_chart(300)
         print("New client to RTstations")
 
     def receive(self, text_data=None, bytes_data=None):

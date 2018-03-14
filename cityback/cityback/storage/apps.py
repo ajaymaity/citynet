@@ -1,10 +1,12 @@
 """TODO."""
-from datetime import timedelta, datetime
+import time
+from datetime import timedelta, datetime, timezone
 
 from django.apps import AppConfig
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
-from django.db.models import Func, F
+from django.db.models import Max, Min
+import numpy as np
 
 
 class StorageConfig(AppConfig):
@@ -58,9 +60,9 @@ def update_stations(stations):
 
 def getDateTimeFromTimeStampMS(timestamp):
     """Convert timestamp in milisecond to datetime object."""
-    return datetime.datetime.utcfromtimestamp(
-                    float(timestamp) / 1000.).replace(
-                    tzinfo=datetime.timezone.utc)
+    return datetime.utcfromtimestamp(
+        float(timestamp) / 1000.).replace(
+        tzinfo=timezone.utc)
 
 
 def getLatestStationsFromDB():
@@ -93,9 +95,9 @@ storage_dublinbikesstationrealtimeupdate.id;
         if type(last_update) != str:
             last_update = last_update.isoformat()
         else:
-            last_update = datetime.datetime.strptime(
+            last_update = datetime.strptime(
                 last_update, "%Y-%m-%d %H:%M:%S").replace(
-                tzinfo=datetime.timezone.utc)
+                tzinfo=timezone.utc)
             last_update = last_update.isoformat()
         latest_bikes.append({
             "station_number": bikes.station_number,
@@ -143,9 +145,9 @@ storage_dublinbikesstationrealtimeupdate.id;
         if type(last_update) != str:
             last_update = last_update.isoformat()
         else:
-            last_update = datetime.datetime.strptime(
+            last_update = datetime.strptime(
                 last_update, "%Y-%m-%d %H:%M:%S").replace(
-                tzinfo=datetime.timezone.utc)
+                tzinfo=timezone.utc)
             last_update = last_update.isoformat()
         bikes_at_time.append({
             "station_number": bikes.station_number,
@@ -169,46 +171,33 @@ def getBikesTimeRange():
 
     :return: tuple first, last timestamp in string iso format
     """
-    times = DublinBikesStationRealTimeUpdate.objects.annotate(
-        min_field=Func(F('last_update'), function='MIN'))
+    times = DublinBikesStationRealTimeUpdate.objects.all().aggregate(
+        Min('last_update'), Max('last_update'))
 
-    timesmax = DublinBikesStationRealTimeUpdate.objects.annotate(
-        max_field=Func(F('last_update'), function='MAX'))
+    startTime = times['last_update__min']
+    lastTime = times['last_update__max']
 
-    startTime = list(times)[0].min_field
-    lastTime = list(timesmax)[0].max_field
-
+    print(startTime, lastTime)
     return startTime, lastTime
 
 
-# class RoundTime(Func)
-#     function = 'ROUNDTIME'
-#     def __init__(self, datetime, **extra):
-#         pass
-#     def as_postgresql(selfself, compiler, connection):
-#         return self.as_sql(compiler, connection, function=)
+def roundTime(dt=None, round_to=60):
+    """Round a datetime object to any time laps in seconds.
 
-#    CREATE FUNCTION date_round(base_date timestamptz, round_interval INTERVAL) RETURNS timestamptz AS $BODY$
-# SELECT TO_TIMESTAMP((EXTRACT(epoch FROM $1)::INTEGER + EXTRACT(epoch FROM $2)::INTEGER / 2)
-#                 / EXTRACT(epoch FROM $2)::INTEGER * EXTRACT(epoch FROM $2)::INTEGER)
-# $BODY$ LANGUAGE SQL STABLE;
-
-
-def roundTime(dt=None, roundTo=60):
-   """Round a datetime object to any time laps in seconds
-   dt : datetime.datetime object, default now.
-   roundTo : Closest number of seconds to round to, default 1 minute.
-   Author: Thierry Husson 2012 - Use it as you want but don't blame me.
-   """
-   if dt == None : dt = datetime.datetime.now()
-   dt = dt.replace(tzinfo=None)
-   seconds = (dt - dt.min).seconds
-   # // is a floor division, not a comment on following line:
-   rounding = (seconds+roundTo/2) // roundTo * roundTo
-   return dt + timedelta(0,rounding-seconds,-dt.microsecond)
+    dt : datetime.datetime object, default now.
+    roundTo : Closest number of seconds to round to, default 1 minute.
+    Author: Thierry Husson 2012 - Use it as you want but don't blame me.
+    """
+    if dt is None:
+        dt = datetime.now()
+    dt = dt.replace(tzinfo=None)
+    seconds = (dt - dt.min).seconds
+    #  this is a floor division, not a comment on following line:
+    rounding = (seconds + round_to / 2) // round_to * round_to
+    return dt + timedelta(0, rounding - seconds, -dt.microsecond)
 
 
-def getBikesDistinctTimes():
+def getBikesDistinctTimes(time_delta_s=60):
     """Get all distinct bike times."""
     # times = DublinBikesStationRealTimeUpdate.objects.raw(
     #     '''select id, last_update from
@@ -222,11 +211,54 @@ def getBikesDistinctTimes():
     # )
     times = DublinBikesStationRealTimeUpdate.objects.only(
         'last_update').distinct()
-    times = sorted(list(set(roundTime(t.last_update) for t in times)))
-    for time in times:
-        print(time)
-        # print("{} {} {}".format(
-        #     time.id,
-        #     time.last_update,
-        #     roundTime(time.last_update)
-        # ))
+    times = sorted(list(set(roundTime(t.last_update, time_delta_s)
+                            for t in times)))
+    # for time in times:
+    #     print(time)
+    return times
+
+
+def getCompressedBikeUpdates(stations=[1], time_delta_s=3600):
+    """Get bike update average over the specified delta and stations."""
+    start = time.time()
+    times = getBikesDistinctTimes(time_delta_s)
+    all = DublinBikesStationRealTimeUpdate.objects.all().filter(
+        parent_station__in=stations).only(
+        'last_update', 'available_bikes', 'bike_stands')
+    print(all.count())
+    print(len(times))
+    #    create 2 numpy array len(times) by 1
+    # first is data
+    # second is % occupancy
+    occupancy = np.zeros((len(times)), dtype=np.float64)
+    counts = np.zeros((len(times)), dtype=np.int64)
+
+    for data in all:
+        rounded_time = roundTime(data.last_update)
+        try:
+            idx = times.index(rounded_time)
+        except ValueError:
+            continue
+        stands = data.bike_stands
+        if stands != 0:
+            occupancy[idx] += (float(data.available_bikes) * 100 /
+                               stands)
+            counts[idx] += 1
+
+    total = counts.sum()
+    empty = counts == 0
+    counts[empty] = 1
+    occupancy /= counts
+    # interpolate
+    fill = occupancy[0]
+    for i in range(occupancy.shape[0]):
+        if empty[i]:
+            occupancy[i] = fill
+        else:
+            fill = occupancy[i]
+    end = time.time()
+    print("computed {} values in {}s".format(
+        total,
+        end - start
+    ))
+    return times, occupancy

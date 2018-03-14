@@ -1,8 +1,6 @@
 """TODO."""
 import json
-
 from django.apps import AppConfig
-
 from cityback.storage.apps import getLatestStationsFromDB
 
 
