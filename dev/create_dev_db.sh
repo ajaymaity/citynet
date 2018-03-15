@@ -23,12 +23,16 @@ fi
 path=$(dirname $0)/..
 source $path/prod/create_prod_db.sh
 
+# allow postgresql acces from outside
+
 pgconf="/etc/postgresql/9.5/main/pg_hba.conf"
 pgconf2="/etc/postgresql/9.5/main/postgresql.conf"
 if [ "`tail -1 ${pgconf} | cut -c 1`" == "#" ]; then
  echo "host  all  all 0.0.0.0/0 md5" >> ${pgconf}
 fi
 echo "listen_addresses = '*'" >> $pgconf2
+
+#import the database
 if [ "$1" != "" ]; then
     echo "Importing database $1"
 su postgres <<EOF
