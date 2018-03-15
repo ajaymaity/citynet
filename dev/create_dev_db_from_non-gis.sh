@@ -21,7 +21,38 @@ else
 fi
 
 path=$(dirname $0)/..
-source $path/prod/create_prod_db.sh
+# import PGUSER PGPASSWORD DJANGO_ADMIN DJANGO_PASSWORD
+source $path/config_private/bash_import_secret
+
+echo "This will delete the current POSTGRESQL database!"
+if [ "$1" != "--force" ]; then
+  echo "Do you want to proceed? (yes)"
+  read a
+  if [ "$a" != "yes" ]; then
+    exit 0
+  fi
+fi
+
+service postgresql stop
+
+# clear existing cluster
+pg_dropcluster --stop 9.5 main
+
+# create new one
+pg_createcluster  9.5 main
+
+# start db
+service postgresql start
+
+# create tmpdb
+su postgres <<EOF
+psql --command "CREATE USER $PGUSER1 WITH SUPERUSER PASSWORD '$PGPASSWORD' ;" &&\
+    echo "User created..." && \
+    createdb -O $PGUSER1 $PGDB &&\
+    echo "db created..." && \
+psql -h localhost -p 5432 -U $PGUSER1 $PGDB -c 'CREATE EXTENSION postgis;'
+EOF
+
 
 # allow postgresql acces from outside
 
@@ -35,6 +66,7 @@ echo "listen_addresses = '*'" >> $pgconf2
 #import the database
 if [ "$1" != "" ]; then
     echo "Importing database $1"
+
 su postgres <<EOF
     psql -d $PGDB -f $1
     psql --command "alter user $PGUSER1 with superuser password '$PGPASSWORD' ;"

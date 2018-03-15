@@ -3,9 +3,11 @@ import time
 from datetime import timedelta, datetime, timezone
 
 from django.apps import AppConfig
+from django.contrib.gis.geos import Point
+
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
-from django.db.models import Max, Min
+from django.contrib.gis.db.models import Max, Min
 import numpy as np
 
 
@@ -28,11 +30,16 @@ def update_stations(stations):
     objects = {}
 
     for station in stations:
+
+        point = Point(
+            station['position']['lng'],
+            station['position']['lat'],
+            srid=4326  # WGS 84
+        )
         object, created = DublinBikesStation.objects.update_or_create(
             station_number=station['number'],
             defaults=dict(
-                latitude=station['position']['lat'],
-                longitude=station['position']['lng'],
+                position=point,
                 name=station['name'],
                 address=station['address'],
                 bonus=station['bonus'],
@@ -72,7 +79,7 @@ def getLatestStationsFromDB():
     :return: list of dict
     """
     bikes_station = DublinBikesStation.objects.raw(
-        '''select station_number, latitude, longitude, name, status,
+        '''select 'position', station_number, name, status,
           available_bikes, available_bike_stands, bike_stands,
           sub_query.last_update from storage_dublinbikesstation
 inner join (
@@ -101,8 +108,8 @@ storage_dublinbikesstationrealtimeupdate.id;
             last_update = last_update.isoformat()
         latest_bikes.append({
             "station_number": bikes.station_number,
-            "latitude": bikes.latitude,
-            "longitude": bikes.longitude,
+            "latitude": bikes.position.coords[1],
+            "longitude": bikes.position.coords[0],
             "name": bikes.name,
             "status": bikes.status,
             "last_update": last_update,
@@ -122,7 +129,7 @@ def getBikesAtTime(dateTime):
     :return: list of dict
     """
     bikes_station = DublinBikesStation.objects.raw(
-        '''select station_number, latitude, longitude, name, status,
+        '''select station_number, 'position', 'name', status,
           available_bikes, available_bike_stands, bike_stands,
           sub_query.last_update from storage_dublinbikesstation
 inner join (
@@ -151,8 +158,8 @@ storage_dublinbikesstationrealtimeupdate.id;
             last_update = last_update.isoformat()
         bikes_at_time.append({
             "station_number": bikes.station_number,
-            "latitude": bikes.latitude,
-            "longitude": bikes.longitude,
+            "latitude": bikes.position.coords[1],
+            "longitude": bikes.position.coords[0],
             "name": bikes.name,
             "status": bikes.status,
             "last_update": last_update,

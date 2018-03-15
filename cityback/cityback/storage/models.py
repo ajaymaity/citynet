@@ -1,5 +1,5 @@
 """Bike storage models definition."""
-from django.db import models
+from django.contrib.gis.db import models
 
 
 # Create your models here.
@@ -7,8 +7,7 @@ class DublinBikesStation(models.Model):
     """A Dublin bikes station."""
 
     station_number = models.IntegerField(primary_key=True)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    position = models.PointField()
     name = models.CharField(max_length=80)
     address = models.CharField(max_length=120)
     bonus = models.BooleanField(default=False)

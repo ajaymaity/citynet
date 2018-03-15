@@ -36,8 +36,13 @@ function setupSlider() {
             // update text in the UI
             document.getElementById('active-hour').innerText = datetime;
 
+            var time_option = document.getElementById("time_delta");
+            var time_delta = 60;
+            // var time_delta = parseInt(time_option.options[
+            //     time_option.selectedIndex].value);
             // update the map
-            websocket.send(JSON.stringify({type: "getMapAtTime", dateTime: datetime}));
+            websocket.send(JSON.stringify({
+                type: "getMapAtTime", dateTime: datetime, timeDelta: time_delta}));
         }
 
     });

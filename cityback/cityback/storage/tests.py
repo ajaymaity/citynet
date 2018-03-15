@@ -136,14 +136,14 @@ class GetLattestStationsFromDBTest(BikeStationsTest):
 
             latest_bikes.append({
                 "station_number": bike_static.station_number,
-                "latitude": bike_static.latitude,
-                "longitude": bike_static.longitude,
+                "latitude": bike_static.position.coords[1],
+                "longitude": bike_static.position.coords[0],
                 "name": bike_static.name,
                 "status": latest_bikes_real.status,
                 "last_update": latest_bikes_real.last_update.isoformat(),
                 "available_bikes": latest_bikes_real.available_bikes,
-                "available_bike_stands": latest_bikes_real.
-                available_bike_stands,
+                "available_bike_stands":
+                    latest_bikes_real.available_bike_stands,
                 "bike_stands": latest_bikes_real.bike_stands
             })
 
