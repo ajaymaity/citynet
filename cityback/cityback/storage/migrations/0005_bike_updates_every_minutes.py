@@ -36,7 +36,10 @@ def migrate_every_minutes(apps, schema_editor):
     num_stations = len(list_stations)
 
     all = MyModel.objects.all()
-    print("number of update records", all.count())
+    count = all.count()
+    print("number of update records", count)
+    if(count == 0):
+        return
 
     vlqs = all.values_list('station_last_update',
                            'available_bikes',

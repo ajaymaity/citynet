@@ -5,9 +5,9 @@ from django.test import TestCase
 import json
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
-from cityback.storage.apps import update_stations, getLatestStationsFromDB
+from cityback.storage.apps import update_stations, getLatestStationsFromDB, \
+    roundTime
 from cityback.storage.apps import getBikesTimeRange, getDateTimeFromTimeStampMS
-import cityback.storage.apps as apps
 import os
 
 
@@ -51,9 +51,10 @@ class CorrectRealTimeInsertTest(BikeStationsTest):
             station_number=s1["number"])
         s2 = DublinBikesStationRealTimeUpdate.objects.get(
             parent_station=dublin_static_object)
-        self.assertEqual(s2.last_update, datetime.datetime.utcfromtimestamp(
-            s1['last_update']/1000).replace(
-                    tzinfo=datetime.timezone.utc))
+        self.assertEqual(s2.station_last_update,
+                         datetime.datetime.utcfromtimestamp(
+                             s1['last_update']/1000).replace(
+                             tzinfo=datetime.timezone.utc))
 # DublinBikesStation.objects.all()
 
 
@@ -63,16 +64,21 @@ class InCorrectRealTimeUpdateTest(BikeStationsTest):
     def runTest(self):
         """Correctly check and not update values."""
         s1 = self.stations[0]
-        update_stations(self.stations)
+        timestamp = max(
+            [getDateTimeFromTimeStampMS(station['last_update'])
+             for station in self.stations])
+        timestamp = roundTime(timestamp, 60)
+        update_stations(self.stations[:10], timestamp)
         s1['status'] = 'Test'
-        update_stations([s1])
+        update_stations([s1], timestamp)
         dublin_static_object = DublinBikesStation.objects.get(
             station_number=s1["number"])
-        s2 = DublinBikesStationRealTimeUpdate.objects.get(
+        s2 = DublinBikesStationRealTimeUpdate.objects.filter(
             parent_station=dublin_static_object,
-            last_update=datetime.datetime.utcfromtimestamp
+            station_last_update=datetime.datetime.utcfromtimestamp
             (s1['last_update']/1000).replace(
-                    tzinfo=datetime.timezone.utc))
+                tzinfo=datetime.timezone.utc)).order_by('timestamp')[0]
+
         self.assertNotEqual(s2.status, 'Test')
 
 
@@ -85,17 +91,17 @@ class CorrectRealTimeUpdateTest(BikeStationsTest):
     def runTest(self):
         """Correctly update the real time values."""
         s1 = self.stations[0]
-        update_stations(self.stations)
+        timestamp = roundTime(datetime.datetime.now(), 60)
+        update_stations(self.stations[:10], timestamp)
         s1['status'] = 'Test'
-        s1['last_update'] = 1519141942000  # changed timestamp
-        update_stations([s1])
+        update_stations([s1], timestamp + datetime.timedelta(minutes=1))
         dublin_static_object = DublinBikesStation.objects.get(
             station_number=s1["number"])
-        s2 = DublinBikesStationRealTimeUpdate.objects.get(
+        s2 = DublinBikesStationRealTimeUpdate.objects.filter(
             parent_station=dublin_static_object,
-            last_update=datetime.datetime.utcfromtimestamp
+            station_last_update=datetime.datetime.utcfromtimestamp
             (s1['last_update']/1000).replace(
-                    tzinfo=datetime.timezone.utc))
+                tzinfo=datetime.timezone.utc)).order_by('-timestamp')[0]
         self.assertEqual(s2.status, 'Test')
 
 
@@ -104,24 +110,18 @@ class GetStations(BikeStationsTest):
 
     def runTest(self):
         """Get dynamic and static data."""
-        update_stations(self.stations)
-        apps.getLatestStationsFromDB()
+        update_stations(self.stations[:10])
+        # TODO: Implement!
+        getLatestStationsFromDB()
 
 
 class GetLattestStationsFromDBTest(BikeStationsTest):
     """Testing latest stations fetch from DB."""
 
     def runTest(self):
-        """
-        Update the bike information in DB from json.
-
-        First, update the list of existing stations
-        then update the bike information for all stations.
-
-        :param station_list: a list of stations dict
-        :return:
-        """
-        update_stations(self.stations_multiple)
+        """Test the retrieval of the latest stations."""
+        update_stations([s for s in self.stations_multiple
+                         if s['number'] in [1, 2, 3]])
         bikes_static = DublinBikesStation.objects.all()
         latest_bikes = []
         for bike_static in bikes_static:
@@ -130,8 +130,8 @@ class GetLattestStationsFromDBTest(BikeStationsTest):
                 tzinfo=datetime.timezone.utc)
             latest_bikes_real = None
             for bike_real in bikes_real:
-                if (bike_real.last_update > max_latest_update):
-                    max_latest_update = bike_real.last_update
+                if bike_real.station_last_update > max_latest_update:
+                    max_latest_update = bike_real.station_last_update
                     latest_bikes_real = bike_real
 
             latest_bikes.append({
@@ -140,7 +140,9 @@ class GetLattestStationsFromDBTest(BikeStationsTest):
                 "longitude": bike_static.position.coords[0],
                 "name": bike_static.name,
                 "status": latest_bikes_real.status,
-                "last_update": latest_bikes_real.last_update.isoformat(),
+                "timestamp": latest_bikes_real.timestamp,
+                "station_last_update":
+                    latest_bikes_real.station_last_update.isoformat(),
                 "available_bikes": latest_bikes_real.available_bikes,
                 "available_bike_stands":
                     latest_bikes_real.available_bike_stands,
@@ -160,9 +162,14 @@ class GetStationsTimeRange(BikeStationsTest):
 
     def runTest(self):
         """Get dynamic and static data."""
-        update_stations(self.stations_multiple)
-        range1 = getBikesTimeRange()
-        times = [getDateTimeFromTimeStampMS(s["last_update"])
-                 for s in self.stations_multiple]
-        range2 = (min(times), max(times))
+        stations = self.stations_multiple[:100]
+        for station in stations:
+            timestamp = getDateTimeFromTimeStampMS(
+                station['last_update'])
+            update_stations([station], timestamp)
+        range2 = getBikesTimeRange()
+        times = [roundTime(getDateTimeFromTimeStampMS(s["last_update"]),
+                           60).replace(tzinfo=datetime.timezone.utc)
+                 for s in stations]
+        range1 = (min(times), max(times))
         self.assertEqual(range1, range2)
