@@ -4,6 +4,7 @@ from datetime import timedelta, datetime, timezone
 
 from django.apps import AppConfig
 from django.contrib.gis.geos import Point
+from django.db import connection
 
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
@@ -162,23 +163,19 @@ def getBikesAtTime(date_time, time_delta=60):
     :return: list of dict
     """
     date_time = roundTime(date_time, time_delta)
-    bikes_station = DublinBikesStation.objects.raw(
-        '''select station_number, 'position', 'name', status,
+
+    # for raw queries of geometry fields, see documentation at
+    # https://docs.djangoproject.com/en/2.0/ref/contrib/gis/tutorial/
+    query = '''select station_number, name, status, {} as position,
           available_bikes, available_bike_stands, bike_stands,
-          sub_query.last_update from storage_dublinbikesstation
-inner join (
-select  max(id) as id, parent_station_id, max(station_last_update) as
-last_update from
-            storage_dublinbikesstationrealtimeupdate
-            where 'timestamp'='{}' group by parent_station_id)
-as sub_query
-    on  storage_dublinbikesstation.station_number =
-sub_query.parent_station_id
-inner join storage_dublinbikesstationrealtimeupdate on
-sub_query.parent_station_id = station_number AND
-sub_query.id =
-storage_dublinbikesstationrealtimeupdate.id;
-'''.format(date_time.isoformat()))
+          station_last_update, timestamp from storage_dublinbikesstation
+         INNER JOIN storage_dublinbikesstationrealtimeupdate
+    on  storage_dublinbikesstation.station_number = parent_station_id
+    where timestamp='{}';
+'''.format((connection.ops.select % 'position'), date_time.isoformat())
+
+    print("Running query: {}".format(query))
+    bikes_station = DublinBikesStation.objects.raw(query)
     bikes_at_time = []
     for bikes in bikes_station:
         bikes_at_time.append({
@@ -188,13 +185,13 @@ storage_dublinbikesstationrealtimeupdate.id;
             "name": bikes.name,
             "status": bikes.status,
             "timestamp": date_time,
-            "station_last_update": bikes.last_update,
+            "station_last_update": bikes.station_last_update,
             "available_bikes": bikes.available_bikes,
             "available_bike_stands": bikes.available_bike_stands,
             "bike_stands": bikes.bike_stands
         })
 
-    # print(latest_bikes)
+    print("bikes at=", len(bikes_at_time))
     return bikes_at_time
 
 
@@ -261,7 +258,7 @@ def getBikesDistinctTimes(time_delta_s=60):
 def getCompressedBikeUpdates(stations=[1], time_delta_s=3600):
     """Get bike update average over the specified delta and stations."""
     times = getBikesDistinctTimes(time_delta_s)
-    return None, None
+    return [], []
     # all = DublinBikesStationRealTimeUpdate.objects.all().filter(
     #     parent_station__in=stations).only(
     #     'last_update', 'available_bikes', 'bike_stands')
