@@ -42,14 +42,20 @@ def update_stations(stations, timestamp=None):
     if start is not None and end is not None:
         end = roundTime(end, 60)
         num_dates = (timestamp - end) // timedelta(seconds=time_delta)
-        date_list = [start + timedelta(seconds=(time_delta * x))
+        date_list = [end + timedelta(seconds=(time_delta * x))
                      for x in range(1, num_dates)]
+
+        if len(date_list):
+            print("num dates={}".format(num_dates))
+            print("Filling holes in db, from {} to {}".format(
+                date_list[0], date_list[-1]))
+
         stations_at_end = getBikesAtTime(end, time_delta)
         objects = []
         for time_ in date_list:
             for station in stations_at_end:
                 objects.append(DublinBikesStationRealTimeUpdate(
-                    parent_station=objects[station['number']],
+                    parent_station_id=station['station_number'],
                     timestamp=time_.replace(tzinfo=timezone.utc),
                     station_last_update=station['station_last_update'],
                     status=station['status'],
@@ -57,7 +63,7 @@ def update_stations(stations, timestamp=None):
                     available_bike_stands=station['available_bike_stands'],
                     bike_stands=station['bike_stands']
                 ))
-        DublinBikesStationRealTimeUpdate.objects.bulk_create(objects)
+        DublinBikesStationRealTimeUpdate.objects.bulk_create(objects, 1000)
         # print("Filled holes for {} time steps".format(len(date_list)))
 
     # update the stations at time timestamp.
@@ -174,7 +180,6 @@ def getBikesAtTime(date_time, time_delta=60):
     where timestamp='{}';
 '''.format((connection.ops.select % 'position'), date_time.isoformat())
 
-    print("Running query: {}".format(query))
     bikes_station = DublinBikesStation.objects.raw(query)
     bikes_at_time = []
     for bikes in bikes_station:
@@ -191,7 +196,7 @@ def getBikesAtTime(date_time, time_delta=60):
             "bike_stands": bikes.bike_stands
         })
 
-    print("bikes at=", len(bikes_at_time))
+    print("getBikesAt found {} entries".format(len(bikes_at_time)))
     return bikes_at_time
 
 

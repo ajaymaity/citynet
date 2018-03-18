@@ -29,14 +29,12 @@ def reset_client_list(sender=None, conf=None, **kwargs):
     loop.run_until_complete(channel_layer.flush())
 
 
-@shared_task
+@shared_task(ignore_result=True)
 def periodic_send_handler():
     """Send periodic data to group bike_group."""
     channel_layer = get_channel_layer()
-    nMsg = 2
-    for i in range(nMsg):
-        a = random.randint(1, 100)
-        async_to_sync(channel_layer.group_send)(
-            "bike_group", {"type": "group.send",
-                           "text": "VALUE=" + str(a)})
-    print("done sending group msg x{}".format(nMsg))
+    a = random.randint(1, 100)
+    async_to_sync(channel_layer.group_send)(
+        "bike_group", {"type": "group.send",
+                       "text": "VALUE=" + str(a)})
+    print("done sending group msg {}".format(a))
