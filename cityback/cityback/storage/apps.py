@@ -8,7 +8,6 @@ from django.db import connection
 
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
-from django.contrib.gis.db.models import Max, Min
 
 
 class StorageConfig(AppConfig):
@@ -206,11 +205,13 @@ def getBikesTimeRange():
 
     :return: tuple first, last timestamp as timestamp object
     """
-    times = DublinBikesStationRealTimeUpdate.objects.all().aggregate(
-        Min('timestamp'), Max('timestamp'))
+    start_timer = time.time()
+    times = DublinBikesStationRealTimeUpdate.objects.only(
+        'timestamp').order_by('timestamp')
+    startTime = times[0].timestamp
+    lastTime = times.reverse()[0].timestamp
 
-    startTime = times['timestamp__min']
-    lastTime = times['timestamp__max']
+    print("get bike time range took: {}s".format(time.time() - start_timer))
 
     return startTime, lastTime
 
@@ -246,18 +247,22 @@ def getBikesDistinctTimes(time_delta_s=60):
     # before optimisation: 2.22s
     # after raw sql + python round: 1.8s
     # with pure sql rounding, tuned 0.54s
-
-    start = time.time()
-    times = DublinBikesStationRealTimeUpdate.objects.raw('''
-        select 1 as id, rdate from (select DISTINCT
-        date_round(station_last_update, '{} seconds') as rdate
-        from storage_dublinbikesstationrealtimeupdate) as foo
-        order by rdate
-        '''.format(time_delta_s))
-    times = [t.rdate.replace(tzinfo=None) for t in times]
-    end = time.time()
-    print("query distinct times took: {}s".format(end - start))
-    return times
+    # TODO: fix this function in the new db type.
+    start_timer = time.time()
+    # times = DublinBikesStationRealTimeUpdate.objects.raw('''
+    #     select 1 as id, rdate from (select DISTINCT
+    #     date_round(station_last_update, '{} seconds') as rdate
+    #     from storage_dublinbikesstationrealtimeupdate) as foo
+    #     order by rdate
+    #     '''.format(time_delta_s))
+    # times = [t.rdate.replace(tzinfo=None) for t in times]
+    # end = time.time()
+    start, end = getBikesTimeRange()
+    num_dates = (end - start) // timedelta(seconds=time_delta_s) + 1
+    date_list = [start + timedelta(seconds=(time_delta_s * x))
+                 for x in range(num_dates)]
+    print("query distinct times took: {}s".format(time.time() - start_timer))
+    return date_list
 
 
 def getCompressedBikeUpdates(stations=[1], time_delta_s=3600):
