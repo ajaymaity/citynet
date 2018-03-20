@@ -17,7 +17,10 @@ def convertToGeoJson(data):
     geojson['features'] = list()
 
     for k in data:
-        occupancy = k['available_bikes'] * 100 / k['bike_stands']
+        occupancy = (k['available_bikes'] * 100 / k['bike_stands']
+                     if k['bike_stands'] != 0 else 100)
+        vacancy = (k['available_bike_stands'] * 100 / k['bike_stands']
+                   if k['bike_stands'] != 0 else 0)
         newFeature = {
             "type": "Feature",
             "geometry": {
@@ -31,7 +34,7 @@ def convertToGeoJson(data):
                           str(k['available_bike_stands'])),
                 "description": "",
                 "occupancy": occupancy,
-                "vacancy": k['available_bike_stands'] * 100 / k['bike_stands'],
+                "vacancy": vacancy,
                 "status": k['status'],
             }
         }

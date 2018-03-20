@@ -83,13 +83,14 @@ def update_stations(stations, timestamp=None):
                 banking=station['banking']
             )
         )
-        # print("timestamp=", timestamp)
+        last_update = station['last_update']
+        last_update = (getDateTimeFromTimeStampMS(last_update)
+                       if last_update is not None else timestamp.now())
         obj, created = DublinBikesStationRealTimeUpdate.objects.get_or_create(
             parent_station=station_object,
             timestamp=timestamp.replace(tzinfo=timezone.utc),
             defaults=dict(
-                station_last_update=(
-                    getDateTimeFromTimeStampMS(station['last_update'])),
+                station_last_update=last_update,
                 status=station['status'],
                 available_bikes=station['available_bikes'],
                 available_bike_stands=station['available_bike_stands'],
