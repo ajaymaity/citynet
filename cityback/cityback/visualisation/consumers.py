@@ -6,7 +6,7 @@ from asgiref.sync import async_to_sync
 
 from cityback.storage.apps import getBikesTimeRange, getBikesAtTime, \
     getCompressedBikeUpdates
-from cityback.visualisation.apps import getLatestStationJSON, convertToGeoJson
+from cityback.visualisation.apps import convertToGeoJson
 from datetime import timedelta
 import datetime
 
@@ -68,7 +68,10 @@ class RTStationsConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_add)(
             "stationUpdateGroup", self.channel_name)
 
-        self.send(text_data=getLatestStationJSON())
+        # TODO re enable periodic realtime data
+        # TODO add a type to the message
+
+        # self.send(text_data=getLatestStationJSON())
         self.send_test_chart(300)
         print("New client to RTstations")
 
