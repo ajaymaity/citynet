@@ -3,10 +3,11 @@ import time
 from datetime import timedelta, datetime, timezone
 
 from django.apps import AppConfig
+from django.contrib.gis.geos import Point
+from django.db import connection
+
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
-from django.db.models import Max, Min
-import numpy as np
 
 
 class StorageConfig(AppConfig):
@@ -15,24 +16,66 @@ class StorageConfig(AppConfig):
     name = 'storage'
 
 
-def update_stations(stations):
+def update_stations(stations, timestamp=None):
     """
     Update the bike information in DB from json.
 
     First, update the list of existing stations
     then update the bike information for all stations.
 
-    :param station: a list of stations dict
+    :param station  a list of stations dict
+    :param now if true insert with current time rounded to nearest minute
+           else, get the most recent station_timestamp, rounded to minute
     :return:
     """
-    objects = {}
+    time_delta = 60
+    # TODO refactor time_delta
 
+    # get the timestamp for the data
+    if timestamp is None:
+        timestamp = datetime.now()
+    timestamp = roundTime(timestamp, time_delta)
+
+    # insert data between end to now, both exclusive.
+    start, end = getBikesTimeRange()
+    if start is not None and end is not None:
+        end = roundTime(end, 60)
+        num_dates = (timestamp - end) // timedelta(seconds=time_delta)
+        date_list = [end + timedelta(seconds=(time_delta * x))
+                     for x in range(1, num_dates)]
+
+        if len(date_list):
+            print("num dates={}".format(num_dates))
+            print("Filling holes in db, from {} to {}".format(
+                date_list[0], date_list[-1]))
+
+        stations_at_end = getBikesAtTime(end, time_delta)
+        objects = []
+        for time_ in date_list:
+            for station in stations_at_end:
+                objects.append(DublinBikesStationRealTimeUpdate(
+                    parent_station_id=station['station_number'],
+                    timestamp=time_.replace(tzinfo=timezone.utc),
+                    station_last_update=station['station_last_update'],
+                    status=station['status'],
+                    available_bikes=station['available_bikes'],
+                    available_bike_stands=station['available_bike_stands'],
+                    bike_stands=station['bike_stands']
+                ))
+        DublinBikesStationRealTimeUpdate.objects.bulk_create(objects, 1000)
+        # print("Filled holes for {} time steps".format(len(date_list)))
+
+    # update the stations at time timestamp.
     for station in stations:
-        object, created = DublinBikesStation.objects.update_or_create(
+        point = Point(
+            station['position']['lng'],
+            station['position']['lat'],
+            srid=4326  # WGS 84
+        )
+        station_object, created = DublinBikesStation.objects.update_or_create(
             station_number=station['number'],
             defaults=dict(
-                latitude=station['position']['lat'],
-                longitude=station['position']['lng'],
+                position=point,
                 name=station['name'],
                 address=station['address'],
                 bonus=station['bonus'],
@@ -40,20 +83,22 @@ def update_stations(stations):
                 banking=station['banking']
             )
         )
-        objects[station['number']] = object
+        last_update = station['last_update']
+        last_update = (getDateTimeFromTimeStampMS(last_update)
+                       if last_update is not None else timestamp.now())
+        obj, created = DublinBikesStationRealTimeUpdate.objects.get_or_create(
+            parent_station=station_object,
+            timestamp=timestamp.replace(tzinfo=timezone.utc),
+            defaults=dict(
+                station_last_update=last_update,
+                status=station['status'],
+                available_bikes=station['available_bikes'],
+                available_bike_stands=station['available_bike_stands'],
+                bike_stands=station['bike_stands'],
+            )
+        )
 
-    for station in stations:
-        object, created = (
-            DublinBikesStationRealTimeUpdate.objects.get_or_create(
-                parent_station=objects[station['number']],
-                last_update=getDateTimeFromTimeStampMS(station['last_update']),
-                defaults=dict(
-                    status=station['status'],
-                    available_bikes=station['available_bikes'],
-                    available_bike_stands=station['available_bike_stands'],
-                    bike_stands=station['bike_stands'],
-                )
-            ))
+        # print("created", created, "obj", obj)
 
     return "Update_stations: {} stations updated!".format(len(stations))
 
@@ -72,11 +117,12 @@ def getLatestStationsFromDB():
     :return: list of dict
     """
     bikes_station = DublinBikesStation.objects.raw(
-        '''select station_number, latitude, longitude, name, status,
+        '''select 'position', station_number, name, status,
           available_bikes, available_bike_stands, bike_stands,
-          sub_query.last_update from storage_dublinbikesstation
+          sub_query.timestamp, station_last_update
+           from storage_dublinbikesstation
 inner join (
-select  max(id) as id, parent_station_id, max(last_update) as last_update from
+select  max(id) as id, parent_station_id, max(timestamp) as timestamp from
             storage_dublinbikesstationrealtimeupdate
             group by parent_station_id)
 as sub_query
@@ -91,7 +137,7 @@ storage_dublinbikesstationrealtimeupdate.id;
     for bikes in bikes_station:
         # TODO: Change the way of getting the lattest station update
 
-        last_update = bikes.last_update
+        last_update = bikes.station_last_update
         if type(last_update) != str:
             last_update = last_update.isoformat()
         else:
@@ -101,11 +147,12 @@ storage_dublinbikesstationrealtimeupdate.id;
             last_update = last_update.isoformat()
         latest_bikes.append({
             "station_number": bikes.station_number,
-            "latitude": bikes.latitude,
-            "longitude": bikes.longitude,
+            "latitude": bikes.position.coords[1],
+            "longitude": bikes.position.coords[0],
             "name": bikes.name,
             "status": bikes.status,
-            "last_update": last_update,
+            "timestamp": bikes.timestamp,
+            "station_last_update": last_update,
             "available_bikes": bikes.available_bikes,
             "available_bike_stands": bikes.available_bike_stands,
             "bike_stands": bikes.bike_stands
@@ -115,53 +162,41 @@ storage_dublinbikesstationrealtimeupdate.id;
     return latest_bikes
 
 
-def getBikesAtTime(dateTime):
+def getBikesAtTime(date_time, time_delta=60):
     """
-    Retrieve the information for every stations at or just less than dateTime.
+    Retrieve the information for every stations at date_time.
 
     :return: list of dict
     """
-    bikes_station = DublinBikesStation.objects.raw(
-        '''select station_number, latitude, longitude, name, status,
+    date_time = roundTime(date_time, time_delta)
+
+    # for raw queries of geometry fields, see documentation at
+    # https://docs.djangoproject.com/en/2.0/ref/contrib/gis/tutorial/
+    query = '''select station_number, name, status, {} as position,
           available_bikes, available_bike_stands, bike_stands,
-          sub_query.last_update from storage_dublinbikesstation
-inner join (
-select  max(id) as id, parent_station_id, max(last_update) as last_update from
-            storage_dublinbikesstationrealtimeupdate
-            where last_update <= \'''' +
-        dateTime +
-        '''\' group by parent_station_id)
-as sub_query
-    on  storage_dublinbikesstation.station_number =
-sub_query.parent_station_id
-inner join storage_dublinbikesstationrealtimeupdate on
-sub_query.parent_station_id = station_number AND
-sub_query.id =
-storage_dublinbikesstationrealtimeupdate.id;
-''')
+          station_last_update, timestamp from storage_dublinbikesstation
+         INNER JOIN storage_dublinbikesstationrealtimeupdate
+    on  storage_dublinbikesstation.station_number = parent_station_id
+    where timestamp='{}';
+'''.format((connection.ops.select % 'position'), date_time.isoformat())
+
+    bikes_station = DublinBikesStation.objects.raw(query)
     bikes_at_time = []
     for bikes in bikes_station:
-        last_update = bikes.last_update
-        if type(last_update) != str:
-            last_update = last_update.isoformat()
-        else:
-            last_update = datetime.strptime(
-                last_update, "%Y-%m-%d %H:%M:%S").replace(
-                tzinfo=timezone.utc)
-            last_update = last_update.isoformat()
         bikes_at_time.append({
             "station_number": bikes.station_number,
-            "latitude": bikes.latitude,
-            "longitude": bikes.longitude,
+            "latitude": bikes.position.coords[1],
+            "longitude": bikes.position.coords[0],
             "name": bikes.name,
             "status": bikes.status,
-            "last_update": last_update,
+            "timestamp": date_time,
+            "station_last_update": bikes.station_last_update,
             "available_bikes": bikes.available_bikes,
             "available_bike_stands": bikes.available_bike_stands,
             "bike_stands": bikes.bike_stands
         })
 
-    # print(latest_bikes)
+    print("getBikesAt found {} entries".format(len(bikes_at_time)))
     return bikes_at_time
 
 
@@ -169,15 +204,16 @@ def getBikesTimeRange():
     """
     Get the time range available for the bike updates.
 
-    :return: tuple first, last timestamp in string iso format
+    :return: tuple first, last timestamp as timestamp object
     """
-    times = DublinBikesStationRealTimeUpdate.objects.all().aggregate(
-        Min('last_update'), Max('last_update'))
+    start_timer = time.time()
+    times = DublinBikesStationRealTimeUpdate.objects.only(
+        'timestamp').order_by('timestamp')
+    startTime = times[0].timestamp
+    lastTime = times.reverse()[0].timestamp
 
-    startTime = times['last_update__min']
-    lastTime = times['last_update__max']
+    print("get bike time range took: {}s".format(time.time() - start_timer))
 
-    print(startTime, lastTime)
     return startTime, lastTime
 
 
@@ -212,63 +248,35 @@ def getBikesDistinctTimes(time_delta_s=60):
     # before optimisation: 2.22s
     # after raw sql + python round: 1.8s
     # with pure sql rounding, tuned 0.54s
-
-    start = time.time()
-    times = DublinBikesStationRealTimeUpdate.objects.raw('''
-        select 1 as id, rdate from (select DISTINCT
-        date_round(last_update, '{} seconds') as rdate
-        from storage_dublinbikesstationrealtimeupdate) as foo
-        order by rdate
-        '''.format(time_delta_s))
-    times = [t.rdate.replace(tzinfo=None) for t in times]
-    end = time.time()
-    print("query distinct times took: {}s".format(end - start))
-    return times
+    # TODO: fix this function in the new db type.
+    start_timer = time.time()
+    # times = DublinBikesStationRealTimeUpdate.objects.raw('''
+    #     select 1 as id, rdate from (select DISTINCT
+    #     date_round(station_last_update, '{} seconds') as rdate
+    #     from storage_dublinbikesstationrealtimeupdate) as foo
+    #     order by rdate
+    #     '''.format(time_delta_s))
+    # times = [t.rdate.replace(tzinfo=None) for t in times]
+    # end = time.time()
+    start, end = getBikesTimeRange()
+    num_dates = (end - start) // timedelta(seconds=time_delta_s) + 1
+    date_list = [start + timedelta(seconds=(time_delta_s * x))
+                 for x in range(num_dates)]
+    print("query distinct times took: {}s".format(time.time() - start_timer))
+    return date_list
 
 
 def getCompressedBikeUpdates(stations=[1], time_delta_s=3600):
     """Get bike update average over the specified delta and stations."""
-    start = time.time()
     times = getBikesDistinctTimes(time_delta_s)
-    all = DublinBikesStationRealTimeUpdate.objects.all().filter(
-        parent_station__in=stations).only(
-        'last_update', 'available_bikes', 'bike_stands')
-    print(all.count())
-    print(len(times))
-    #    create 2 numpy array len(times) by 1
-    # first is data
-    # second is % occupancy
-    occupancy = np.zeros((len(times)), dtype=np.float64)
-    counts = np.zeros((len(times)), dtype=np.int64)
-
-    for data in all:
-        rounded_time = roundTime(data.last_update)
-        try:
-            idx = times.index(rounded_time)
-        except ValueError:
-            continue
-        stands = data.bike_stands
-        if stands != 0:
-            occupancy[idx] += (float(data.available_bikes) * 100 /
-                               stands)
-            counts[idx] += 1
-
-    total = counts.sum()
-    empty = counts == 0
-    counts[empty] = 1
-    occupancy /= counts
-    # interpolate
-    if len(occupancy) == 0:
-        return times, occupancy
-    fill = occupancy[0]
-    for i in range(occupancy.shape[0]):
-        if empty[i]:
-            occupancy[i] = fill
-        else:
-            fill = occupancy[i]
-    end = time.time()
-    print("computed {} values in {}s".format(
-        total,
-        end - start
-    ))
-    return times, occupancy
+    return [], []
+    # all = DublinBikesStationRealTimeUpdate.objects.all().filter(
+    #     parent_station__in=stations).only(
+    #     'last_update', 'available_bikes', 'bike_stands')
+    times = DublinBikesStationRealTimeUpdate.objects.raw('''
+        select 1 as id, rdate from (select DISTINCT
+        date_round(station_last_update, '{} seconds') as rdate
+        from storage_dublinbikesstationrealtimeupdate) as foo
+        order by rdate
+        '''.format(time_delta_s))
+    times = [t.rdate.replace(tzinfo=None) for t in times]

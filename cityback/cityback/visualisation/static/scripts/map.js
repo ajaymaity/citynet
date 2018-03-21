@@ -6,19 +6,24 @@ var map;
 
 
 function updateMap(geoStation) {
-    geoFeatures = geoStation['features'];
-    for (let i = 0; i < geoFeatures.length; i++) {
-        let geoProperty = geoFeatures[i]['properties'];
-        if (i in previousOccuapancy &&
-            geoProperty['occupancy'] == previousOccuapancy[i]) {
-            geoProperty['occupancyChanged'] = 0;
-        } else {
-            geoProperty['occupancyChanged'] = 1;
-            previousOccuapancy[i] = geoProperty['occupancy'];
+    console.log("updating map")
+    if (mapLoaded) {
+        geoFeatures = geoStation['features'];
+        for (let i = 0; i < geoFeatures.length; i++) {
+            let geoProperty = geoFeatures[i]['properties'];
+            if (i in previousOccuapancy &&
+                geoProperty['occupancy'] == previousOccuapancy[i]) {
+                geoProperty['occupancyChanged'] = 0;
+            } else {
+                geoProperty['occupancyChanged'] = 1;
+                previousOccuapancy[i] = geoProperty['occupancy'];
+            }
         }
-    }
-    if (mapLoaded && firstJson)
         map.getSource('bikesource').setData(geoStation);
+    }else{
+        // keep the data for when the map is loaded
+        firstJson = geoStation
+    }
 }
 
 
@@ -29,19 +34,28 @@ function pressButton() {
 
 
 function setupSlider() {
+    document.getElementById('slider').addEventListener('change', function(e) {
+        var value = parseInt(e.target.value);
+        if(value in date_Time_Of_Index){
+            datetime = date_Time_Of_Index[value]
+            // update text in the UI
+            document.getElementById('active-hour').innerText = datetime;
+            var time_option = document.getElementById("time_delta");
+            var time_delta = 60;
+            // update the map
+            websocket.send(JSON.stringify({
+                type: "getMapAtTime", dateTime: datetime, timeDelta: time_delta}));
+        }
+
+    });
     document.getElementById('slider').addEventListener('input', function(e) {
         var value = parseInt(e.target.value);
         if(value in date_Time_Of_Index){
             datetime = date_Time_Of_Index[value]
             // update text in the UI
             document.getElementById('active-hour').innerText = datetime;
-
-            // update the map
-            websocket.send(JSON.stringify({type: "getMapAtTime", dateTime: datetime}));
         }
-
     });
-
 }
 
 function initMap() {

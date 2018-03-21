@@ -6,8 +6,9 @@ from asgiref.sync import async_to_sync
 
 from cityback.storage.apps import getBikesTimeRange, getBikesAtTime, \
     getCompressedBikeUpdates
-from cityback.visualisation.apps import getLatestStationJSON, convertToGeoJson
+from cityback.visualisation.apps import convertToGeoJson
 from datetime import timedelta
+import datetime
 
 
 class RTStationsConsumer(WebsocketConsumer):
@@ -40,7 +41,9 @@ class RTStationsConsumer(WebsocketConsumer):
         dateTime = text_data.get("dateTime", None)
         if dateTime is None:
             return
-
+        dateTime = datetime.datetime.strptime(
+                dateTime, "%Y-%m-%d %H:%M").replace(
+                tzinfo=datetime.timezone.utc)
         data = {"type": "mapAtTime",
                 "value": convertToGeoJson(getBikesAtTime(dateTime))}
         self.send(text_data=json.dumps(data))
@@ -49,6 +52,8 @@ class RTStationsConsumer(WebsocketConsumer):
         """Tmp function to get first chart."""
         times, occupancy = getCompressedBikeUpdates(
             time_delta_s=time_delta_s)
+        if len(times) == 0:
+            return
         data = json.dumps({"type": "chart",
                            "labels": [t.strftime(self.format) for t in times],
                            "occupancy": occupancy.tolist(),
@@ -63,13 +68,16 @@ class RTStationsConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_add)(
             "stationUpdateGroup", self.channel_name)
 
-        self.send(text_data=getLatestStationJSON())
+        # TODO re enable periodic realtime data
+        # TODO add a type to the message
+
+        # self.send(text_data=getLatestStationJSON())
         self.send_test_chart(300)
         print("New client to RTstations")
 
     def receive(self, text_data=None, bytes_data=None):
         """On message reveice, display message."""
-        print("received data:", text_data, bytes_data)
+        print("consumer received message:", text_data)
         text_data = json.loads(text_data)
         if type(text_data) == dict:
             if "type" in text_data:

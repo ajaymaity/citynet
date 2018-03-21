@@ -1,5 +1,5 @@
 """Bike storage models definition."""
-from django.db import models
+from django.contrib.gis.db import models
 
 
 # Create your models here.
@@ -7,8 +7,7 @@ class DublinBikesStation(models.Model):
     """A Dublin bikes station."""
 
     station_number = models.IntegerField(primary_key=True)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    position = models.PointField()
     name = models.CharField(max_length=80)
     address = models.CharField(max_length=120)
     bonus = models.BooleanField(default=False)
@@ -26,7 +25,8 @@ class DublinBikesStationRealTimeUpdate(models.Model):
     parent_station = models.ForeignKey(DublinBikesStation,
                                        on_delete=models.CASCADE)
     status = models.CharField(max_length=30)
-    last_update = models.DateTimeField(null=True)
+    timestamp = models.DateTimeField(null=True, db_index=True)
+    station_last_update = models.DateTimeField(null=True)
     available_bikes = models.IntegerField()
     available_bike_stands = models.IntegerField()
     bike_stands = models.IntegerField()

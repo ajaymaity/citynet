@@ -1,7 +1,7 @@
 """TODO."""
 
-from django.contrib import admin
 from .models import DublinBikesStation, DublinBikesStationRealTimeUpdate
+from django.contrib.gis import admin
 
 
 # Register your models here.

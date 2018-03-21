@@ -36,7 +36,6 @@ EOF
 # do not remove existing migrations, they should be remove manually
 # find /app/cityback/cityback -name migrations -type d -exec rm -rf "{}" +
 
-python $path/cityback/manage.py makemigrations
 python $path/cityback/manage.py migrate
 echo "from django.contrib.auth.models import User; \
   User.objects.filter(email='admin@example.com').delete();\

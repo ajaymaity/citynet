@@ -2,12 +2,9 @@ var date_Time_Of_Index = [];
 function onMessage(evt) {
     console.log('data_received');
     let svals = JSON.parse(evt.data);
+
     if ("stations" in svals) {
-        if (!mapLoaded) {
-            firstJson = svals.stations;
-        } else {
-            updateMap(svals.stations);
-        }
+        updateMap(svals.stations);
     }
     if("type" in svals){
         // console.log('data=' + JSON.stringify(svals))
@@ -18,7 +15,7 @@ function onMessage(evt) {
                 slider.max = svals.nbIntervals - 1;
                 slider.value = slider.max;
                 date_Time_Of_Index = svals.dateTimeOfIndex;
-                var event = new Event('input');
+                var event = new Event('change');
                 slider.dispatchEvent(event);
                 break;
             case "mapAtTime":
