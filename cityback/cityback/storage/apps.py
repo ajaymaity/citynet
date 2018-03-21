@@ -1,5 +1,4 @@
 """TODO."""
-import time
 from datetime import timedelta, datetime, timezone
 
 from django.apps import AppConfig
@@ -117,7 +116,7 @@ def getLatestStationsFromDB():
     :return: list of dict
     """
     bikes_station = DublinBikesStation.objects.raw(
-        '''select 'position', station_number, name, status,
+        '''select {} as position, station_number, name, status,
           available_bikes, available_bike_stands, bike_stands,
           sub_query.timestamp, station_last_update
            from storage_dublinbikesstation
@@ -132,7 +131,7 @@ inner join storage_dublinbikesstationrealtimeupdate on
 sub_query.parent_station_id = station_number AND
 sub_query.id =
 storage_dublinbikesstationrealtimeupdate.id;
-''')
+'''.format((connection.ops.select % 'position')))
     latest_bikes = []
     for bikes in bikes_station:
         # TODO: Change the way of getting the lattest station update
@@ -196,7 +195,7 @@ def getBikesAtTime(date_time, time_delta=60):
             "bike_stands": bikes.bike_stands
         })
 
-    print("getBikesAt found {} entries".format(len(bikes_at_time)))
+    # print("getBikesAt found {} entries".format(len(bikes_at_time)))
     return bikes_at_time
 
 
@@ -206,15 +205,19 @@ def getBikesTimeRange():
 
     :return: tuple first, last timestamp as timestamp object
     """
-    start_timer = time.time()
+    # start_timer = time.time()
     times = DublinBikesStationRealTimeUpdate.objects.only(
         'timestamp').order_by('timestamp')
-    startTime = times[0].timestamp
-    lastTime = times.reverse()[0].timestamp
+    if len(times) > 0:
+        startTime = times[0].timestamp
+        lastTime = times.reverse()[0].timestamp
 
-    print("get bike time range took: {}s".format(time.time() - start_timer))
+        # print("get bike time range took: {}s".format(time.time()
+        # - start_timer))
 
-    return startTime, lastTime
+        return startTime, lastTime
+    else:
+        return None, None
 
 
 def roundTime(dt=None, round_to=60):
@@ -249,7 +252,7 @@ def getBikesDistinctTimes(time_delta_s=60):
     # after raw sql + python round: 1.8s
     # with pure sql rounding, tuned 0.54s
     # TODO: fix this function in the new db type.
-    start_timer = time.time()
+    # start_timer = time.time()
     # times = DublinBikesStationRealTimeUpdate.objects.raw('''
     #     select 1 as id, rdate from (select DISTINCT
     #     date_round(station_last_update, '{} seconds') as rdate
@@ -262,7 +265,7 @@ def getBikesDistinctTimes(time_delta_s=60):
     num_dates = (end - start) // timedelta(seconds=time_delta_s) + 1
     date_list = [start + timedelta(seconds=(time_delta_s * x))
                  for x in range(num_dates)]
-    print("query distinct times took: {}s".format(time.time() - start_timer))
+    # print("query distinct times took: {}s".format(time.time() - start_timer))
     return date_list
 
 
