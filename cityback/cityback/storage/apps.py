@@ -4,9 +4,11 @@ from datetime import timedelta, datetime, timezone
 from django.apps import AppConfig
 from django.contrib.gis.geos import Point
 from django.db import connection
+from django.db.models import Max, Min
 
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
+import time
 
 
 class StorageConfig(AppConfig):
@@ -133,6 +135,7 @@ sub_query.id =
 storage_dublinbikesstationrealtimeupdate.id;
 '''.format((connection.ops.select % 'position')))
     latest_bikes = []
+    return latest_bikes
     for bikes in bikes_station:
         # TODO: Change the way of getting the lattest station update
 
@@ -205,17 +208,24 @@ def getBikesTimeRange():
 
     :return: tuple first, last timestamp as timestamp object
     """
-    # start_timer = time.time()
-    times = DublinBikesStationRealTimeUpdate.objects.only(
-        'timestamp').order_by('timestamp')
-    if len(times) > 0:
-        startTime = times[0].timestamp
-        lastTime = times.reverse()[0].timestamp
+    start_timer = time.time()
+    # times = DublinBikesStationRealTimeUpdate.objects.only(
+    #     'timestamp').order_by('timestamp')
+    times = DublinBikesStationRealTimeUpdate.objects.all().aggregate(
+        Max('timestamp'), Min('timestamp'))
 
-        # print("get bike time range took: {}s".format(time.time()
-        # - start_timer))
+    # times = DublinBikesStationRealTimeUpdate.objects.only(
+    #     'timestamp').order_by('timestamp')
+    if times is not None:
+        # startTime = times[0].timestamp
+        # lastTime = times.reverse()[0].timestamp
+        startTime = times['timestamp__min']
+        lastTime = times['timestamp__max']
 
+        print("get bike time range took: {}s".format(time.time()
+                                                     - start_timer))
         return startTime, lastTime
+
     else:
         return None, None
 
