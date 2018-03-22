@@ -70,6 +70,40 @@ function initMap() {
 // Add zoom and rotation controls to the map.
     map.addControl(new mapboxgl.NavigationControl());
 
+    var draw = new MapboxDraw({
+        displayControlsDefault: false,
+        controls: {
+            polygon: true,
+            trash: true
+        }
+    });
+    map.addControl(draw);
+
+
+    map.on('draw.create', getPolygon);
+    map.on('draw.delete', getPolygon);
+    map.on('draw.update', getPolygon);
+
+    function getPolygon(e) {
+        let data = draw.getAll();
+        let selectedPolygons = {};
+
+        for (dataPoint of data.features) {
+            selectedPolygons[dataPoint.id] = 'POLYGON(' +
+                dataPoint.geometry.coordinates.map(function (ring) {
+                    return '(' + ring.map(function (p) {
+                        return p[0] + ' ' + p[1];
+                    }).join(', ') + ')';
+                }).join(', ') + ')';
+        }
+        console.log(selectedPolygons);
+        websocket.send(JSON.stringify({
+            type: "polygonData",
+            selectedPolygons: selectedPolygons
+        }));
+    }
+
+
 // dict to store stations previous occupancy
     map.on('load', function() {
         let empty = {type: 'FeatureCollection', features: []};
@@ -117,6 +151,23 @@ function initMap() {
     });
     setupWebSocket();
     setupSlider();
+
+    map.on('click', 'bikes', function (e) {
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var description = e.features[0].properties.title;
+
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setHTML(description)
+            .addTo(map);
+    });
 }
 
 window.addEventListener('load', initMap);
