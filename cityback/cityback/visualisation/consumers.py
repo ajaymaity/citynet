@@ -48,7 +48,7 @@ class RTStationsConsumer(WebsocketConsumer):
                 "value": convertToGeoJson(getBikesAtTime(dateTime))}
         self.send(text_data=json.dumps(data))
 
-    def send_test_chart(self, time_delta_s=3600):
+    def send_historic_chart(self, time_delta_s=3600):
         """Tmp function to get first chart."""
         times, occupancy = getCompressedBikeUpdates(
             time_delta_s=time_delta_s)
@@ -56,7 +56,7 @@ class RTStationsConsumer(WebsocketConsumer):
             return
         data = json.dumps({"type": "chart",
                            "labels": [t.strftime(self.format) for t in times],
-                           "occupancy": occupancy.tolist(),
+                           "occupancy": occupancy,
                            "time_delta_s": time_delta_s})
         print("Send chart data")
         self.send(text_data=data)
@@ -72,7 +72,7 @@ class RTStationsConsumer(WebsocketConsumer):
         # TODO add a type to the message
 
         # self.send(text_data=getLatestStationJSON())
-        self.send_test_chart(300)
+        self.send_historic_chart(time_delta_s=5 * 60)
         print("New client to RTstations")
 
     def receive(self, text_data=None, bytes_data=None):

@@ -279,17 +279,22 @@ def getBikesDistinctTimes(time_delta_s=60):
     return date_list
 
 
-def getCompressedBikeUpdates(stations=[1], time_delta_s=3600):
+def getCompressedBikeUpdates(stations=[21], time_delta_s=3600):
     """Get bike update average over the specified delta and stations."""
-    times = getBikesDistinctTimes(time_delta_s)
-    return [], []
-    # all = DublinBikesStationRealTimeUpdate.objects.all().filter(
-    #     parent_station__in=stations).only(
-    #     'last_update', 'available_bikes', 'bike_stands')
     times = DublinBikesStationRealTimeUpdate.objects.raw('''
-        select 1 as id, rdate from (select DISTINCT
-        date_round(station_last_update, '{} seconds') as rdate
-        from storage_dublinbikesstationrealtimeupdate) as foo
+        select 1 as id, avg(available_bikes::float / bike_stands::float)
+        as avg_occupancy,
+        date_round(timestamp, '{} seconds') as rdate
+        from storage_dublinbikesstationrealtimeupdate
+        WHERE parent_station_id in ({})
+        and bike_stands <> 0
+        group by rdate
         order by rdate
-        '''.format(time_delta_s))
-    times = [t.rdate.replace(tzinfo=None) for t in times]
+        '''.format(
+        time_delta_s,
+        ",".join([str(s) for s in stations]))
+    )
+
+    return (
+        [t.rdate.replace(tzinfo=None) for t in times],
+        [float(t.avg_occupancy) * 100 for t in times])
