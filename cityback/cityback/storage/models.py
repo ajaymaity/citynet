@@ -30,3 +30,7 @@ class DublinBikesStationRealTimeUpdate(models.Model):
     available_bikes = models.IntegerField()
     available_bike_stands = models.IntegerField()
     bike_stands = models.IntegerField()
+
+    def __str__(self):
+        """For returning number, name of station, and last_update with object."""
+        return "parent %s at %s" % (self.parent_station, self.station_last_update)
