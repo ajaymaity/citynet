@@ -9,7 +9,7 @@ trap 'error $LINENO' ERR
 [ "`cat /etc/timezone`" == "Europe/Dublin" ]
 
 # PostGreSQL
-[ "`psql --version`" == 'psql (PostgreSQL) 9.5.11' ]
+[ "`psql --version`" == 'psql (PostgreSQL) 9.5.12' ] || psql --version
 /etc/init.d/postgresql start && sleep 2
 [ "`/etc/init.d/postgresql status | cut -d'(' -f 2 | cut -d')' -f 1 | cut -c 6-`" \
   == "5432" ]

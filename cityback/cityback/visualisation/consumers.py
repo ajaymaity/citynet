@@ -4,10 +4,9 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
-from cityback.storage.apps import getBikesTimeRange, getBikesAtTime, \
-    getCompressedBikeUpdates
+from cityback.storage.apps import getBikesAtTime, \
+    getCompressedBikeUpdates, getBikesDistinctTimes, roundTime
 from cityback.visualisation.apps import convertToGeoJson
-from datetime import timedelta
 import datetime
 
 
@@ -16,36 +15,32 @@ class RTStationsConsumer(WebsocketConsumer):
 
     format = "%Y-%m-%d %H:%M"
 
-    def send_time_range(self, size=60):
+    def send_time_range(self, delta_s=60):
         """Send time range to the js client."""
-        start, end = getBikesTimeRange()
-        if start is None or end is None:
-            # TODO make a real log
-            print("No data provided in Get time range")
-            return
-        number = int((end - start).total_seconds() / size)
-        times = []
-        for i in range(number - 1):
-            times.append((start + timedelta(seconds=size * i)
-                          ).strftime(self.format))
-        times.append(end.strftime(self.format))
+        date_list = getBikesDistinctTimes(delta_s=delta_s)
+        times = [d.strftime(self.format) for d in date_list]
 
         data = {"type": "timeRange",
-                'nbIntervals': number,
+                'nbIntervals': len(times),
                 'dateTimeOfIndex': times}
         self.send(text_data=json.dumps(data))
-        # distinctTimes = getBikesDistinctTimes()
+        # print("Sending timerange with delta={}".format(delta_s))
+        # print("last time is:", times[-1])
 
     def send_bikes_at_time(self, text_data):
         """Send the bikes at specific time to the js client."""
         dateTime = text_data.get("dateTime", None)
         if dateTime is None:
             return
-        dateTime = datetime.datetime.strptime(
+        delta_s = text_data.get("delta_s", None)
+        if delta_s is None:
+            return
+        delta_s = int(delta_s)
+        dateTime = roundTime(datetime.datetime.strptime(
                 dateTime, "%Y-%m-%d %H:%M").replace(
-                tzinfo=datetime.timezone.utc)
+                tzinfo=datetime.timezone.utc), delta_s)
         data = {"type": "mapAtTime",
-                "value": convertToGeoJson(getBikesAtTime(dateTime))}
+                "value": convertToGeoJson(getBikesAtTime(dateTime, delta_s))}
         self.send(text_data=json.dumps(data))
 
     def send_historic_chart(self, time_delta_s=3600):
@@ -82,7 +77,7 @@ class RTStationsConsumer(WebsocketConsumer):
         if type(text_data) == dict:
             if "type" in text_data:
                 if text_data['type'] == "getTimeRange":
-                    self.send_time_range()
+                    self.send_time_range(int(text_data['delta_s']))
                 if text_data['type'] == "getMapAtTime":
                     self.send_bikes_at_time(text_data)
         pass

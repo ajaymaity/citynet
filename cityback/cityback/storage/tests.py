@@ -142,17 +142,25 @@ class GetLattestStationsFromDBTest(BikeStationsTest):
                 "status": latest_bikes_real.status,
                 "timestamp": latest_bikes_real.timestamp,
                 "station_last_update":
-                    latest_bikes_real.station_last_update.isoformat(),
-                "available_bikes": latest_bikes_real.available_bikes,
+                    latest_bikes_real.station_last_update.replace(
+                        tzinfo=datetime.timezone.utc
+                    ),
+                "available_bikes": float(latest_bikes_real.available_bikes),
                 "available_bike_stands":
-                    latest_bikes_real.available_bike_stands,
-                "bike_stands": latest_bikes_real.bike_stands
+                    float(latest_bikes_real.available_bike_stands),
+                "bike_stands": float(latest_bikes_real.bike_stands)
             })
 
         ground_truth_bike = sorted(latest_bikes,
                                    key=lambda x: x["station_number"])
+        ground_truth_bike = [
+            d[k] for d in ground_truth_bike for k in sorted(d.keys())
+        ]
         latest_bikes = sorted(getLatestStationsFromDB(),
                               key=lambda x: x["station_number"])
+        latest_bikes = [
+            d[k] for d in latest_bikes for k in sorted(d.keys())
+        ]
         # print(latest_bikes)
         self.assertEqual(ground_truth_bike, latest_bikes)
 

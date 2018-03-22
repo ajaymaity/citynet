@@ -33,7 +33,8 @@ RUN \
   apt-get install -y --no-install-recommends build-essential rabbitmq-server redis-server\
                       curl git htop man vim wget python3-pip postgresql postgis\
                       postgresql-9.5-postgis-scripts postgresql-9.5-postgis-2.4 \
-                      gdal-bin python3-gdal python3-dev nodejs python3-psutil tmux nginx &&\
+                      gdal-bin python3-gdal python3-dev nodejs python3-psutil tmux nginx \
+                      libssl-dev &&\
   rm -rf /var/lib/apt/lists/* &&\
   apt-get autoremove &&\
   apt-get clean &&\
@@ -72,6 +73,7 @@ VOLUME  ["/etc/postgresql", "/var/log", "/var/lib/postgresql", "/etc/nginx"]
 
 # ADD
 RUN useradd -c 'Daphne user' -m -d /home/daphne -s /bin/bash daphne
+
 
 # Expose the web ports
 EXPOSE 80 443

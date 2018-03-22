@@ -40,11 +40,13 @@ function setupSlider() {
             datetime = date_Time_Of_Index[value]
             // update text in the UI
             document.getElementById('active-hour').innerText = datetime;
-            var time_option = document.getElementById("time_delta");
-            var time_delta = 60;
+            var e = document.getElementById('delta_s')
+            delta_s = e.options[e.selectedIndex].value
             // update the map
             websocket.send(JSON.stringify({
-                type: "getMapAtTime", dateTime: datetime, timeDelta: time_delta}));
+                'type': "getMapAtTime",
+                'dateTime': datetime,
+                'delta_s': delta_s}));
         }
 
     });
@@ -55,6 +57,9 @@ function setupSlider() {
             // update text in the UI
             document.getElementById('active-hour').innerText = datetime;
         }
+    });
+    document.getElementById('delta_s').addEventListener('change', function(e) {
+        getTimeRange()
     });
 }
 

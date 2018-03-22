@@ -44,8 +44,17 @@ function setupWebSocket() {
         onMessage(evt);};
 }
 
+function getTimeRange(){
+    var e = document.getElementById('delta_s')
+    delta_s = e.options[e.selectedIndex].value
+    websocket.send(JSON.stringify({
+        type: "getTimeRange",
+        delta_s: delta_s}
+    ));
+}
+
 function onOpen(evt) {
-    console.log('Connected to websocket!');
-    websocket.send(JSON.stringify(
-        {type: "getTimeRange"}));
+    console.log('Connected to websocket!')
+    getTimeRange()
+
 }
