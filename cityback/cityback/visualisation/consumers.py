@@ -24,8 +24,6 @@ class RTStationsConsumer(WebsocketConsumer):
                 'nbIntervals': len(times),
                 'dateTimeOfIndex': times}
         self.send(text_data=json.dumps(data))
-        # print("Sending timerange with delta={}".format(delta_s))
-        # print("last time is:", times[-1])
 
     def send_bikes_at_time(self, text_data):
         """Send the bikes at specific time to the js client."""
@@ -67,7 +65,7 @@ class RTStationsConsumer(WebsocketConsumer):
         # TODO add a type to the message
 
         # self.send(text_data=getLatestStationJSON())
-        self.send_historic_chart(time_delta_s=5 * 60)
+        # self.send_historic_chart(time_delta_s=5 * 60)
         print("New client to RTstations")
 
     def receive(self, text_data=None, bytes_data=None):
@@ -80,7 +78,9 @@ class RTStationsConsumer(WebsocketConsumer):
                     self.send_time_range(int(text_data['delta_s']))
                 if text_data['type'] == "getMapAtTime":
                     self.send_bikes_at_time(text_data)
-        pass
+                if text_data['type'] == "getChartWithDelta":
+                    self.send_historic_chart(
+                        time_delta_s=int(text_data['delta_s']))
 
     def group_send(self, event):
         """

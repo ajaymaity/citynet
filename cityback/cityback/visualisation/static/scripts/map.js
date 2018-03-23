@@ -59,7 +59,7 @@ function setupSlider() {
         }
     });
     document.getElementById('delta_s').addEventListener('change', function(e) {
-        getTimeRange()
+        getDeltaDependentFunction();
     });
 }
 

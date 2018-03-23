@@ -117,12 +117,20 @@ document.getElementById('removeData').addEventListener('click', function() {
     window.myLine.update();
 });
 
-function addChart(labels, occupancy, time_delta_s){
+function replaceChart(labels, occupancy, time_delta_s){
     // get new color in list
     let colorName = colorNames[config.data.datasets.length % colorNames.length];
     let newColor = window.chartColors[colorName];
+    let minutes = time_delta_s / 60;
+    let hours = minutes / 60;
+
+    if(hours >= 1)
+        time_str = hours + ' hour'  + (hours == 1 ? '' : 's');
+    else
+        time_str = minutes + ' minute' + (minutes == 1 ? '' : 's');
+
     let newDataset = {
-        label: 'First bike data with points every ' + time_delta_s / 60 + ' minute(s)',
+        label: 'Bike occupancy averaged for every ' + time_str,
         backgroundColor: newColor,
         borderColor: newColor,
         data: [],
@@ -130,6 +138,13 @@ function addChart(labels, occupancy, time_delta_s){
     };
 
     console.log("drawing chart with data:")
+    // empty the previous graphs
+    while(config.data.datasets.length)
+        config.data.datasets.pop();
+
+    while(config.data.labels.length)
+        config.data.labels.pop();
+
     for (let index = 0; index < labels.length; ++index) {
         config.data.labels.push(labels[index]);
     }

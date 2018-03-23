@@ -25,7 +25,7 @@ function onMessage(evt) {
                 break;
             case "chart":
                 console.log('Received Chart data!')
-                addChart(svals.labels, svals.occupancy, svals.time_delta_s)
+                replaceChart(svals.labels, svals.occupancy, svals.time_delta_s)
                 break;
         }
     }
@@ -44,17 +44,32 @@ function setupWebSocket() {
         onMessage(evt);};
 }
 
-function getTimeRange(){
+function getCurrentDetla(){
     var e = document.getElementById('delta_s')
     delta_s = e.options[e.selectedIndex].value
+    return delta_s
+}
+
+function getTimeRange(){
     websocket.send(JSON.stringify({
         type: "getTimeRange",
-        delta_s: delta_s}
+        delta_s: getCurrentDetla()}
     ));
 }
 
-function onOpen(evt) {
-    console.log('Connected to websocket!')
-    getTimeRange()
+function getChartData() {
+    websocket.send(JSON.stringify({
+        type: "getChartWithDelta",
+        delta_s: getCurrentDetla()}
+    ));
+}
 
+function getDeltaDependentFunction() {
+    getTimeRange();
+    getChartData();
+}
+
+function onOpen(evt) {
+    console.log('Connected to websocket!');
+    getDeltaDependentFunction();
 }
