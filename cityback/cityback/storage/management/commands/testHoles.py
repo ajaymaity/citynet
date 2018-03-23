@@ -3,7 +3,7 @@ import datetime
 import numpy as np
 from django.core.management.base import BaseCommand
 import time
-from cityback.storage.apps import getBikesTimeRange, roundTime
+from cityback.storage.apps import getBikesTimeRange, floorTime
 from cityback.storage.models import DublinBikesStationRealTimeUpdate
 # import ipdb
 
@@ -16,7 +16,7 @@ class Command(BaseCommand):
         time_delta = 60
 
         start, end = getBikesTimeRange()
-        start, end = roundTime(start, time_delta), roundTime(end, time_delta)
+        start, end = floorTime(start, time_delta), floorTime(end, time_delta)
 
         num_dates = (end - start) // datetime.timedelta(seconds=time_delta) + 1
         date_list = [start + datetime.timedelta(seconds=(time_delta * x))
@@ -50,7 +50,7 @@ class Command(BaseCommand):
             if i % 10000 == 0:
                 print(i)
 
-            rounded_time = roundTime(data[0], time_delta)
+            rounded_time = floorTime(data[0], time_delta)
             try:
                 idx = date_list.index(rounded_time)
                 station_idx = list_stations.index(data[3])

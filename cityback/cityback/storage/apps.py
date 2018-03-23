@@ -35,12 +35,12 @@ def update_stations(stations, timestamp=None):
     # get the timestamp for the data
     if timestamp is None:
         timestamp = datetime.now()
-    timestamp = roundTime(timestamp, time_delta)
+    timestamp = floorTime(timestamp, time_delta)
 
     # insert data between end to now, both exclusive.
     start, end = getBikesTimeRange()
     if start is not None and end is not None:
-        end = roundTime(end, 60)
+        end = floorTime(end, 60)
         num_dates = (timestamp - end) // timedelta(seconds=time_delta)
         date_list = [end + timedelta(seconds=(time_delta * x))
                      for x in range(1, num_dates)]
@@ -128,7 +128,7 @@ def getBikesAtTime(date_time, time_delta=60):
     :return: list of dict
     """
     timer_start = time.time()
-    date_time = roundTime(date_time, time_delta)
+    date_time = floorTime(date_time, time_delta)
     print("getBikesAtTime=", time_delta)
     # for raw queries of geometry fields, see documentation at
     # https://docs.djangoproject.com/en/2.0/ref/contrib/gis/tutorial/
@@ -173,6 +173,7 @@ def getBikesAtTime(date_time, time_delta=60):
         })
 
     print("GetBikesAtTime took {:.03f}s".format(time.time() - timer_start))
+    print("found {} non-empty stations".format(len(bikes_at_time)))
     return bikes_at_time
 
 
@@ -199,7 +200,7 @@ def getBikesTimeRange():
         return None, None
 
 
-def roundTime(dt=None, round_to=60):
+def floorTime(dt=None, round_to=60):
     """Round a datetime object to any time laps in seconds.
 
     dt : datetime.datetime object, default now.
@@ -211,14 +212,14 @@ def roundTime(dt=None, round_to=60):
     dt = dt.replace(tzinfo=None)
     seconds = (dt - dt.min).seconds
     #  this is a floor division, not a comment on following line:
-    rounding = (seconds + round_to / 2) // round_to * round_to
+    rounding = seconds // round_to * round_to
     return dt + timedelta(0, rounding - seconds, -dt.microsecond)
 
 
 def getBikesDistinctTimes(delta_s=60):
     """Get all distinct bike times."""
     start, end = getBikesTimeRange()
-    start, end = roundTime(start, delta_s), roundTime(end, delta_s)
+    start, end = floorTime(start, delta_s), floorTime(end, delta_s)
     num_dates = (end - start) // timedelta(seconds=delta_s) + 1
     date_list = [start + timedelta(seconds=(delta_s * x))
                  for x in range(num_dates)]

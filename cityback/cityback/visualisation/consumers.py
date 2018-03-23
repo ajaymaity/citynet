@@ -5,7 +5,7 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
 from cityback.storage.apps import getBikesAtTime, \
-    getCompressedBikeUpdates, getBikesDistinctTimes, roundTime
+    getCompressedBikeUpdates, getBikesDistinctTimes, floorTime
 from cityback.visualisation.apps import convertToGeoJson
 import datetime
 
@@ -36,7 +36,7 @@ class RTStationsConsumer(WebsocketConsumer):
         if delta_s is None:
             return
         delta_s = int(delta_s)
-        dateTime = roundTime(datetime.datetime.strptime(
+        dateTime = floorTime(datetime.datetime.strptime(
                 dateTime, "%Y-%m-%d %H:%M").replace(
                 tzinfo=datetime.timezone.utc), delta_s)
         data = {"type": "mapAtTime",

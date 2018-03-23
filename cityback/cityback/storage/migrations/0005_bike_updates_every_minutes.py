@@ -6,7 +6,7 @@ import datetime
 from django.db import migrations, models
 from django.db.models import Min, Max
 
-from cityback.storage.apps import getBikesTimeRange, roundTime
+from cityback.storage.apps import getBikesTimeRange, floorTime
 import time
 
 
@@ -19,7 +19,7 @@ def migrate_every_minutes(apps, schema_editor):
         Min('station_last_update'), Max('station_last_update'))
     startTime = times['station_last_update__min']
     lastTime = times['station_last_update__max']
-    start, end = roundTime(startTime, time_delta), roundTime(lastTime, time_delta)
+    start, end = floorTime(startTime, time_delta), floorTime(lastTime, time_delta)
 
     num_dates = (end - start) // datetime.timedelta(seconds=time_delta) + 1
     date_list = [start + datetime.timedelta(seconds=(time_delta * x))
@@ -58,7 +58,7 @@ def migrate_every_minutes(apps, schema_editor):
         if i % 10000 == 0:
             print(i)
 
-        rounded_time = roundTime(data[0], time_delta)
+        rounded_time = floorTime(data[0], time_delta)
         try:
             idx = date_list.index(rounded_time)
             station_idx = list_stations_pk.index(data[3])

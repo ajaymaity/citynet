@@ -6,7 +6,7 @@ import json
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
 from cityback.storage.apps import update_stations, getLatestStationsFromDB, \
-    roundTime
+    floorTime
 from cityback.storage.apps import getBikesTimeRange, getDateTimeFromTimeStampMS
 import os
 
@@ -67,7 +67,7 @@ class InCorrectRealTimeUpdateTest(BikeStationsTest):
         timestamp = max(
             [getDateTimeFromTimeStampMS(station['last_update'])
              for station in self.stations])
-        timestamp = roundTime(timestamp, 60)
+        timestamp = floorTime(timestamp, 60)
         update_stations(self.stations[:10], timestamp)
         s1['status'] = 'Test'
         update_stations([s1], timestamp)
@@ -91,7 +91,7 @@ class CorrectRealTimeUpdateTest(BikeStationsTest):
     def runTest(self):
         """Correctly update the real time values."""
         s1 = self.stations[0]
-        timestamp = roundTime(datetime.datetime.now(), 60)
+        timestamp = floorTime(datetime.datetime.now(), 60)
         update_stations(self.stations[:10], timestamp)
         s1['status'] = 'Test'
         update_stations([s1], timestamp + datetime.timedelta(minutes=1))
@@ -176,7 +176,7 @@ class GetStationsTimeRange(BikeStationsTest):
                 station['last_update'])
             update_stations([station], timestamp)
         range2 = getBikesTimeRange()
-        times = [roundTime(getDateTimeFromTimeStampMS(s["last_update"]),
+        times = [floorTime(getDateTimeFromTimeStampMS(s["last_update"]),
                            60).replace(tzinfo=datetime.timezone.utc)
                  for s in stations]
         range1 = (min(times), max(times))
