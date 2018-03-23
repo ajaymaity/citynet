@@ -15,3 +15,4 @@ __pycache__
 cityback/.eggs
 cityback/build
 celerybeat-schedule.db
+cityback/cover

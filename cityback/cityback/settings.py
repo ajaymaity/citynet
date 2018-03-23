@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'django_nose',
     'cityback.storage',
     'cityback.processing',
     'cityback.retrieval',
@@ -186,3 +187,17 @@ CHANNEL_LAYERS = {
 }
 
 ASGI_APPLICATION = "cityback.routing.application"
+
+# Use nose to run all tests
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Tell nose to measure coverage on the 'foo' and 'bar' apps
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=cityback.storage,cityback.retrieval,'
+    'cityback.dashboard,'
+    'cityback.visualisation,'
+    'cityback.scheduler,'
+    'cityback.processing',
+    '--cover-html'
+]
