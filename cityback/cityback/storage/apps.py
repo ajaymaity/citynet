@@ -227,7 +227,7 @@ def getBikesDistinctTimes(delta_s=60):
     return date_list
 
 
-def getCompressedBikeUpdates(stations=[21], time_delta_s=3600):
+def getCompressedBikeUpdates(stations=[26], time_delta_s=3600):
     """Get bike update average over the specified delta and stations."""
     times = DublinBikesStationRealTimeUpdate.objects.raw('''
         select 1 as id, avg(available_bikes::float / bike_stands::float)
