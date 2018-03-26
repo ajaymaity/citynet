@@ -88,6 +88,7 @@ WSGI_APPLICATION = 'cityback.wsgi.application'
 db_user = os.environ.get('PGUSER1', "")
 db_password = os.environ.get('PGPASSWORD', "")
 db_name = os.environ.get('PGDB', "")
+db_host = os.environ.get('PGHOST', "127.0.0.1")
 if db_user == "":
     raise ValueError("PGUSER1 not defined, did you import settings?")
 
@@ -98,7 +99,7 @@ if db_user != "" and db_password != "" and db_name != "":
             'NAME': db_name,
             'USER': db_user,
             'PASSWORD': db_password,
-            'HOST': '127.0.0.1',
+            'HOST': db_host,
             'PORT': '5432',
         }
     }

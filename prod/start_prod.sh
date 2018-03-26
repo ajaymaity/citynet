@@ -1,16 +1,26 @@
 #!/bin/bash
 
+if [ "$1" = "rds" ]; then
+  source /app/config_private/bash_import_secret_aws
+  service postgresql stop
+elif [ "$1" = "local" ]; then
+  source /app/config_private/bash_import_secret
+  chown -R postgres /var/log/postgresql
+  service postgresql restart
+else
+  echo "Please specify the db type:"
+  echo "Usage $0 rds|local"
+  exit
+fi
+
 set -e
 # import PGUSER PGPASSWORD DJANGO_ADMIN DJANGO_PASSWORD
-source /app/config_private/bash_import_secret
 
 #create log directories
 mkdir -p /var/log/celery /var/log/redis
 chown -R redis /var/log/redis
-chown -R postgres /var/log/postgresql
 
 # start db
-service postgresql restart
 
 # update django db (if needed)
 python /app/cityback/manage.py makemigrations
