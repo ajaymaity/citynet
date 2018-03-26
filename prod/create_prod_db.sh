@@ -2,6 +2,11 @@
 
 set -e
 
+if [ "$1" == "" ]; then
+    echo "Creating empty database"
+else
+    echo "Importing db from $1"
+fi
 path=$(dirname $0)/..
 # import PGUSER PGPASSWORD DJANGO_ADMIN DJANGO_PASSWORD
 source $path/config_private/bash_import_secret
@@ -33,6 +38,15 @@ psql --command "CREATE USER $PGUSER1 WITH SUPERUSER PASSWORD '$PGPASSWORD' ;" &&
 psql -h localhost -p 5432 -U $PGUSER1 $PGDB -c 'CREATE EXTENSION postgis;'
 EOF
 
+#import the database
+if [ "$1" != "" ]; then
+    echo "Importing database $1"
+
+su postgres <<EOF
+    psql -d $PGDB -f $1
+    psql --command "alter user $PGUSER1 with superuser password '$PGPASSWORD' ;"
+EOF
+fi
 # do not remove existing migrations, they should be remove manually
 # find /app/cityback/cityback -name migrations -type d -exec rm -rf "{}" +
 
