@@ -3,6 +3,7 @@ var mapLoaded = false;
 var firstJson = undefined;
 var debug = false;
 var map;
+var delta_slider = null;
 
 
 function updateMap(geoStation) {
@@ -37,11 +38,12 @@ function setupSlider() {
     document.getElementById('slider').addEventListener('change', function(e) {
         var value = parseInt(e.target.value);
         if(value in date_Time_Of_Index){
-            datetime = date_Time_Of_Index[value]
+            datetime = date_Time_Of_Index[value];
             // update text in the UI
             document.getElementById('active-hour').innerText = datetime;
-            var e = document.getElementById('delta_s')
-            delta_s = e.options[e.selectedIndex].value
+            var e = document.getElementById('delta_s');
+            delta_s = e.options[e.selectedIndex].value;
+            delta_slider = delta_s;
             // update the map
             websocket.send(JSON.stringify({
                 'type': "getMapAtTime",
@@ -90,22 +92,36 @@ function initMap() {
     map.on('draw.update', getPolygon);
 
     function getPolygon(e) {
-        let data = draw.getAll();
-        let selectedPolygons = {};
 
-        for (dataPoint of data.features) {
-            selectedPolygons[dataPoint.id] = 'POLYGON(' +
+        let data = draw.getAll();
+        let selectedPolygon = {};
+
+        if ((e.type === "draw.create" || e.type === "draw.update") && e.features) {
+
+            dataPoint = e.features[0];
+
+            dataPoint.paint = {
+            'fill-color': '#088',
+            'fill-opacity': 0.8
+            };
+
+            selectedPolygon[dataPoint.id] = 'POLYGON(' +
                 dataPoint.geometry.coordinates.map(function (ring) {
                     return '(' + ring.map(function (p) {
                         return p[0] + ' ' + p[1];
                     }).join(', ') + ')';
                 }).join(', ') + ')';
+
+            console.log(selectedPolygon);
+            websocket.send(JSON.stringify({
+                'type': "polygonData",
+                'selectedPolygon': selectedPolygon,
+                'delta_s': delta_slider ? delta_slider : 21600
+            }));
+
+        } else if (e.type === "draw.delete" && e.features) {
+            // delete graph
         }
-        console.log(selectedPolygons);
-        websocket.send(JSON.stringify({
-            type: "polygonData",
-            selectedPolygons: selectedPolygons
-        }));
     }
 
 

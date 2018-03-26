@@ -2,7 +2,7 @@
 from datetime import timedelta, datetime, timezone
 
 from django.apps import AppConfig
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, GEOSGeometry
 from django.db import connection
 from django.db.models import Max, Min
 
@@ -246,3 +246,14 @@ def getCompressedBikeUpdates(stations=[26], time_delta_s=3600):
     return (
         [t.rdate.replace(tzinfo=None) for t in times],
         [float(t.avg_occupancy) * 100 for t in times])
+
+
+def get_stations_from_polygon(polygon_dict):
+    """Get station ids present within the polygon."""
+    for id, polygon in polygon_dict.items():
+        poly = GEOSGeometry(polygon)
+        stations = DublinBikesStation.objects.all().filter(
+            position__within=poly
+        ).values_list("station_number", flat=True)
+        print(stations)
+        return stations

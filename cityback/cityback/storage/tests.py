@@ -6,7 +6,7 @@ import json
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
 from cityback.storage.apps import update_stations, getLatestStationsFromDB, \
-    floorTime
+    floorTime, get_stations_from_polygon
 from cityback.storage.apps import getBikesTimeRange, getDateTimeFromTimeStampMS
 import os
 
@@ -181,3 +181,24 @@ class GetStationsTimeRange(BikeStationsTest):
                  for s in stations]
         range1 = (min(times), max(times))
         self.assertEqual(range1, range2)
+
+
+class GetStationsFromPolygonTest(BikeStationsTest):
+    """Station Ids from polygon testcase."""
+
+    def runTest(self):
+        """Test with dummy data."""
+        update_stations(self.stations)
+
+        dict_in = {"type": "polygonData",
+                   "selectedPolygons":
+                       {"bf886b5448015cccd9874e4c18ab8963":
+                        "POLYGON((-6.250526108576906 53.34958844643552, "
+                        "-6.237612656663856 53.349697785865345, "
+                        "-6.237612656663856 53.344831909748194,"
+                        "-6.248602828503806 53.34319160163423, "
+                        "-6.250526108576906 53.34958844643552))"}}
+
+        list_out = {64, 49, 8, 99, 65, 62, 48}
+        test_out = get_stations_from_polygon(dict_in["selectedPolygons"])
+        self.assertEqual(set(test_out), list_out)

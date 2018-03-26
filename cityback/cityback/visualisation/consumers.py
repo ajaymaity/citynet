@@ -7,6 +7,7 @@ from asgiref.sync import async_to_sync
 from cityback.storage.apps import getBikesAtTime, \
     getCompressedBikeUpdates, getBikesDistinctTimes, floorTime
 from cityback.visualisation.apps import convertToGeoJson
+from cityback.storage.apps import get_stations_from_polygon
 import datetime
 
 
@@ -81,6 +82,26 @@ class RTStationsConsumer(WebsocketConsumer):
                 if text_data['type'] == "getChartWithDelta":
                     self.send_historic_chart(
                         time_delta_s=int(text_data['delta_s']))
+                if text_data['type'] == "polygonData":
+                    self.get_polygon_data(
+                        text_data["selectedPolygon"],
+                        int(text_data['delta_s']))
+
+    def get_polygon_data(self, polygon_dict, delta_s):
+        """Get updated chart from selected polygon."""
+        print("delta S ", delta_s)
+        stations_list = get_stations_from_polygon(polygon_dict)
+        times, occupancy = getCompressedBikeUpdates(
+            stations=stations_list,
+            time_delta_s=delta_s)
+        if len(times) == 0:
+            return
+        data = json.dumps({"type": "chart",
+                           "labels": [t.strftime(self.format) for t in times],
+                           "occupancy": occupancy,
+                           "time_delta_s": delta_s})
+        print("Send chart data")
+        self.send(text_data=data)
 
     def group_send(self, event):
         """
