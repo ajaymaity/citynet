@@ -157,10 +157,12 @@ STATIC_ROOT = '/var/www/static/'
 
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = True
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+
+celery_url = os.environ.get('CELERY_URL', 'redis://localhost:6379/0')
+CELERY_BROKER_URL = celery_url
 
 
-CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_RESULT_BACKEND = 'django-db'
 # CELERY_RESULT_BACKEND = 'django-cache'
 
 
