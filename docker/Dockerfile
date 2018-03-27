@@ -82,7 +82,8 @@ EXPOSE 80 443
 ENV HOME /root
 
 # Define working directory.
-WORKDIR /root
+RUN mkdir /app
+WORKDIR /app
 
 USER root
 # Define default command.
