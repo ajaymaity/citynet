@@ -6,4 +6,4 @@ set -e
 
 cd /app/cityback
 rm -f celerybeat.pid
-celery beat -A cityback
+celery beat -A cityback -l info
