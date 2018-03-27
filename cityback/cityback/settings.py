@@ -161,6 +161,7 @@ CELERY_ENABLE_UTC = True
 celery_url = os.environ.get('CELERY_URL', 'redis://localhost:6379/0')
 CELERY_BROKER_URL = celery_url
 
+CELERY_BROKER_TRANSPORT_OPTIONS = {'region': 'eu-west-1'}
 
 # CELERY_RESULT_BACKEND = 'django-db'
 # CELERY_RESULT_BACKEND = 'django-cache'
