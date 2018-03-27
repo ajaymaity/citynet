@@ -1,3 +1,4 @@
+sudo docker pull asegroup11/all_servers:citynet
 sudo docker volume inspect letsencrypt &>/dev/null || docker volume create letsencrypt
 sudo docker run --hostname "cityback_nginx" \
   -p 443:443 -p 80:80 \
