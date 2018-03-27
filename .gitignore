@@ -20,3 +20,15 @@ cityback/cover
 /old_dump/180320_13_27_prod.sql
 /dump.sql
 /node/package.json
+/cityback/.coverage
+/180321_dev_dump
+/180326_prod_dump.sql
+/180326_prod_dump_migrated.sql
+/180326_prod_dump_migrated.sql.gz
+/cityback/occupancy.npy
+/cityback/occupancy.npy.gz
+/cityback/times.npy
+/.idea/dataSources/24b20e5b-ae70-4b41-bbcc-12e493166502.xml
+/.idea/dataSources/24b20e5b-ae70-4b41-bbcc-12e493166502/storage_v2/_src_/database/dev.FYQBAA.meta
+/.idea/dataSources/24b20e5b-ae70-4b41-bbcc-12e493166502/storage_v2/_src_/database/dev.FYQBAA/schema/public.abK9xQ.meta
+/.idea/dataSources/24b20e5b-ae70-4b41-bbcc-12e493166502/storage_v2/_src_/database/dev.FYQBAA/schema/public.abK9xQ.zip
