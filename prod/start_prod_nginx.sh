@@ -6,6 +6,7 @@ set -e
 
 python /app/cityback/manage.py collectstatic --noinput
 
+mkdir -p /var/log/celery
 cd /app/cityback
 celery multi start beat \
       -A cityback --beat \
