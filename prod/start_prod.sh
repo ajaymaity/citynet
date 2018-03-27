@@ -23,7 +23,6 @@ chown -R redis /var/log/redis
 # start db
 
 # update django db (if needed)
-python /app/cityback/manage.py makemigrations
 python /app/cityback/manage.py migrate
 python /app/cityback/manage.py collectstatic --noinput
 
