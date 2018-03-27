@@ -6,7 +6,10 @@ set -e
 
 python /app/cityback/manage.py collectstatic --noinput
 
-
+celery multi start beat \
+      -A cityback --beat \
+      --pidfile="/var/log/celery/%n.pid" \
+      --logfile="/var/log/celery/%n.log"
 # start web servers
 nginx -g "daemon off;" > /var/log/nginx/access.log 2> /var/log/nginx/error.log
 
