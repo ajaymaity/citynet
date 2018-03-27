@@ -16,3 +16,7 @@ cityback/.eggs
 cityback/build
 celerybeat-schedule.db
 cityback/cover
+/old_dump/180317_23_49_prod.sql
+/old_dump/180320_13_27_prod.sql
+/dump.sql
+/node/package.json
