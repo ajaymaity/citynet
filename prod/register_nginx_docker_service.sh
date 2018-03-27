@@ -1,4 +1,4 @@
-docker volume inspect letsencrypt &>/dev/null || docker volume create letsencrypt
+sudo docker volume inspect letsencrypt &>/dev/null || docker volume create letsencrypt
 sudo docker run --hostname "cityback_nginx" \
   -p 443:443 -p 80:80 \
   -v nginx_conf:/etc/nginx/ \
