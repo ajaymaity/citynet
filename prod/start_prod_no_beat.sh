@@ -11,12 +11,10 @@ chown -R redis /var/log/redis
 python /app/cityback/manage.py migrate
 
 # message routers
-service redis-server restart
+service redis-server start
 
 cd /app/cityback
 # celery tasks
-celery multi stop worker1 --pidfile="/var/log/celery/%n.pid"
-sleep .2
 # TODO put inside a service file, see http://docs.celeryproject.org/en/latest/userguide/daemonizing.html
 celery multi start worker1 \
     -A cityback \
