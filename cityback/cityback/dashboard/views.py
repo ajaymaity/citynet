@@ -5,6 +5,5 @@ import os
 
 def rtDemo(request):
     """Serve the index."""
-
     return render(request, "rtDemo.html", {'hostname':
                                            os.environ.get("HOSTNAME", "None")})

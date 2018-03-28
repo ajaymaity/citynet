@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 import asyncio
 import random
 
+import os
 from asgiref.sync import async_to_sync
 from celery import shared_task
 from celery.signals import celeryd_init
@@ -33,8 +34,10 @@ def reset_client_list(sender=None, conf=None, **kwargs):
 def periodic_send_handler():
     """Send periodic data to group bike_group."""
     channel_layer = get_channel_layer()
-    a = random.randint(1, 100)
+    text = "{}-random={}".format(
+        os.environ.get("HOSTNAME", "None"),
+        random.randint(1, 100))
     async_to_sync(channel_layer.group_send)(
         "bike_group", {"type": "group.send",
-                       "text": "VALUE=" + str(a)})
-    print("done sending group msg {}".format(a))
+                       "text": text})
+    print("done sending group msg {}".format(text))
