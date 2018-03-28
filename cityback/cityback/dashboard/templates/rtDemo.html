@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <title>Index Page</title>
     <script type="text/javascript">
+        var h1,
+            seconds = 0.0,
+            t;
+
+        function add() {
+            seconds += 0.1;
+
+            h1.textContent = seconds.toFixed(1) + 's'; // "{:5}".format(seconds);
+            timer();
+        }
+        function timer() {
+            t = setTimeout(add, 100);
+        }
         function onOpen(evt) {
             console.log("Connected to websocket!");
             websocket.send(JSON.stringify({data: "Hello"}));
@@ -12,6 +25,7 @@
         function onMessage(evt) {
             //console.log(evt.data);
             document.getElementById("rand").innerHTML = evt.data;
+            seconds = 0.0;
         }
 
         function setupWebSocket() {
@@ -23,17 +37,23 @@
             websocket = new WebSocket(prefix + "://"  + location.host + "/ws/");
             websocket.onopen = function(evt) { onOpen(evt); };
             websocket.onmessage = function(evt) { onMessage(evt); };
+            h1 = document.getElementById('time')
+            timer();
         }
 
         function runButton() {
             websocket.send(JSON.stringify({data: "Sending button click!"}));
         }
 
+
         window.addEventListener("load", setupWebSocket);
     </script>
 </head>
 <body>
 <h2>The random data is <span id="rand">0</span>.</h2>
+<h2>Time since last message: <label id="time">0.0s</label></h2>
 <button type="button" onclick="runButton()">Click Me!</button>
+
+
 </body>
 </html>
