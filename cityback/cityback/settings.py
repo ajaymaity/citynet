@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'cityback.storage',
     'cityback.processing',
     'cityback.retrieval',
-    'django_celery_results',
     'channels',
     'cityback.dashboard',
     'cityback.visualisation'
