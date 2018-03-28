@@ -11,7 +11,9 @@ chown -R redis /var/log/redis
 python /app/cityback/manage.py migrate
 
 # message routers
-service redis-server start
+if [ "$REDIS_PASSWORD" = "" ]; then
+  service redis-server start
+fi
 
 if ls /var/log/celery/*pid 1> /dev/null 2>&1; then
   rm -f /var/log/celery/*pid
@@ -30,4 +32,6 @@ daphne -p 8000 -b 0.0.0.0 cityback.asgi:application -v 2
 echo "Stopping all servers"
 celery multi stop worker1 --pidfile="/var/log/celery/%n.pid"
 
-redis-cli shutdown
+if [ "$REDIS_PASSWORD" = "" ]; then
+  redis-cli shutdown
+fi

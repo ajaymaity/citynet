@@ -158,7 +158,13 @@ STATIC_ROOT = '/var/www/static/'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = True
 
-celery_url = os.environ.get('CELERY_URL', 'redis://localhost:6379/0')
+redis_host = os.environ.get('REDIS_HOST', "127.0.0.1")
+redis_password = os.environ.get('REDIS_PASSWORD', '')
+if redis_password != '':
+    redis_host = redis_password + "@" + redis_host
+
+redis_url = 'redis://' + redis_host + ':6379/0'
+celery_url = os.environ.get('CELERY_URL', redis_url)
 CELERY_BROKER_URL = celery_url
 
 CELERY_BROKER_TRANSPORT_OPTIONS = {'region': 'eu-west-1'}
@@ -178,13 +184,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-            # "capacity": 20000,
-            # "channel_capacity": {
-            #     "http.request": 10000,
-            #     "http.response!*": 10000,
-            #     re.compile(r"^websocket.send\!.+"): 10000,
-            # },
+            "hosts": [redis_url],
         },
     },
 }
