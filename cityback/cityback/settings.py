@@ -161,12 +161,11 @@ CELERY_ENABLE_UTC = True
 redis_host = os.environ.get('REDIS_HOST', "127.0.0.1")
 redis_password = os.environ.get('REDIS_PASSWORD', '')
 if redis_password != '':
-    redis_host = redis_password + "@" + redis_host
+    redis_host = ":" + redis_password + "@" + redis_host
 
 redis_url = 'redis://' + redis_host + ':6379/0'
 celery_url = os.environ.get('CELERY_URL', redis_url)
 CELERY_BROKER_URL = celery_url
-
 CELERY_BROKER_TRANSPORT_OPTIONS = {'region': 'eu-west-1'}
 
 # CELERY_RESULT_BACKEND = 'django-db'
