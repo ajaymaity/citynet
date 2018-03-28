@@ -63,11 +63,13 @@ ENV LC_ALL en_IE.UTF-8
 RUN \
   add-apt-repository -y ppa:certbot/certbot &&\
   apt-get update && \
-  apt-get install -y python3-certbot-nginx &&\
+  apt-get install -y python3-certbot-nginx libcurl4-nss-dev &&\
   apt-get autoremove &&\
   apt-get clean &&\
   rm -rf /var/lib/apt/lists/*
 
+RUN pip3 install --no-cache-dir --compile --ignore-installed \
+ --install-option="--with-nss" pycurl
 # Add VOLUMEs to allow backup of config, logs and databases
 VOLUME  ["/etc/postgresql", "/var/log", "/var/lib/postgresql", "/etc/nginx"]
 
