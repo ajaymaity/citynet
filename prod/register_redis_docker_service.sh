@@ -7,7 +7,7 @@ path="$(dirname $(realpath $0))"
 
 sudo docker pull redis:alpine
 
-source ../../config_private_citynet/bash_import_secret_aws
+source ${path}/../../config_private_citynet/bash_import_secret_aws
 echo -n "$REDIS_PASSWORD" > "${path}/../../config_private_citynet/redis-password"
 sudo docker run --name some-redis -p 6379:6379 \
   -v "${path}/../../config_private_citynet/redis-password":/run/secrets/redis-password \
