@@ -7,9 +7,7 @@ import json
 
 
 def rtStations(request):
-    """Create your views here
-    Refactor to class based view
-    ."""
+    """Render Dublin bikes station average value per minute."""
     latestStations = getLatestStationsFromDB()
     # latestStations = []
     return render(
