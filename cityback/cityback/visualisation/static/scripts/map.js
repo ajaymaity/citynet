@@ -7,7 +7,7 @@ var delta_slider = 21600;
 
 
 function updateMap(geoStation) {
-    console.log("updating map")
+    console.log("updating map");
     if (mapLoaded) {
         geoFeatures = geoStation['features'];
         for (let i = 0; i < geoFeatures.length; i++) {
@@ -21,6 +21,7 @@ function updateMap(geoStation) {
             }
         }
         map.getSource('bikesource').setData(geoStation);
+
     }else{
         // keep the data for when the map is loaded
         firstJson = geoStation
@@ -172,6 +173,7 @@ function initMap() {
     });
     setupWebSocket();
     setupSlider();
+
 
     map.on('click', 'bikes', function (e) {
         var coordinates = e.features[0].geometry.coordinates.slice();

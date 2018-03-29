@@ -229,7 +229,6 @@ def getBikesDistinctTimes(delta_s=60):
 
 def getCompressedBikeUpdates(stations, time_delta_s=3600):
     """Get bike update average over the specified delta and stations."""
-
     if not stations:
         return None, None
 
