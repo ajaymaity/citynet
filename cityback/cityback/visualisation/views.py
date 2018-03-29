@@ -7,7 +7,9 @@ import json
 
 
 def rtStations(request):
-    """Create your views here."""
+    """Create your views here
+    Refactor to class based view
+    ."""
     latestStations = getLatestStationsFromDB()
     # latestStations = []
     return render(
