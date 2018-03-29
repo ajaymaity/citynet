@@ -3,7 +3,7 @@ var mapLoaded = false;
 var firstJson = undefined;
 var debug = false;
 var map;
-var delta_slider = null;
+var delta_slider = 21600;
 
 
 function updateMap(geoStation) {
@@ -53,7 +53,7 @@ function setupSlider() {
 
     });
     document.getElementById('slider').addEventListener('input', function(e) {
-        var value = parseInt(e.target.value);
+        let value = parseInt(e.target.value);
         if(value in date_Time_Of_Index){
             datetime = date_Time_Of_Index[value]
             // update text in the UI
@@ -116,7 +116,7 @@ function initMap() {
             websocket.send(JSON.stringify({
                 'type': "polygonData",
                 'selectedPolygon': selectedPolygon,
-                'delta_s': delta_slider ? delta_slider : 21600
+                'delta_s': delta_slider
             }));
 
         } else if (e.type === "draw.delete" && e.features) {
@@ -175,7 +175,7 @@ function initMap() {
 
     map.on('click', 'bikes', function (e) {
         var coordinates = e.features[0].geometry.coordinates.slice();
-        var description = e.features[0].properties.title;
+        var description = "Station No. " + e.features[0].properties['station_number'] + "</br>" + e.features[0].properties['station_name'];
 
         // Ensure that if the map is zoomed out such that multiple
         // copies of the feature are visible, the popup appears
@@ -183,6 +183,12 @@ function initMap() {
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
+
+        websocket.send(JSON.stringify({
+                'type': "stationSelect",
+                'stationId': e.features[0].properties['station_number'],
+                'delta_s': delta_slider
+            }));
 
         new mapboxgl.Popup()
             .setLngLat(coordinates)

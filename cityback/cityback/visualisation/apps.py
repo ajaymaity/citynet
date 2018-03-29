@@ -41,6 +41,8 @@ def convertToGeoJson(data):
                 "occupancy": occupancy,
                 "vacancy": vacancy,
                 "status": k['status'],
+                "station_number": str(k['station_number']),
+                "station_name": k['name']
             }
         }
         geojson['features'].append(newFeature)

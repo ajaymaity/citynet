@@ -227,8 +227,12 @@ def getBikesDistinctTimes(delta_s=60):
     return date_list
 
 
-def getCompressedBikeUpdates(stations=[26], time_delta_s=3600):
+def getCompressedBikeUpdates(stations, time_delta_s=3600):
     """Get bike update average over the specified delta and stations."""
+
+    if not stations:
+        return None, None
+
     times = DublinBikesStationRealTimeUpdate.objects.raw('''
         select 1 as id, avg(available_bikes::float / bike_stands::float)
         as avg_occupancy,
@@ -255,5 +259,4 @@ def get_stations_from_polygon(polygon_dict):
         stations = DublinBikesStation.objects.all().filter(
             position__within=poly
         ).values_list("station_number", flat=True)
-        print(stations)
         return stations

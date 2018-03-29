@@ -42,11 +42,12 @@ class RTStationsConsumer(WebsocketConsumer):
                 "value": convertToGeoJson(getBikesAtTime(dateTime, delta_s))}
         self.send(text_data=json.dumps(data))
 
-    def send_historic_chart(self, time_delta_s=3600):
+    def send_historic_chart(self, station_ids, time_delta_s=3600):
         """Tmp function to get first chart."""
         times, occupancy = getCompressedBikeUpdates(
+            stations=station_ids,
             time_delta_s=time_delta_s)
-        if len(times) == 0:
+        if not times or len(times) == 0:
             return
         data = json.dumps({"type": "chart",
                            "labels": [t.strftime(self.format) for t in times],
@@ -81,10 +82,15 @@ class RTStationsConsumer(WebsocketConsumer):
                     self.send_bikes_at_time(text_data)
                 if text_data['type'] == "getChartWithDelta":
                     self.send_historic_chart(
+                        station_ids=[26],
                         time_delta_s=int(text_data['delta_s']))
                 if text_data['type'] == "polygonData":
                     self.get_polygon_data(
                         text_data["selectedPolygon"],
+                        int(text_data['delta_s']))
+                if text_data['type'] == "stationSelect":
+                    self.send_historic_chart(
+                        [int(text_data["stationId"])],
                         int(text_data['delta_s']))
 
     def get_polygon_data(self, polygon_dict, delta_s):
@@ -94,7 +100,7 @@ class RTStationsConsumer(WebsocketConsumer):
         times, occupancy = getCompressedBikeUpdates(
             stations=stations_list,
             time_delta_s=delta_s)
-        if len(times) == 0:
+        if not times or len(times) == 0:
             return
         data = json.dumps({"type": "chart",
                            "labels": [t.strftime(self.format) for t in times],
