@@ -7,7 +7,7 @@ set -e
 python /app/cityback/manage.py collectstatic --noinput
 
 # copy the nginx configuration file
-cp /app/cityback/config_private/etc/nginx /etc/nginx/sites-enabled/default
+cp /app/config_private/etc/nginx /etc/nginx/sites-enabled/default
 
 # start web servers
 nginx -g "daemon off;" > /var/log/nginx/access.log 2> /var/log/nginx/error.log
