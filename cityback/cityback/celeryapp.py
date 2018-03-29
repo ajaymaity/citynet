@@ -30,7 +30,7 @@ app.conf.update(
         'realtime-demo-every-x-seconds': {
             'task':
                 'cityback.dashboard.tasks.periodic_send_handler',
-            'schedule': datetime.timedelta(seconds=4),
+            'schedule': datetime.timedelta(seconds=3),
             'args': ()
         }
     }

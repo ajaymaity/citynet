@@ -165,7 +165,8 @@ if redis_password != '':
 redis_url = 'redis://' + redis_host + ':6379/0'
 celery_url = os.environ.get('CELERY_URL', redis_url)
 CELERY_BROKER_URL = celery_url
-CELERY_BROKER_TRANSPORT_OPTIONS = {'region': 'eu-west-1'}
+CELERY_BROKER_TRANSPORT_OPTIONS = {'region': 'eu-west-1',
+                                   'visibility_timeout': 43200}
 
 # CELERY_RESULT_BACKEND = 'django-db'
 # CELERY_RESULT_BACKEND = 'django-cache'

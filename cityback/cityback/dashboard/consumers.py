@@ -1,4 +1,7 @@
 """Socket consumers."""
+import json
+
+import os
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 import random
@@ -17,7 +20,10 @@ class ClientSocketConsumer(WebsocketConsumer):
     def receive(self, text_data=None, bytes_data=None):
         """On message reveice, display message."""
         print("received data:", text_data, bytes_data)
-        self.send(text_data=str(random.randint(500, 599)))
+        host = os.environ.get("HOSTNAME", "None")
+        rnd = random.randint(1, 100)
+        text = {'host': host, 'rnd': rnd}
+        self.send(text_data=json.dumps(text))
         # text_data = "Hello Group member!"
         # async_to_sync(self.channel_layer.group_send)(
         #     "bike_group",
