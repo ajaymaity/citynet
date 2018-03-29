@@ -18,6 +18,8 @@ if [ "$1" != "--force" ]; then
   if [ "$a" != "yes" ]; then
     exit 0
   fi
+else
+  shift
 fi
 
 # clear existing cluster
