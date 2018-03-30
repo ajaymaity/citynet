@@ -1,5 +1,7 @@
-var MONTHS = ['January', 'February', 'March', 'April', 'May',
+
+let MONTHS = ['January', 'February', 'March', 'April', 'May',
     'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
 window.chartColors = {
     red: 'rgb(255, 99, 132)',
     orange: 'rgb(255, 159, 64)',
@@ -10,10 +12,14 @@ window.chartColors = {
     grey: 'rgb(201, 203, 207)',
 };
 
+/**
+ * Generate a random number
+ * @return {number}
+ */
 function randomValue() {
     return Math.round(Math.random() * 200 - 100)
-
 }
+
 var config = {
     type: 'line',
     data: {
