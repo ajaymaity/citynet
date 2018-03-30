@@ -44,7 +44,7 @@
         <input id='slider' class='row' type='range' min='0' max='23' step='1' value='12' />
     </div>
     <div>Time precision:
-    <select id=delta_s>
+    <select id='deltaS'>
         <option value="60"> 1 minute</option>
         <option value="1800">30 minutes</option>
         <option value="3600">1 hour</option>
@@ -55,8 +55,6 @@
 </div>
 
 <div class="aftermap">
-<button type="button" onclick="pressButton()">Debug Mode</button>
-The debug mode is <span id="dbg">false</span>.
     <div style="width:75%;">
         <canvas id="canvas"></canvas>
     </div>

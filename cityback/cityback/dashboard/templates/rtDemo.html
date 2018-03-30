@@ -19,7 +19,7 @@
         }
         function onOpen(evt) {
             console.log("Connected to websocket!");
-            websocket.send(JSON.stringify({data: "Hello"}));
+            webSocket.send(JSON.stringify({data: "Hello"}));
         }
 
         function onMessage(evt) {
@@ -40,7 +40,7 @@
             }else{
                 prefix = "wss";
             }
-            websocket = new WebSocket(prefix + "://"  + location.host + "/ws/");
+            webSocket = new WebSocket(prefix + "://"  + location.host + "/ws/");
             websocket.onopen = function(evt) { onOpen(evt); };
             websocket.onmessage = function(evt) { onMessage(evt); };
             h1 = document.getElementById('time')
@@ -48,7 +48,7 @@
         }
 
         function runButton() {
-            websocket.send(JSON.stringify({data: "Sending button click!"}));
+            webSocket.send(JSON.stringify({data: "Sending button click!"}));
         }
 
 

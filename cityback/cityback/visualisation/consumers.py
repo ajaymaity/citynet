@@ -1,14 +1,14 @@
 """Socket consumers."""
+import datetime
 import json
 
-from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
+from channels.generic.websocket import WebsocketConsumer
 
 from cityback.storage.apps import getBikesAtTime, \
     getCompressedBikeUpdates, getBikesDistinctTimes, floorTime
-from cityback.visualisation.apps import convertToGeoJson
 from cityback.storage.apps import get_stations_from_polygon
-import datetime
+from cityback.visualisation.apps import convertToGeoJson
 
 
 class RTStationsConsumer(WebsocketConsumer):
@@ -31,7 +31,7 @@ class RTStationsConsumer(WebsocketConsumer):
         dateTime = text_data.get("dateTime", None)
         if dateTime is None:
             return
-        delta_s = text_data.get("delta_s", None)
+        delta_s = text_data.get("deltaS", None)
         if delta_s is None:
             return
         delta_s = int(delta_s)
@@ -77,25 +77,25 @@ class RTStationsConsumer(WebsocketConsumer):
         if type(text_data) == dict:
             if "type" in text_data:
                 if text_data['type'] == "getTimeRange":
-                    self.send_time_range(int(text_data['delta_s']))
+                    self.send_time_range(int(text_data['deltaS']))
                 if text_data['type'] == "getMapAtTime":
                     self.send_bikes_at_time(text_data)
                 if text_data['type'] == "getChartWithDelta":
                     self.send_historic_chart(
                         station_ids=[26],
-                        time_delta_s=int(text_data['delta_s']))
+                        time_delta_s=int(text_data['deltaS']))
                 if text_data['type'] == "polygonData":
                     self.get_polygon_data(
                         text_data["selectedPolygon"],
-                        int(text_data['delta_s']))
+                        int(text_data['deltaS']))
                 if text_data['type'] == "stationSelect":
                     self.send_historic_chart(
                         [int(text_data["stationId"])],
-                        int(text_data['delta_s']))
+                        int(text_data['deltaS']))
 
     def get_polygon_data(self, polygon_dict, delta_s):
         """Get updated chart from selected polygon."""
-        print("delta S ", delta_s)
+        print("deltaS ", delta_s)
         stations_list = get_stations_from_polygon(polygon_dict)
         times, occupancy = getCompressedBikeUpdates(
             stations=stations_list,
