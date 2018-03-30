@@ -22,8 +22,8 @@ class DublinBikesStation(models.Model):
 class DublinBikesStationRealTimeUpdate(models.Model):
     """A Dublin bikes station real time data."""
 
-    parent_station = models.ForeignKey(DublinBikesStation,
-                                       on_delete=models.CASCADE)
+    parent_station = models.ForeignKey(
+        DublinBikesStation, on_delete=models.CASCADE, db_index=True)
     status = models.CharField(max_length=30)
     timestamp = models.DateTimeField(null=True, db_index=True)
     station_last_update = models.DateTimeField(null=True)
