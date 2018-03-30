@@ -34,9 +34,14 @@ function onMessage(evt) {
                 break;
             case 'chart':
                 console.log('Received Chart data!');
-                replaceChart(svals.labels, svals.occupancy, svals.time_delta_s);
+                replaceChart(svals.labels, svals.occupancy,
+                    svals.selectionType, svals.selectionId, svals.time_delta_s);
                 break;
         }
+    }
+    if (requestInProgress) {
+        requestInProgress = false;
+        $('#loading').hide();
     }
 }
 

@@ -251,11 +251,10 @@ def getCompressedBikeUpdates(stations, time_delta_s=3600):
         [float(t.avg_occupancy) * 100 for t in times])
 
 
-def get_stations_from_polygon(polygon_dict):
+def get_stations_from_polygon(polygon):
     """Get station ids present within the polygon."""
-    for id, polygon in polygon_dict.items():
-        poly = GEOSGeometry(polygon)
-        stations = DublinBikesStation.objects.all().filter(
-            position__within=poly
-        ).values_list("station_number", flat=True)
-        return stations
+    poly = GEOSGeometry(polygon)
+    stations = DublinBikesStation.objects.all().filter(
+        position__within=poly
+    ).values_list("station_number", flat=True)
+    return stations

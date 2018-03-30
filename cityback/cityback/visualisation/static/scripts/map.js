@@ -4,6 +4,15 @@ let mapLoaded = false;
 let firstJson = undefined;
 let map;
 let deltaSlider = 21600;
+let iterator = 0;
+let polygonLabelMap = {};
+let requestInProgress = false;
+
+
+function showLoadingScreen() {
+    requestInProgress = true;
+    $('#loading').show();
+}
 
 /**
  * Update the mapbox map from json.
@@ -107,17 +116,53 @@ function initMap() {
             && element.features) {
             let dataPoint = element.features[0];
 
+            if (element.type === 'draw.create') {
+                iterator += 1;
+                polygonLabelMap[dataPoint.id] = 'Area ' + iterator;
+            }
+
+            if (element.type === 'draw.update') {
+                removeDatasetFromChart(dataPoint.id);
+                try {
+                    map.removeLayer(dataPoint.id);
+                    map.removeSource(dataPoint.id);
+                } catch (e1) {}
+            }
+
             dataPoint.paint = {
                 'fill-color': '#088',
                 'fill-opacity': 0.8,
             };
 
-            selectedPolygon[dataPoint.id] = 'POLYGON(' +
+            selectedPolygon['id'] = dataPoint.id;
+            selectedPolygon['polygon'] = 'POLYGON(' +
                 dataPoint.geometry.coordinates.map(function(ring) {
                     return '(' + ring.map(function(p) {
                         return p[0] + ' ' + p[1];
                     }).join(', ') + ')';
                 }).join(', ') + ')';
+
+            centroidPt = turf.centroid(dataPoint);
+            centroidPt.properties.title = 'label';
+
+            map.addSource(dataPoint.id, {
+                'type': 'geojson',
+                'data': centroidPt,
+            });
+
+            // Add the label style
+            map.addLayer({
+                'id': dataPoint.id,
+                'type': 'symbol',
+                'source': dataPoint.id,
+                'layout': {
+                    'text-field': polygonLabelMap[dataPoint.id],
+                    'text-size': 50,
+                },
+                'paint': {
+                    'text-color': 'black',
+                },
+            });
 
             console.log(selectedPolygon);
             webSocket.send(JSON.stringify({
@@ -125,8 +170,15 @@ function initMap() {
                 'selectedPolygon': selectedPolygon,
                 'deltaS': deltaSlider,
             }));
+            showLoadingScreen();
         } else if (element.type === 'draw.delete' && element.features) {
             // delete graph
+            delete polygonLabelMap[element.features[0].id];
+            removeDatasetFromChart(element.features[0].id);
+            try {
+                map.removeLayer(element.features[0].id);
+                map.removeSource(element.features[0].id);
+            } catch (e1) {}
         }
     }
 

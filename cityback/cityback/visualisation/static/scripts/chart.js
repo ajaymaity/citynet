@@ -128,9 +128,10 @@ document.getElementById('removeData').addEventListener('click', function() {
  * Draw a new graph, removing the previous one
  * @param {Array} labels
  * @param {Array} occupancy
+ * @param {String} polygonId
  * @param {int} timeDeltaS
  */
-function replaceChart(labels, occupancy, timeDeltaS) {
+function replaceChart(labels, occupancy, selectionType, selectionId, timeDeltaS) {
     // get new color in list
     let colorName = colorNames[config.data.datasets.length % colorNames.length];
     let newColor = window.chartColors[colorName];
@@ -143,8 +144,15 @@ function replaceChart(labels, occupancy, timeDeltaS) {
         timeStr = minutes + ' minute' + (minutes == 1 ? '' : 's');
     }
 
+    if (selectionType === 'station') {
+
+    }
+
     let newDataset = {
-        label: 'Bike occupancy averaged for every ' + timeStr,
+        id: selectionId,
+        label: 'Bike occupancy averaged for every ' + timeStr + ' for '
+        + (selectionType === 'polygon'?
+            polygonLabelMap[selectionId] : 'Station ' + selectionId),
         backgroundColor: newColor,
         borderColor: newColor,
         data: [],
@@ -153,16 +161,18 @@ function replaceChart(labels, occupancy, timeDeltaS) {
 
     console.log('drawing chart with data:');
     // empty the previous graphs
-    while (config.data.datasets.length) {
-        config.data.datasets.pop();
-    }
+    // while (config.data.datasets.length) {
+    //     config.data.datasets.pop();
+    // }
+    //
+    // while (config.data.labels.length) {
+    //     config.data.labels.pop();
+    // }
 
-    while (config.data.labels.length) {
-        config.data.labels.pop();
-    }
-
-    for (let index = 0; index < labels.length; ++index) {
-        config.data.labels.push(labels[index]);
+    if (config.data.labels.length === 0) {
+        for (let index = 0; index < labels.length; ++index) {
+            config.data.labels.push(labels[index]);
+        }
     }
 
     for (let index = 0; index < occupancy.length; ++index) {
@@ -171,4 +181,18 @@ function replaceChart(labels, occupancy, timeDeltaS) {
 
     config.data.datasets.push(newDataset);
     window.myLine.update();
+}
+
+/* exported removeDatasetFromChart */
+
+function removeDatasetFromChart(selectionId) {
+    let removalIndex = config.data.datasets.indexOf(
+        config.data.datasets.filter(
+            function(dataObject) {
+                return dataObject.id === selectionId;
+    })[0]);
+    if (removalIndex >= 0) {
+        config.data.datasets.splice(removalIndex, 1);
+        window.myLine.update();
+    }
 }

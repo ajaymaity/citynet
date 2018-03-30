@@ -42,15 +42,18 @@ class RTStationsConsumer(WebsocketConsumer):
                 "value": convertToGeoJson(getBikesAtTime(dateTime, delta_s))}
         self.send(text_data=json.dumps(data))
 
-    def send_historic_chart(self, station_ids, time_delta_s=3600):
+    def send_historic_chart(self, station_id, time_delta_s=3600):
         """Tmp function to get first chart."""
         times, occupancy = getCompressedBikeUpdates(
-            stations=station_ids,
+            stations=[station_id],
             time_delta_s=time_delta_s)
         if not times or len(times) == 0:
             return
         data = json.dumps({"type": "chart",
+                           "selectionType": "station",
+                           "selectionId": station_id,
                            "labels": [t.strftime(self.format) for t in times],
+                           # "station":
                            "occupancy": occupancy,
                            "time_delta_s": time_delta_s})
         print("Send chart data")
@@ -82,7 +85,7 @@ class RTStationsConsumer(WebsocketConsumer):
                     self.send_bikes_at_time(text_data)
                 if text_data['type'] == "getChartWithDelta":
                     self.send_historic_chart(
-                        station_ids=[26],
+                        station_id=26,
                         time_delta_s=int(text_data['deltaS']))
                 if text_data['type'] == "polygonData":
                     self.get_polygon_data(
@@ -90,19 +93,21 @@ class RTStationsConsumer(WebsocketConsumer):
                         int(text_data['deltaS']))
                 if text_data['type'] == "stationSelect":
                     self.send_historic_chart(
-                        [int(text_data["stationId"])],
+                        int(text_data["stationId"]),
                         int(text_data['deltaS']))
 
     def get_polygon_data(self, polygon_dict, delta_s):
         """Get updated chart from selected polygon."""
         print("deltaS ", delta_s)
-        stations_list = get_stations_from_polygon(polygon_dict)
+        stations_list = get_stations_from_polygon(polygon_dict['polygon'])
         times, occupancy = getCompressedBikeUpdates(
             stations=stations_list,
             time_delta_s=delta_s)
         if not times or len(times) == 0:
             return
         data = json.dumps({"type": "chart",
+                           "selectionType": "polygon",
+                           "selectionId": polygon_dict['id'],
                            "labels": [t.strftime(self.format) for t in times],
                            "occupancy": occupancy,
                            "time_delta_s": delta_s})
