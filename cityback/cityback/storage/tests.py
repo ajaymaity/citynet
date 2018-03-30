@@ -5,8 +5,9 @@ import os
 
 from django.test import TestCase
 
-from cityback.storage.apps import floorTime, getCompressedBikeUpdates, \
-    getLatestStationsFromDB, get_stations_from_polygon, update_stations
+from cityback.storage.apps import floorTime, getBikesDistinctTimes, \
+    getCompressedBikeUpdates, getLatestStationsFromDB, \
+    get_stations_from_polygon, update_stations
 from cityback.storage.apps import getBikesTimeRange, getDateTimeFromTimeStampMS
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
@@ -20,6 +21,8 @@ class BikeStationsTest(TestCase):
         self.stations = json.load(open(os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
             "test_data.json")))
+        self.last_timestamp = max([getDateTimeFromTimeStampMS(s["last_update"])
+                                   for s in self.stations])
         self.stations_multiple = json.load(open(os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
             "test_data_multiple.json")))
@@ -170,7 +173,7 @@ class GetStationsTimeRange(BikeStationsTest):
     """Testing bikes time range."""
 
     def runTest(self):
-        """Get dynamic and static data."""
+        """Check for correct range and empty db."""
         stations = self.stations_multiple[:100]
         for station in stations:
             timestamp = getDateTimeFromTimeStampMS(
@@ -182,6 +185,37 @@ class GetStationsTimeRange(BikeStationsTest):
                  for s in stations]
         range1 = (min(times), max(times))
         self.assertEqual(range1, range2)
+
+        DublinBikesStationRealTimeUpdate.objects.all().delete()
+        start, end = getBikesTimeRange()
+        self.assertIsNone(start)
+        self.assertIsNone(end)
+
+
+class GetDistinctTimes(BikeStationsTest):
+    """Testing bikes distinct times."""
+
+    def runTest(self):
+        """Check for correct range and empty db."""
+        stations = self.stations_multiple[:100]
+        for station in stations:
+            timestamp = getDateTimeFromTimeStampMS(
+                station['last_update'])
+            update_stations([station], timestamp)
+        result = [datetime.datetime(2018, 2, 20, 15, 46) +
+                  datetime.timedelta(minutes=i)
+                  for i in range(11)]
+        self.assertEqual(result, getBikesDistinctTimes())
+
+        result = [datetime.datetime(2018, 2, 20, 15, 46) +
+                  datetime.timedelta(minutes=i)
+                  for i in range(0, 11, 2)]
+        self.assertEqual(result, getBikesDistinctTimes(120))
+
+        DublinBikesStationRealTimeUpdate.objects.all().delete()
+        start, end = getBikesTimeRange()
+        result = []
+        self.assertEqual(result, getBikesDistinctTimes())
 
 
 class GetStationsFromPolygonTest(BikeStationsTest):
@@ -207,6 +241,23 @@ class GetCompressedBikeUpdateTest(BikeStationsTest):
 
     def runTest(self):
         """Test empty."""
-        update_stations(self.stations)
-        test_out = getCompressedBikeUpdates([])
-        self.assertEqual(test_out, (None, None))
+        update_stations(self.stations, self.last_timestamp)
+        results = getCompressedBikeUpdates([])
+        expected = (None, None)
+        self.assertEqual(results, expected)
+
+        results = getCompressedBikeUpdates([5, 6, 7])
+        expected = ([datetime.datetime(2018, 2, 20, 15, 0)],
+                    [11.5804597701149])
+        self.assertEqual(results[0], expected[0])
+        for v1, v2 in zip(results[1], expected[1]):
+            self.assertAlmostEqual(v1, v2)
+
+        results = getCompressedBikeUpdates([9, 55], 60)
+        expected = ([datetime.datetime(2018, 2, 20, 15, 56)],
+                    [68.75])
+
+        print(results)
+        self.assertEqual(results[0], expected[0])
+        for v1, v2 in zip(results[1], expected[1]):
+            self.assertAlmostEqual(v1, v2)

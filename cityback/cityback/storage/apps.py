@@ -1,14 +1,13 @@
 """TODO."""
-from datetime import timedelta, datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from django.apps import AppConfig
-from django.contrib.gis.geos import Point, GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, Point
 from django.db import connection
 from django.db.models import Max, Min
 
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
-import time
 
 
 class StorageConfig(AppConfig):
@@ -127,9 +126,9 @@ def getBikesAtTime(date_time, time_delta=60):
 
     :return: list of dict
     """
-    timer_start = time.time()
+    # timer_start = time.time()
     date_time = floorTime(date_time, time_delta)
-    print("getBikesAtTime=", time_delta)
+    # print("getBikesAtTime=", time_delta)
     # for raw queries of geometry fields, see documentation at
     # https://docs.djangoproject.com/en/2.0/ref/contrib/gis/tutorial/
     query = '''select station_number, name, status, {} as position,
@@ -172,8 +171,8 @@ def getBikesAtTime(date_time, time_delta=60):
             "bike_stands": float(bikes.bike_stands)
         })
 
-    print("GetBikesAtTime took {:.03f}s".format(time.time() - timer_start))
-    print("found {} non-empty stations".format(len(bikes_at_time)))
+    # print("GetBikesAtTime took {:.03f}s".format(time.time() - timer_start))
+    # print("found {} non-empty stations".format(len(bikes_at_time)))
     return bikes_at_time
 
 
@@ -183,32 +182,26 @@ def getBikesTimeRange():
 
     :return: tuple first, last timestamp as timestamp object
     """
-    start_timer = time.time()
+    # start_timer = time.time()
 
     times = DublinBikesStationRealTimeUpdate.objects.all().aggregate(
         Max('timestamp'), Min('timestamp'))
 
-    if times is not None:
-        startTime = times['timestamp__min']
-        lastTime = times['timestamp__max']
+    startTime = times['timestamp__min']
+    lastTime = times['timestamp__max']
 
-        print("get bike time range took: {}s".format(time.time()
-                                                     - start_timer))
-        return startTime, lastTime
-
-    else:
-        return None, None
+    # print("get bike time range took: {}s".format(time.time()
+    #                                              - start_timer))
+    return startTime, lastTime
 
 
-def floorTime(dt=None, round_to=60):
+def floorTime(dt, round_to=60):
     """Round a datetime object to any time laps in seconds.
 
     dt : datetime.datetime object, default now.
     roundTo : Closest number of seconds to round to, default 1 minute.
     Author: Thierry Husson 2012 - Use it as you want but don't blame me.
     """
-    if dt is None:
-        dt = datetime.now()
     dt = dt.replace(tzinfo=None)
     seconds = (dt - dt.min).seconds
     #  this is a floor division, not a comment on following line:
@@ -219,6 +212,8 @@ def floorTime(dt=None, round_to=60):
 def getBikesDistinctTimes(delta_s=60):
     """Get all distinct bike times."""
     start, end = getBikesTimeRange()
+    if start is None or end is None:
+        return []
     start, end = floorTime(start, delta_s), floorTime(end, delta_s)
     num_dates = (end - start) // timedelta(seconds=delta_s) + 1
     date_list = [start + timedelta(seconds=(delta_s * x))
