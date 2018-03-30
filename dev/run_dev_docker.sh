@@ -22,9 +22,16 @@ docker volume inspect db1_dev &>/dev/null || docker volume create db1_dev
 docker volume inspect db2_dev &>/dev/null || docker volume create db2_dev
 docker volume inspect db3_dev &>/dev/null || docker volume create db3_dev
 
+if [ $# -gt 0 ] ; then
+  exec="-c '$@'"
+else
+  exec=""
+fi
+
 docker run -p 5432:5432 -p 8000:8000 --rm -it --hostname dev_docker \
   -v db1_dev:/etc/postgresql \
   -v db2_dev:/var/log \
   -v db3_dev:/var/lib/postgresql \
   -v "${path}/..":/app -w /app asegroup11/all_servers:citynet \
-  "$@"
+  bash -c "source  /app/config_private/bash_import_secret; \
+   service postgresql start; /bin/bash $exec"
