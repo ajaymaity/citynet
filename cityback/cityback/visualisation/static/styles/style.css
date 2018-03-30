@@ -30,7 +30,7 @@ body { margin:0; padding:0; }
     width: 280px;
     top: 10px;
     left:10px;
-    padding: 10px 20px;
+    padding: 0 10px 10px 10px;
     background-color: white;
 }
 
@@ -51,10 +51,34 @@ body { margin:0; padding:0; }
     margin-right: 5px;
 }
 
+.arrow{
+    height: 25px;
+    text-align: center;
+    float: left;
+    display: block;
+    line-height: 29px;
+    margin-left: 5px;
+}
+
+.colorbar_update_black{
+    background: #006bc0;
+    display: block;
+    float:left;
+}
+.colorbar_update_red{
+    background: #006bc0;
+    border-color: #D00000;
+    display: block;
+    float:left;
+    margin-left: 5px;
+}
+
 .colorbar_middle{
     width: 70%;
+    height: 25px;
     background: linear-gradient(to right,  #ccddff, #006bc0);
     margin:0 auto;
+    margin-bottom: 5px;
 }
 
 .colorbar_full{
@@ -62,14 +86,23 @@ body { margin:0; padding:0; }
     float: right;
 }
 
+.right{
+    float:right;
+}
+.block_row {
+    height: 25px;
+    margin-bottom: 5px;
+    width: 100%;
+}
 .row {
     height: 12px;
     margin-bottom: 5px;
+    width: 100%;
 }
 
 
 .label {
-    width: 15%;
+    width: 11%;
     display: inline-block;
     text-align: center;
 }

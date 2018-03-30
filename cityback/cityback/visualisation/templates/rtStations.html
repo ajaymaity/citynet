@@ -16,24 +16,31 @@
 <div id='map'></div>
 
 <div id='console'>
-    <h2>Dublin Bikes stations occupancy</h2>
-    <div class='session'>
-        <div class="container">
-            <div class='circle colorbar_empty'></div>
-            <div class='circle colorbar_full'></div>
-            <div class='circle colorbar_middle'></div>
-        </div>
-        <div class='row labels'>
-            <div class='label'>0</div>
-            <div class='label'>1</div>
-            <div class='label'>x</div>
-            <div class='label'>x</div>
-            <div class='label'>99</div>
-            <div class='label'>100</div>
-        </div>
+    <h2>Dublin Bikes map</h2>
+    <h3>Station occupancy:</h3>
+    <div class="container">
+        <div class='circle colorbar_empty'></div>
+        <div class='circle colorbar_full'></div>
+        <div class='colorbar_middle'></div>
     </div>
-    <div class='session' id='sliderbar'>
-        <h2>DateTime: <br/><label id='active-hour'>YYYY-MM-DD HH:MM</label></h2>
+    <div class='row labels'>
+        <div class='label'>0</div>
+        <div class='label'>1</div>
+        <div class='label'>x</div>
+        <div class='label'>x</div>
+        <div class='label'>x</div>
+        <div class='label'>x</div>
+        <div class='label'>99</div>
+        <div class='label right'>100</div>
+    </div>
+    <h3>Updated station:</h3>
+    <div class="block_row">
+        <div class='circle colorbar_update_black'></div>
+        <div class='arrow'>&rarr;</div>
+        <div class='circle colorbar_update_red'></div>
+    </div>
+    <div id='sliderbar'>
+        <h3>DateTime: <label id='active-hour'>2018-01-01 00:00</label></h3>
         <input id='slider' class='row' type='range' min='0' max='23' step='1' value='12' />
     </div>
     <div>Time precision:
