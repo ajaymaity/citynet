@@ -17,10 +17,10 @@ window.chartColors = {
  * @return {number}
  */
 function randomValue() {
-    return Math.round(Math.random() * 200 - 100)
+    return Math.round(Math.random() * 200 - 100);
 }
 
-var config = {
+let config = {
     type: 'line',
     data: {
         labels: [],
@@ -75,7 +75,7 @@ document.getElementById('randomizeData').addEventListener('click', function() {
     window.myLine.update();
 });
 
-var colorNames = Object.keys(window.chartColors);
+let colorNames = Object.keys(window.chartColors);
 document.getElementById('addDataset').addEventListener('click', function() {
     let colorName = colorNames[config.data.datasets.length % colorNames.length];
     let newColor = window.chartColors[colorName];
@@ -123,33 +123,43 @@ document.getElementById('removeData').addEventListener('click', function() {
     window.myLine.update();
 });
 
-function replaceChart(labels, occupancy, time_delta_s){
+/* exported replaceChart */
+/**
+ * Draw a new graph, removing the previous one
+ * @param {Array} labels
+ * @param {Array} occupancy
+ * @param {int} timeDeltaS
+ */
+function replaceChart(labels, occupancy, timeDeltaS) {
     // get new color in list
     let colorName = colorNames[config.data.datasets.length % colorNames.length];
     let newColor = window.chartColors[colorName];
-    let minutes = time_delta_s / 60;
+    let minutes = timeDeltaS / 60;
     let hours = minutes / 60;
-
-    if(hours >= 1)
-        time_str = hours + ' hour'  + (hours == 1 ? '' : 's');
-    else
-        time_str = minutes + ' minute' + (minutes == 1 ? '' : 's');
+    let timeStr;
+    if (hours >= 1) {
+        timeStr = hours + ' hour' + (hours == 1 ? '' : 's');
+    } else {
+        timeStr = minutes + ' minute' + (minutes == 1 ? '' : 's');
+    }
 
     let newDataset = {
-        label: 'Bike occupancy averaged for every ' + time_str,
+        label: 'Bike occupancy averaged for every ' + timeStr,
         backgroundColor: newColor,
         borderColor: newColor,
         data: [],
         fill: false,
     };
 
-    console.log("drawing chart with data:")
+    console.log('drawing chart with data:');
     // empty the previous graphs
-    while(config.data.datasets.length)
+    while (config.data.datasets.length) {
         config.data.datasets.pop();
+    }
 
-    while(config.data.labels.length)
+    while (config.data.labels.length) {
         config.data.labels.pop();
+    }
 
     for (let index = 0; index < labels.length; ++index) {
         config.data.labels.push(labels[index]);
