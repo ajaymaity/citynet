@@ -32,13 +32,10 @@ let config = {
             display: true,
             text: 'Chart.js Line Chart',
         },
-        tooltips: {
-            mode: 'index',
-            intersect: false,
-        },
-        hover: {
-            mode: 'nearest',
-            intersect: true,
+        showTooltips: false,
+        hover: false,
+        animation:{
+            duration: 0
         },
         scales: {
             xAxes: [{

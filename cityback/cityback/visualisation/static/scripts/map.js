@@ -199,20 +199,17 @@ function initMap() {
                             [1, '#ccddff'],
                             [99, '#006bc0'],
                             [100, '#777777']]},
-                'circle-radius': {
-                    property: 'vacancy',
-                    type: 'exponential',
-                    stops: [[0, 15],
-                        [100, 15]]},
+                'circle-radius': [
+                    'interpolate', ['linear'], ['zoom'],
+                    12, 7,
+                    14, 18,
+                ],
                 'circle-opacity': 1.0,
-                'circle-stroke-width': {
-                    property: 'occupancyChanged',
-                    type: 'exponential',
-                    stops: [
-                        [0, 2],
-                        [1, 3],
-                    ],
-                },
+                'circle-stroke-width': [
+                    'interpolate', ['linear'], ['zoom'],
+                    12, 1,
+                    14, 3,
+                ],
                 'circle-stroke-color': {
                     property: 'occupancyChanged',
                     type: 'exponential',
