@@ -61,6 +61,24 @@ class BikesRetrieval(DataRetrieval):
         stations = self.get_json_from_url(url)
         return stations
 
+    def check_connectivity_using_key(self):
+        """
+        Verify that the key is working by listing.
+
+        the station information.
+        """
+        contracts = self.get_contracts()
+        if contracts is None:
+            return False
+        contracts = [c for c in contracts if c['name'] == "Dublin"]
+        if len(contracts) == 0:
+            return False
+
+        stations = self.get_stations_list_from_contract(contracts[0]['name'])
+        if stations is None:
+            return False
+        return True
+
     def get_static_data(self):
         """Get static Dublin Bikes data."""
         url = self.BIKES_URL["static_stations_Dublin"]. \
