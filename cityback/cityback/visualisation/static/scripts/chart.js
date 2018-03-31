@@ -157,14 +157,6 @@ function replaceChart(labels, occupancy, selectionType, selectionId, timeDeltaS)
     };
 
     console.log('drawing chart with data:');
-    // empty the previous graphs
-    // while (config.data.datasets.length) {
-    //     config.data.datasets.pop();
-    // }
-    //
-    // while (config.data.labels.length) {
-    //     config.data.labels.pop();
-    // }
 
     if (config.data.labels.length === 0) {
         for (let index = 0; index < labels.length; ++index) {
@@ -191,5 +183,18 @@ function removeDatasetFromChart(selectionId) {
     if (removalIndex >= 0) {
         config.data.datasets.splice(removalIndex, 1);
         window.myLine.update();
+    }
+}
+
+/* exported removeAllDatasetsAndLabelsFromChart */
+
+function removeAllDatasetsAndLabelsFromChart() {
+
+    while (config.data.datasets.length) {
+        config.data.datasets.pop();
+    }
+
+    while (config.data.labels.length) {
+        config.data.labels.pop();
     }
 }

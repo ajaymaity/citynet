@@ -3,6 +3,7 @@ let previousOccupancy = [];
 let mapLoaded = false;
 let firstJson = undefined;
 let map;
+let draw;
 let deltaSlider = 21600;
 let iterator = 0;
 let polygonLabelMap = {};
@@ -40,6 +41,21 @@ function updateMap(geoStation) {
     }
 }
 
+function applyDeltaSliderUpdates() {
+    removeAllDatasetsAndLabelsFromChart();
+    let type = 'draw.update';
+    let allPolygons = draw.getAll();
+    console.log(allPolygons);
+    for (let polygon of allPolygons.features) {
+        let features = [];
+        features.push(polygon);
+        getPolygon({
+            'type': type,
+            'features': features,
+        });
+    }
+}
+
 /**
  * Add events fuctions on the time slider
  */
@@ -54,7 +70,10 @@ function setupSlider() {
                 document.getElementById('active-hour').innerText = datetime;
                 let el = document.getElementById('deltaS');
                 let deltaS = el.options[el.selectedIndex].value;
-                deltaSlider = deltaS;
+                if (deltaSlider != deltaS) {
+                    deltaSlider = deltaS;
+                    applyDeltaSliderUpdates();
+                }
                 // update the map
                 webSocket.send(JSON.stringify({
                     'type': 'getMapAtTime',
@@ -75,6 +94,86 @@ function setupSlider() {
     });
 }
 
+
+/**
+ * Handler when a polygon is selected, deleted or created
+ * @param {mapObject} element
+ */
+function getPolygon(element) {
+    // let data = draw.getAll();
+    let selectedPolygon = {};
+
+    if ((element.type === 'draw.create' || element.type === 'draw.update')
+        && element.features) {
+        let dataPoint = element.features[0];
+
+        if (element.type === 'draw.create') {
+            iterator += 1;
+            polygonLabelMap[dataPoint.id] = 'Area ' + iterator;
+        }
+
+        if (element.type === 'draw.update') {
+            removeDatasetFromChart(dataPoint.id);
+            try {
+                map.removeLayer(dataPoint.id);
+                map.removeSource(dataPoint.id);
+            } catch (e1) {}
+        }
+
+        dataPoint.paint = {
+            'fill-color': '#088',
+            'fill-opacity': 0.8,
+        };
+
+        selectedPolygon['id'] = dataPoint.id;
+        selectedPolygon['polygon'] = 'POLYGON(' +
+            dataPoint.geometry.coordinates.map(function(ring) {
+                return '(' + ring.map(function(p) {
+                    return p[0] + ' ' + p[1];
+                }).join(', ') + ')';
+            }).join(', ') + ')';
+
+        let centroidPt = turf.centroid(dataPoint);
+        centroidPt.properties.title = 'label';
+
+        map.addSource(dataPoint.id, {
+            'type': 'geojson',
+            'data': centroidPt,
+        });
+
+        // Add the label style
+        map.addLayer({
+            'id': dataPoint.id,
+            'type': 'symbol',
+            'source': dataPoint.id,
+            'layout': {
+                'text-field': polygonLabelMap[dataPoint.id],
+                'text-size': 50,
+            },
+            'paint': {
+                'text-color': 'black',
+            },
+        });
+
+        console.log(selectedPolygon);
+        webSocket.send(JSON.stringify({
+            'type': 'polygonData',
+            'selectedPolygon': selectedPolygon,
+            'deltaS': deltaSlider,
+        }));
+        showLoadingScreen();
+    } else if (element.type === 'draw.delete' && element.features) {
+        // delete graph
+        delete polygonLabelMap[element.features[0].id];
+        removeDatasetFromChart(element.features[0].id);
+        try {
+            map.removeLayer(element.features[0].id);
+            map.removeSource(element.features[0].id);
+        } catch (e1) {}
+    }
+}
+
+
 /**
  * Create the mapbox area with the key and input functions
  */
@@ -90,7 +189,7 @@ function initMap() {
 // Add zoom and rotation controls to the map.
     map.addControl(new mapboxgl.NavigationControl());
 
-    let draw = new MapboxDraw({
+    draw = new MapboxDraw({
         displayControlsDefault: false,
         controls: {
             polygon: true,
@@ -103,85 +202,6 @@ function initMap() {
     map.on('draw.create', getPolygon);
     map.on('draw.delete', getPolygon);
     map.on('draw.update', getPolygon);
-
-    /**
-     * Handler when a polygon is selected, deleted or created
-     * @param {mapObject} element
-     */
-    function getPolygon(element) {
-        // let data = draw.getAll();
-        let selectedPolygon = {};
-
-        if ((element.type === 'draw.create' || element.type === 'draw.update')
-            && element.features) {
-            let dataPoint = element.features[0];
-
-            if (element.type === 'draw.create') {
-                iterator += 1;
-                polygonLabelMap[dataPoint.id] = 'Area ' + iterator;
-            }
-
-            if (element.type === 'draw.update') {
-                removeDatasetFromChart(dataPoint.id);
-                try {
-                    map.removeLayer(dataPoint.id);
-                    map.removeSource(dataPoint.id);
-                } catch (e1) {}
-            }
-
-            dataPoint.paint = {
-                'fill-color': '#088',
-                'fill-opacity': 0.8,
-            };
-
-            selectedPolygon['id'] = dataPoint.id;
-            selectedPolygon['polygon'] = 'POLYGON(' +
-                dataPoint.geometry.coordinates.map(function(ring) {
-                    return '(' + ring.map(function(p) {
-                        return p[0] + ' ' + p[1];
-                    }).join(', ') + ')';
-                }).join(', ') + ')';
-
-            centroidPt = turf.centroid(dataPoint);
-            centroidPt.properties.title = 'label';
-
-            map.addSource(dataPoint.id, {
-                'type': 'geojson',
-                'data': centroidPt,
-            });
-
-            // Add the label style
-            map.addLayer({
-                'id': dataPoint.id,
-                'type': 'symbol',
-                'source': dataPoint.id,
-                'layout': {
-                    'text-field': polygonLabelMap[dataPoint.id],
-                    'text-size': 50,
-                },
-                'paint': {
-                    'text-color': 'black',
-                },
-            });
-
-            console.log(selectedPolygon);
-            webSocket.send(JSON.stringify({
-                'type': 'polygonData',
-                'selectedPolygon': selectedPolygon,
-                'deltaS': deltaSlider,
-            }));
-            showLoadingScreen();
-        } else if (element.type === 'draw.delete' && element.features) {
-            // delete graph
-            delete polygonLabelMap[element.features[0].id];
-            removeDatasetFromChart(element.features[0].id);
-            try {
-                map.removeLayer(element.features[0].id);
-                map.removeSource(element.features[0].id);
-            } catch (e1) {}
-        }
-    }
-
 
 // dict to store stations previous occupancy
     map.on('load', function() {
