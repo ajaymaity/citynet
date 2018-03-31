@@ -30,12 +30,12 @@ let config = {
         responsive: true,
         title: {
             display: true,
-            text: 'Chart.js Line Chart',
+            text: 'Bike occupancy vs time charts',
         },
         showTooltips: false,
         hover: false,
         animation:{
-            duration: 0
+            duration: 0,
         },
         scales: {
             xAxes: [{
@@ -125,10 +125,12 @@ document.getElementById('removeData').addEventListener('click', function() {
  * Draw a new graph, removing the previous one
  * @param {Array} labels
  * @param {Array} occupancy
- * @param {String} polygonId
+ * @param {int} selectionType
+ * @param {int} selectionId
  * @param {int} timeDeltaS
  */
-function replaceChart(labels, occupancy, selectionType, selectionId, timeDeltaS) {
+function replaceChart(labels, occupancy, selectionType, selectionId,
+                      timeDeltaS) {
     // get new color in list
     let colorName = colorNames[config.data.datasets.length % colorNames.length];
     let newColor = window.chartColors[colorName];
@@ -173,7 +175,10 @@ function replaceChart(labels, occupancy, selectionType, selectionId, timeDeltaS)
 }
 
 /* exported removeDatasetFromChart */
-
+/**
+ * Remove a specific dataset from the chart.
+ * @param {int} selectionId
+ */
 function removeDatasetFromChart(selectionId) {
     let removalIndex = config.data.datasets.indexOf(
         config.data.datasets.filter(
@@ -187,9 +192,10 @@ function removeDatasetFromChart(selectionId) {
 }
 
 /* exported removeAllDatasetsAndLabelsFromChart */
-
+/**
+ * Remove all the datasets and labels from the chart.
+ */
 function removeAllDatasetsAndLabelsFromChart() {
-
     while (config.data.datasets.length) {
         config.data.datasets.pop();
     }
