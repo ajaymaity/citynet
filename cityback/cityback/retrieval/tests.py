@@ -1,6 +1,6 @@
 """Tests for Bikes Retrieval."""
 from django.test import TestCase
-from cityback.retrieval.data_retrieval import BikesRetrieval
+from cityback.retrieval.data_retrieval import BikesRetrieval, DataRetrieval
 from unittest import mock
 from requests.models import Response
 import json
@@ -44,3 +44,17 @@ class GetStationsListFromContractTest(TestCase):
             contract_name)
 
         self.assertEqual(ordered(stations), ordered(json_response))
+
+
+class DataRetrievalTestCase(TestCase):
+    """Stations list from contract testcase."""
+
+    @mock.patch('cityback.retrieval.data_retrieval.requests.get',
+                side_effect=mocked_requests_get)
+    def test_fetch(self, mock_get):
+        """Test with dummy data."""
+        mgc = DataRetrieval()
+        json_data = mgc.get_json_from_url(
+            'https://api.jcdecaux.com/vls/v1/stations?contract=Dublin&apiKey=')
+        self.assertEqual
+        (json_data, {'address': 'Smithfield North', 'name': [30340]})
