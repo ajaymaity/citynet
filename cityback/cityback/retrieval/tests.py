@@ -51,7 +51,7 @@ class DataRetrievalTestCase(TestCase):
 
     @mock.patch('cityback.retrieval.data_retrieval.requests.get',
                 side_effect=mocked_requests_get)
-    def test_fetch(self):
+    def test_fetch(self, mock_get):
         """Test with dummy data."""
         mgc = DataRetrieval()
         json_data = mgc.get_json_from_url(
