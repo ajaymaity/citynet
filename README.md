@@ -78,7 +78,7 @@ Make documentation
 ====
 Run the following commands:
 ```
-docker/run_inside_docker.sh bash -c "cd doc; make html"
+dev/run_dev_docker.sh "cd /app/doc && make html"
 Then browse the file `doc/build/html/index.html`
 ``` 
 
