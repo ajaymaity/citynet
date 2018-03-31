@@ -226,11 +226,14 @@ def getCompressedBikeUpdates(stations, time_delta_s=3600):
     """Get bike update average over the specified delta and stations."""
     if not stations:
         return None, None
+    # import time
+    # stopwatch_start = time.time()
 
-    times = DublinBikesStationRealTimeUpdate.objects.raw('''
-        select 1 as id, avg(available_bikes::float / bike_stands::float)
-        as avg_occupancy,
-        date_floor(timestamp, '{} seconds') as rdate
+    times = list(DublinBikesStationRealTimeUpdate.objects.raw('''
+        select
+         1 as id,
+         avg(available_bikes::float / bike_stands::float) as avg_occupancy,
+         date_floor(timestamp, '{} seconds') as rdate
         from storage_dublinbikesstationrealtimeupdate
         WHERE parent_station_id in ({})
         and bike_stands <> 0
@@ -239,11 +242,15 @@ def getCompressedBikeUpdates(stations, time_delta_s=3600):
         '''.format(
         time_delta_s,
         ",".join([str(s) for s in stations]))
-    )
+    ))
 
-    return (
+    # print("get compressed: {:.03f}s".format(time.time() - stopwatch_start))
+    # stopwatch_start = time.time()
+    results = (
         [t.rdate.replace(tzinfo=None) for t in times],
         [float(t.avg_occupancy) * 100 for t in times])
+    # print("get compressed2: {:.03f}s".format(time.time() - stopwatch_start))
+    return results
 
 
 def get_stations_from_polygon(polygon):
