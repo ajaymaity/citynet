@@ -8,7 +8,6 @@ PRE="docker/run_inside_docker.sh bash -c"
 if [ "$1" == "from_docker" ]; then
 	PRE="bash -c"
 fi
-$PRE "cd cityback && python setup.py test"
 echo "Running Django tests on the POSTGRES DB"
 $PRE "
   source config_private/bash_import_secret &&
