@@ -1,6 +1,7 @@
 """Dashboard views."""
-from django.shortcuts import render
 import os
+
+from django.shortcuts import render
 
 
 def rtDemo(request):

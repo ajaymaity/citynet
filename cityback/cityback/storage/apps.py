@@ -25,7 +25,7 @@ def update_stations(stations, timestamp=None):
 
     :param station  a list of stations dict
     :param now if true insert with current time rounded to nearest minute
-           else, get the most recent station_timestamp, rounded to minute
+    else, get the most recent station_timestamp, rounded to minute
     :return:
     """
     time_delta = 60

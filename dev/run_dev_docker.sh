@@ -28,7 +28,7 @@ else
   exec=""
 fi
 
-docker run -p 5432:5432 -p 8000:8000 --rm -it --hostname dev_docker \
+docker run -p 5432:5432 -p 8000:8000 --rm -it --name citynet --hostname dev_docker \
   -v db1_dev:/etc/postgresql \
   -v db2_dev:/var/log \
   -v db3_dev:/var/lib/postgresql \

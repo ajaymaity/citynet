@@ -6,7 +6,8 @@ See Channels documentation for detail.
 from channels.routing import ProtocolTypeRouter, URLRouter
 # from channels.auth import AuthMiddlewareStack
 from django.urls import path
-from cityback.dashboard.consumers import ClientSocketConsumer
+
+from cityback.rtdemo.consumers import ClientSocketConsumer
 from cityback.visualisation.consumers import RTStationsConsumer
 
 application = ProtocolTypeRouter({

@@ -7,7 +7,7 @@
         var h1,
             seconds = 0.0,
             t;
-
+        let webSocket;
         function add() {
             seconds += 0.1;
 
@@ -41,8 +41,8 @@
                 prefix = "wss";
             }
             webSocket = new WebSocket(prefix + "://"  + location.host + "/ws/");
-            websocket.onopen = function(evt) { onOpen(evt); };
-            websocket.onmessage = function(evt) { onMessage(evt); };
+            webSocket.onopen = function(evt) { onOpen(evt); };
+            webSocket.onmessage = function(evt) { onMessage(evt); };
             h1 = document.getElementById('time')
             timer();
         }

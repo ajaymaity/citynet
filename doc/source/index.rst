@@ -10,13 +10,8 @@ Contents:
 
 .. toctree::
    :maxdepth: 3
-.. automodule:: cityback
-   :members:
-   :inherited-members:
-.. automodule:: cityback.data_retrieval
-   :members:
-   :inherited-members:
 
+   modules
 
 Indices and tables
 ==================

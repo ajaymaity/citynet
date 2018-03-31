@@ -1,9 +1,10 @@
 """Celery inside django task manager."""
 from __future__ import absolute_import, unicode_literals
-import os
-from celery import Celery
-import datetime
 
+import datetime
+import os
+
+from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cityback.settings')
@@ -29,7 +30,7 @@ app.conf.update(
         },
         'realtime-demo-every-x-seconds': {
             'task':
-                'cityback.dashboard.tasks.periodic_send_handler',
+                'cityback.rtdemo.tasks.periodic_send_handler',
             'schedule': datetime.timedelta(seconds=3),
             'args': ()
         }

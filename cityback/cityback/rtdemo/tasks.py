@@ -2,9 +2,9 @@
 from __future__ import absolute_import, unicode_literals
 
 import json
+import os
 import random
 
-import os
 from asgiref.sync import async_to_sync
 from celery import shared_task
 from channels.layers import get_channel_layer

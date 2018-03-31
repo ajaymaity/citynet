@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os
 import ast
+import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'cityback.processing',
     'cityback.retrieval',
     'channels',
-    'cityback.dashboard',
+    'cityback.rtdemo',
     'cityback.visualisation'
 ]
 
@@ -197,7 +197,7 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = [
     '--with-coverage',
     '--cover-package=cityback.storage,cityback.retrieval,'
-    'cityback.dashboard,'
+    'cityback.rtdemo,'
     'cityback.visualisation,'
     'cityback.scheduler,'
     'cityback.processing',
