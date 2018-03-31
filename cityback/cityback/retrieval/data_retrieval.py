@@ -10,10 +10,6 @@ __all__ = ["DataRetrieval", "BikesRetrieval"]
 class DataRetrieval(object):
     """Wrapper for data retrieval functionality."""
 
-    def __init__(self):
-        """Empty, to be implemented by sub class."""
-        pass
-
     def get_json_from_url(self, url):
         """Get the json response from a url, log if error."""
         response = requests.get(url)
@@ -64,24 +60,6 @@ class BikesRetrieval(DataRetrieval):
             contract_name=contract, api_key=self.dbikes_apikey)
         stations = self.get_json_from_url(url)
         return stations
-
-    def check_connectivity_using_key(self):
-        """
-        Verify that the key is working by listing.
-
-        the station information.
-        """
-        contracts = self.get_contracts()
-        if contracts is None:
-            return False
-        contracts = [c for c in contracts if c['name'] == "Dublin"]
-        if len(contracts) == 0:
-            return False
-
-        stations = self.get_stations_list_from_contract(contracts[0]['name'])
-        if stations is None:
-            return False
-        return True
 
     def get_static_data(self):
         """Get static Dublin Bikes data."""
