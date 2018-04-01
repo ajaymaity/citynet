@@ -262,4 +262,4 @@ def get_stations_from_polygon(polygon):
     stations = DublinBikesStation.objects.all().filter(
         position__within=poly
     ).values_list("station_number", flat=True)
-    return stations
+    return list(stations)

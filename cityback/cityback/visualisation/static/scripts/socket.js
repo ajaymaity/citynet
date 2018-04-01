@@ -120,7 +120,7 @@ function getChartData() {
  */
 function getDeltaDependentFunction() {
     getTimeRange();
-    getChartData();
+    // getChartData();
 }
 
 /**

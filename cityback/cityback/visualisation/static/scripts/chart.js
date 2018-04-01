@@ -196,7 +196,7 @@ function removeDatasetFromChart(selectionId) {
     let removalIndex = config.data.datasets.indexOf(
         config.data.datasets.filter(
             function(dataObject) {
-                return dataObject.id == selectionId; // need coersion
+                return dataObject.id == selectionId; // need coercion
     })[0]);
     if (removalIndex >= 0) {
         config.data.datasets.splice(removalIndex, 1);

@@ -54,6 +54,7 @@ function updateMap(geoStation) {
         map.getSource('bikesource').setData(geoStation, {});
         if (!lastGeoJson) {
             lastGeoJson = geoStation;
+            map.getSource('bikesourcefilter').setData(lastGeoJson);
         }
     } else {
         // keep the data for when the map is loaded
@@ -66,7 +67,13 @@ function applyDeltaSliderUpdates() {
     showLoadingScreen();
     let type = 'draw.update';
     let allPolygons = draw.getAll();
-    console.log(allPolygons);
+    for (let elementId of stationsInChart) {
+        let station = lastGeoJson.features.filter(function(d) {
+            return d.properties['station_number'] === elementId;
+        })[0];
+        addStationToChart(elementId, station);
+    }
+    map.getSource('bikesourcefilter').setData(lastGeoJson);
     for (let polygon of allPolygons.features) {
         let features = [];
         features.push(polygon);
@@ -198,6 +205,16 @@ function getPolygon(element) {
     }
 }
 
+function addStationToChart(elementId, station) {
+    showLoadingScreen();
+    station.properties['charted'] = 1;
+    webSocket.send(JSON.stringify({
+        'type': 'stationSelect',
+        'stationId': elementId,
+        'deltaS': deltaSlider,
+    }));
+}
+
 
 /**
  * Create the mapbox area with the key and input functions
@@ -265,10 +282,11 @@ function initMap() {
                 },
             },
         });
+        map.addSource('bikesourcefilter', {type: 'geojson', data: empty});
         map.addLayer({
             'id': 'stations-selected',
             'type': 'circle',
-            'source': 'bikesource',
+            'source': 'bikesourcefilter',
             'paint': {
                 'circle-color': '#6e599f',
                 'circle-radius': [
@@ -336,14 +354,9 @@ function initMap() {
                 removeDatasetFromChart(elementId);
                 station.properties['charted'] = 0;
             } else {
-                station.properties['charted'] = 1;
-                webSocket.send(JSON.stringify({
-                    'type': 'stationSelect',
-                    'stationId': elementId,
-                    'deltaS': deltaSlider,
-                }));
+                addStationToChart(elementId, station);
             }
-            map.getSource('bikesource').setData(lastGeoJson);
+            map.getSource('bikesourcefilter').setData(lastGeoJson);
         };
     });
 }
