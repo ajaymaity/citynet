@@ -105,6 +105,8 @@ class RTStationsConsumer(WebsocketConsumer):
             stations=stations_list,
             time_delta_s=delta_s)
         if not times or len(times) == 0:
+            data = {"type": "chart"}
+            self.send(text_data=json.dumps(data))
             return
         data = json.dumps({"type": "chart",
                            "selectionType": "polygon",

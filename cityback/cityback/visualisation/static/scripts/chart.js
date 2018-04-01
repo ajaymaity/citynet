@@ -132,6 +132,9 @@ document.getElementById('removeData').addEventListener('click', function() {
 function replaceChart(labels, occupancy, selectionType, selectionId,
                       timeDeltaS) {
     // get new color in list
+    if (!selectionType) {
+        return;
+    }
     let colorName = colorNames[config.data.datasets.length % colorNames.length];
     let newColor = window.chartColors[colorName];
     let minutes = timeDeltaS / 60;
@@ -144,7 +147,16 @@ function replaceChart(labels, occupancy, selectionType, selectionId,
     }
 
     if (selectionType === 'station') {
+        // let values = map.querySourceFeatures('bikesource', {
+        //     'sourceLayer': 'bikes',
+        // });
+        // // console.log('number of values ' + values.length);
+        // for (let value of values) {
+        //     console.log(value.properties.station_number + ' ' + value.properties.station_name);
+        // }
+        let values = map.getLayer('bikes');
 
+        stationsInChart.add(String(selectionId));
     }
 
     let newDataset = {
@@ -184,11 +196,17 @@ function removeDatasetFromChart(selectionId) {
     let removalIndex = config.data.datasets.indexOf(
         config.data.datasets.filter(
             function(dataObject) {
-                return dataObject.id === selectionId;
+                return dataObject.id == selectionId; // need coersion
     })[0]);
     if (removalIndex >= 0) {
         config.data.datasets.splice(removalIndex, 1);
         window.myLine.update();
+    }
+
+    if (config.data.datasets.length === 0) {
+        while (config.data.labels.length) {
+            config.data.labels.pop();
+        }
     }
 }
 

@@ -5,16 +5,29 @@ let firstJson = undefined;
 let map;
 let draw;
 let deltaSlider = 21600;
-let iterator = 0;
+let iterators = new Set();
+let stationsInChart = new Set();
 let polygonLabelMap = {};
+let requestInProgress = 0;
+let lastGeoJson;
 
-/* exported requestInProgress */
-let requestInProgress = false;
+// requestInProgress.registerListener(function() {
+//     if (requestInProgress === false) {
+//         $('#loading').hide();
+//     } else {
+//         $('#loading').show();
+//     }
+// });
 
 
 function showLoadingScreen() {
-    requestInProgress = true;
+    requestInProgress += 1;
     $('#loading').show();
+}
+
+function hideLoadingScreen() {
+    if (requestInProgress > 0) requestInProgress -= 1;
+    if (requestInProgress === 0) $('#loading').hide();
 }
 
 /**
@@ -25,6 +38,7 @@ function updateMap(geoStation) {
     console.log('updating map');
     if (mapLoaded) {
         let geoFeatures = geoStation['features'];
+        console.log('geofeatures length: ' + geoFeatures.length);
         for (let i = 0; i < geoFeatures.length; i++) {
             let geoProperty = geoFeatures[i]['properties'];
             if (i in previousOccupancy &&
@@ -37,6 +51,7 @@ function updateMap(geoStation) {
         }
         // noinspection Annotator
         map.getSource('bikesource').setData(geoStation, {});
+        lastGeoJson = geoStation;
     } else {
         // keep the data for when the map is loaded
         firstJson = geoStation;
@@ -45,6 +60,7 @@ function updateMap(geoStation) {
 
 function applyDeltaSliderUpdates() {
     removeAllDatasetsAndLabelsFromChart();
+    showLoadingScreen();
     let type = 'draw.update';
     let allPolygons = draw.getAll();
     console.log(allPolygons);
@@ -110,8 +126,10 @@ function getPolygon(element) {
         let dataPoint = element.features[0];
 
         if (element.type === 'draw.create') {
-            iterator += 1;
+            let iterator = 1;
+            while (iterators.has(iterator)) iterator += 1;
             polygonLabelMap[dataPoint.id] = 'Area ' + iterator;
+            iterators.add(iterator);
         }
 
         if (element.type === 'draw.update') {
@@ -166,6 +184,8 @@ function getPolygon(element) {
         showLoadingScreen();
     } else if (element.type === 'draw.delete' && element.features) {
         // delete graph
+        let delIterator = Number(polygonLabelMap[element.features[0].id].match(/\d+/)[0]);
+        iterators.delete(delIterator);
         delete polygonLabelMap[element.features[0].id];
         removeDatasetFromChart(element.features[0].id);
         try {
@@ -242,6 +262,38 @@ function initMap() {
                 },
             },
         });
+        map.addLayer({
+            'id': 'stations-selected',
+            'type': 'circle',
+            'source': 'bikesource',
+            'paint': {
+                'circle-color': '#6e599f',
+                'circle-radius': [
+                    'interpolate', ['linear'], ['zoom'],
+                    12, 7,
+                    14, 18,
+                ],
+                'circle-stroke-width': [
+                    'interpolate', ['linear'], ['zoom'],
+                    12, 1,
+                    14, 3,
+                ],
+                'circle-stroke-color': {
+                    property: 'occupancyChanged',
+                    type: 'exponential',
+                    stops: [
+                        [0, '#000000'],
+                        [1, '#D00000'],
+                    ],
+                },
+                'circle-opacity': {
+                    property: 'charted',
+                    type: 'exponential',
+                    stops: [[0, 0], [1, 1]],
+                },
+            },
+            // 'filter': ['in', 'FIPS', ''],
+        });
         mapLoaded = true;
         if (firstJson !== undefined) {
             updateMap(firstJson);
@@ -254,7 +306,9 @@ function initMap() {
     map.on('click', 'bikes', function(e) {
         let coordinates = e.features[0].geometry.coordinates.slice();
         let description = ('Station No. ' + e.features[0].properties['station_number'] +
-            '</br>' + e.features[0].properties['station_name']);
+            '</br>' + e.features[0].properties['station_name'])
+            +'</br> <button id = station_' + e.features[0].properties['station_number']
+            + '> click to add/remove on chart </button>';
 
         // Ensure that if the map is zoomed out such that multiple
         // copies of the feature are visible, the popup appears
@@ -263,16 +317,31 @@ function initMap() {
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
 
-        webSocket.send(JSON.stringify({
-                'type': 'stationSelect',
-                'stationId': e.features[0].properties['station_number'],
-                'deltaS': deltaSlider,
-            }));
-
         new mapboxgl.Popup()
             .setLngLat(coordinates)
             .setHTML(description)
             .addTo(map);
+
+        let btn = document.getElementById('station_' + e.features[0].properties['station_number']);
+        btn.onclick = function(e1) {
+            let elementId = e1.currentTarget.id.match(/\d+/)[0];
+            let station = lastGeoJson.features.filter(function(d) {
+                return d.properties['station_number'] === elementId;
+            })[0];
+            if (stationsInChart.has(elementId)) {
+                stationsInChart.delete(elementId);
+                removeDatasetFromChart(elementId);
+                station.properties['charted'] = 0;
+            } else {
+                station.properties['charted'] = 1;
+                webSocket.send(JSON.stringify({
+                    'type': 'stationSelect',
+                    'stationId': elementId,
+                    'deltaS': deltaSlider,
+                }));
+            }
+            map.getSource('bikesource').setData(lastGeoJson);
+        };
     });
 }
 

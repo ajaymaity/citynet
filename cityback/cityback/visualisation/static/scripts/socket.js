@@ -57,10 +57,7 @@ function onMessage(evt) {
                 break;
         }
     }
-    if (requestInProgress) {
-        requestInProgress = false;
-        $('#loading').hide();
-    }
+    hideLoadingScreen();
 }
 
 /* exported webSocket */
