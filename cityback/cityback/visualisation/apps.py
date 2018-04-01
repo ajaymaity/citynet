@@ -19,10 +19,8 @@ def convertToGeoJson(data):
     geojson['features'] = list()
 
     for k in data:
-        occupancy = (k['available_bikes'] * 100 / k['bike_stands']
-                     if k['bike_stands'] != 0 else 100)
-        vacancy = (k['available_bike_stands'] * 100 / k['bike_stands']
-                   if k['bike_stands'] != 0 else 0)
+        occupancy = int(k['available_bikes'] * 100 / k['bike_stands']
+                        if k['bike_stands'] != 0 else 100)
         newFeature = {
             "type": "Feature",
             "geometry": {
@@ -36,20 +34,20 @@ def convertToGeoJson(data):
                           str(k['available_bike_stands'])),
                 "description": "",
                 "occupancy": occupancy,
-                "vacancy": vacancy,
                 "status": k['status'],
                 "station_number": str(k['station_number']),
                 "station_name": k['name']
             }
         }
         geojson['features'].append(newFeature)
-        # geojson['name'] =
     return geojson
 
 
 def getLatestStationJSON():
     """
     Get the json formatted last station updates.
+
+    In realtime update, so only with delta_s = 60
 
     @:return json of the stations updates
     """

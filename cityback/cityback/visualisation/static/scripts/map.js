@@ -51,6 +51,7 @@ function updateMap(geoStation, rtMode) {
             }
         }
         // noinspection Annotator
+        console.log(geoStation);
         map.getSource('bikesource').setData(geoStation, {});
         if (!lastGeoJson) {
             lastGeoJson = geoStation;

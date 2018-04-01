@@ -112,7 +112,7 @@ def getDateTimeFromTimeStampMS(timestamp):
 
 def getLatestStationsFromDB():
     """
-    Retrieve the lattest information for every stations.
+    Retrieve the latest information for every stations.
 
     :return: list of dict
     """
@@ -144,10 +144,11 @@ def getBikesAtTime(date_time, time_delta=60):
           max(station_last_update) as station_last_update,
           max(status) as status
         FROM storage_dublinbikesstationrealtimeupdate
-        WHERE timestamp BETWEEN '{}' and '{}'
+        WHERE timestamp >= '{}' and  timestamp < '{}'
         GROUP BY parent_station_id
         ) as avg_updates
-    on station_number = avg_updates.parent_station_id;
+    on station_number = avg_updates.parent_station_id
+    order by station_number;
 '''.format(
         (connection.ops.select % 'position'),
         date_time.isoformat(),

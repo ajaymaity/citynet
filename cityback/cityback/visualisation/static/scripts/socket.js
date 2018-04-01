@@ -51,7 +51,6 @@ function onMessage(evt) {
                 break;
             case 'mapAtTime':
                 console.log('Updating data...');
-                console.log(svals.value);
                 updateMap(svals.value, rtMode);
                 break;
             case 'chart':
