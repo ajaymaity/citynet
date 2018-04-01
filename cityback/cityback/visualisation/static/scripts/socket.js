@@ -31,6 +31,11 @@ function onMessage(evt) {
     // update real-time stations
     if (rtMode && 'rtstations' in svals) {
         updateMap(svals.rtstations, rtMode);
+        let slider = document.getElementById('slider');
+        slider.min = 0;
+        slider.max = svals.timerange.nbIntervals - 1;
+        slider.value = slider.max;
+        dateTimeOfIndex = svals.timerange.dateTimeOfIndex;
     }
     if ('type' in svals) {
         // console.log('data=' + JSON.stringify(svals))

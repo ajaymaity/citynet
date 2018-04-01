@@ -58,8 +58,7 @@ def getLatestStationJSON():
     date_list = getBikesDistinctTimes(delta_s=60)
     times = [d.strftime(format) for d in date_list]
 
-    data = {"type": "timeRange",
-            'nbIntervals': len(times),
+    data = {'nbIntervals': len(times),
             'dateTimeOfIndex': times}
     data = json.dumps({"rtstations": convertToGeoJson(latestStations),
                        'timerange': data})
