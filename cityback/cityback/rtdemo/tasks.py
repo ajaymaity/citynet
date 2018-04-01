@@ -1,4 +1,4 @@
-"""All the celery tasks are defined here."""
+i"""All the celery tasks are defined here."""
 from __future__ import absolute_import, unicode_literals
 
 import json

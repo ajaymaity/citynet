@@ -2,7 +2,7 @@ asgiref==2.1.6
 celery[sqs]==4.1.0
 channels==2.0.2
 channels_redis==2.0.3
-Django==2.0.2
+Django==1.11
 django-nose==1.4.5
 django-celery-results==1.0.1
 flake8==3.5.0
