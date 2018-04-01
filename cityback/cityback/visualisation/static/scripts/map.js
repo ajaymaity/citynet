@@ -40,6 +40,7 @@ function updateMap(geoStation) {
         let geoFeatures = geoStation['features'];
         console.log('geofeatures length: ' + geoFeatures.length);
         for (let i = 0; i < geoFeatures.length; i++) {
+            geoFeatures[i].properties['charted'] = 0;
             let geoProperty = geoFeatures[i]['properties'];
             if (i in previousOccupancy &&
                 geoProperty['occupancy'] === previousOccupancy[i]) {
@@ -51,7 +52,9 @@ function updateMap(geoStation) {
         }
         // noinspection Annotator
         map.getSource('bikesource').setData(geoStation, {});
-        lastGeoJson = geoStation;
+        if (!lastGeoJson) {
+            lastGeoJson = geoStation;
+        }
     } else {
         // keep the data for when the map is loaded
         firstJson = geoStation;
