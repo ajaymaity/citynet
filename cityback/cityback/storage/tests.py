@@ -21,7 +21,7 @@ class BikeStationsTest(TestCase):
             "test_data.json")))
         self.last_timestamp = max([
             RealTimeProcessing.getDateTimeFromTimeStampMS(s["last_update"])
-                                   for s in self.stations])
+            for s in self.stations])
         self.stations_multiple = json.load(open(os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
             "test_data_multiple.json")))
@@ -126,7 +126,7 @@ class GetLattestStationsFromDBTest(BikeStationsTest):
     def runTest(self):
         """Test the data_retrieval of the latest stations."""
         RealTimeProcessing.update_stations([s for s in self.stations_multiple
-                         if s['number'] in [1, 2, 3]])
+                                            if s['number'] in [1, 2, 3]])
         bikes_static = DublinBikesStation.objects.all()
         latest_bikes = []
         for bike_static in bikes_static:

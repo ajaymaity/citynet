@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'cityback.retrieval',
     'channels',
     'cityback.rtdemo',
-    'cityback.visualisation'
+    'cityback.visualisation',
 ]
 
 MIDDLEWARE = [

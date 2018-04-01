@@ -3,8 +3,6 @@ from datetime import datetime, timedelta, timezone
 
 from django.apps import AppConfig
 from django.contrib.gis.geos import Point
-from twisted.test.test_sob import objects
-
 from cityback.data_storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
 from cityback.historical_analysis.apps import HistoricAnalysis
@@ -18,6 +16,7 @@ class StorageConfig(AppConfig):
 
 
 class RealTimeProcessing():
+    """Methods dealing with real time processing."""
 
     @staticmethod
     def update_stations(stations, timestamp=None):
@@ -28,8 +27,8 @@ class RealTimeProcessing():
         then update the bike information for all stations.
 
         :param stations  a list of stations dict
-        :param timestamp if true insert with current time rounded to nearest minute
-        else, get the most recent station_timestamp, rounded to minute
+        :param timestamp if true insert with current time rounded to nearest
+        minute else, get the most recent station_timestamp, rounded to minute
         :return:
         """
         time_delta = 60
@@ -92,7 +91,7 @@ class RealTimeProcessing():
             last_update = station['last_update']
             last_update = (
                 RealTimeProcessing.getDateTimeFromTimeStampMS(last_update)
-                           if last_update is not None else timestamp.now())
+                if last_update is not None else timestamp.now())
             obj, created = DublinBikesStationRealTimeUpdate.objects.get_or_create(
                 parent_station=station_object,
                 timestamp=timestamp.replace(tzinfo=timezone.utc),
@@ -126,7 +125,6 @@ class RealTimeProcessing():
         _, end = HistoricAnalysis.getBikesTimeRange()
         return HistoricAnalysis.getBikesAtTime(end)
     pass
-
 
 
 
