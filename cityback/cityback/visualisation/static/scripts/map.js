@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+/* bunch of global variables */
 let previousOccupancy = [];
 let mapLoaded = false;
 let firstJson = undefined;
@@ -11,20 +12,18 @@ let polygonLabelMap = {};
 let requestInProgress = 0;
 let lastGeoJson;
 
-// requestInProgress.registerListener(function() {
-//     if (requestInProgress === false) {
-//         $('#loading').hide();
-//     } else {
-//         $('#loading').show();
-//     }
-// });
-
-
+/**
+ * Show loading screen and handle state for number of requests waiting for
+ */
 function showLoadingScreen() {
     requestInProgress += 1;
     $('#loading').show();
 }
 
+/* exported hideLoadingScreen */
+/**
+ * Hide loading screen and handle state for number of requests waiting for
+ */
 function hideLoadingScreen() {
     if (requestInProgress > 0) requestInProgress -= 1;
     if (requestInProgress === 0) $('#loading').hide();
@@ -33,8 +32,9 @@ function hideLoadingScreen() {
 /**
  * Update the mapbox map from json.
  * @param {json} geoStation
+ * @param {Boolean} rtMode
  */
-function updateMap(geoStation) {
+function updateMap(geoStation, rtMode) {
     console.log('updating map');
     if (mapLoaded) {
         let geoFeatures = geoStation['features'];
@@ -42,8 +42,8 @@ function updateMap(geoStation) {
         for (let i = 0; i < geoFeatures.length; i++) {
             geoFeatures[i].properties['charted'] = 0;
             let geoProperty = geoFeatures[i]['properties'];
-            if (i in previousOccupancy &&
-                geoProperty['occupancy'] === previousOccupancy[i]) {
+            if (!rtMode || (i in previousOccupancy &&
+                geoProperty['occupancy'] === previousOccupancy[i])) {
                 geoProperty['occupancyChanged'] = 0;
             } else {
                 geoProperty['occupancyChanged'] = 1;
@@ -54,7 +54,7 @@ function updateMap(geoStation) {
         map.getSource('bikesource').setData(geoStation, {});
         if (!lastGeoJson) {
             lastGeoJson = geoStation;
-            map.getSource('bikesourcefilter').setData(lastGeoJson);
+            map.getSource('bikesourcefilter').setData(lastGeoJson, {});
         }
     } else {
         // keep the data for when the map is loaded
@@ -62,6 +62,9 @@ function updateMap(geoStation) {
     }
 }
 
+/**
+ * Destroy and re-create charts when slider is updated.
+ */
 function applyDeltaSliderUpdates() {
     removeAllDatasetsAndLabelsFromChart();
     showLoadingScreen();
@@ -205,6 +208,11 @@ function getPolygon(element) {
     }
 }
 
+/**
+ * Add station to chart
+ * @param {Number} elementId
+ * @param {Object} station
+ */
 function addStationToChart(elementId, station) {
     showLoadingScreen();
     station.properties['charted'] = 1;
@@ -220,7 +228,7 @@ function addStationToChart(elementId, station) {
  * Create the mapbox area with the key and input functions
  */
 function initMap() {
-// create mapbox object
+    // create mapbox object
     mapboxgl.accessToken = 'pk.eyJ1IjoiYXNlcHJvamVjdGdyb3VwMTEiLCJhIjoiY2pkdWE2dHRuMTVmODMzbGxzY3htNzVmZCJ9.rp6HgWPAmVtqsQ9pOR4PdA';
     map = new mapboxgl.Map({
         container: 'map', // container id
@@ -228,7 +236,7 @@ function initMap() {
         center: [-6.264, 53.346], // starting position [lng, lat]
         zoom: 13.25, // starting zoom
     });
-// Add zoom and rotation controls to the map.
+    // Add zoom and rotation controls to the map.
     map.addControl(new mapboxgl.NavigationControl());
 
     draw = new MapboxDraw({
@@ -245,7 +253,7 @@ function initMap() {
     map.on('draw.delete', getPolygon);
     map.on('draw.update', getPolygon);
 
-// dict to store stations previous occupancy
+    // dict to store stations previous occupancy
     map.on('load', function() {
         let empty = {type: 'FeatureCollection', features: []};
         map.addSource('bikesource', {type: 'geojson', data: empty});
@@ -294,19 +302,6 @@ function initMap() {
                     12, 7,
                     14, 18,
                 ],
-                'circle-stroke-width': [
-                    'interpolate', ['linear'], ['zoom'],
-                    12, 1,
-                    14, 3,
-                ],
-                'circle-stroke-color': {
-                    property: 'occupancyChanged',
-                    type: 'exponential',
-                    stops: [
-                        [0, '#000000'],
-                        [1, '#D00000'],
-                    ],
-                },
                 'circle-opacity': {
                     property: 'charted',
                     type: 'exponential',
@@ -317,7 +312,7 @@ function initMap() {
         });
         mapLoaded = true;
         if (firstJson !== undefined) {
-            updateMap(firstJson);
+            updateMap(firstJson, false);
         }
     });
     setupWebSocket();

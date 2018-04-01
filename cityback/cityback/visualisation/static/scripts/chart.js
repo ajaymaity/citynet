@@ -125,7 +125,7 @@ document.getElementById('removeData').addEventListener('click', function() {
  * Draw a new graph, removing the previous one
  * @param {Array} labels
  * @param {Array} occupancy
- * @param {int} selectionType
+ * @param {String} selectionType
  * @param {int} selectionId
  * @param {int} timeDeltaS
  */
@@ -147,15 +147,6 @@ function replaceChart(labels, occupancy, selectionType, selectionId,
     }
 
     if (selectionType === 'station') {
-        // let values = map.querySourceFeatures('bikesource', {
-        //     'sourceLayer': 'bikes',
-        // });
-        // // console.log('number of values ' + values.length);
-        // for (let value of values) {
-        //     console.log(value.properties.station_number + ' ' + value.properties.station_name);
-        // }
-        let values = map.getLayer('bikes');
-
         stationsInChart.add(String(selectionId));
     }
 
@@ -196,7 +187,7 @@ function removeDatasetFromChart(selectionId) {
     let removalIndex = config.data.datasets.indexOf(
         config.data.datasets.filter(
             function(dataObject) {
-                return dataObject.id == selectionId; // need coercion
+                return dataObject.id == selectionId; // force coercion
     })[0]);
     if (removalIndex >= 0) {
         config.data.datasets.splice(removalIndex, 1);

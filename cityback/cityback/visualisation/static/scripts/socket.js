@@ -30,8 +30,7 @@ function onMessage(evt) {
 
     // update real-time stations
     if (rtMode && 'rtstations' in svals) {
-        updateMap(svals.rtstations);
-        getTimeRange();
+        updateMap(svals.rtstations, rtMode);
     }
     if ('type' in svals) {
         // console.log('data=' + JSON.stringify(svals))
@@ -47,7 +46,7 @@ function onMessage(evt) {
             case 'mapAtTime':
                 console.log('Updating data...');
                 console.log(svals.value);
-                updateMap(svals.value);
+                updateMap(svals.value, rtMode);
                 break;
             case 'chart':
                 console.log('Received Chart data!');
