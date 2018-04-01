@@ -183,7 +183,7 @@ class GetStationsTimeRange(BikeStationsTest):
         range2 = HistoricAnalysis.getBikesTimeRange()
         times = [HistoricAnalysis.floorTime(
             RealTimeProcessing.getDateTimeFromTimeStampMS(s["last_update"]),
-                           60).replace(tzinfo=datetime.timezone.utc)
+            60).replace(tzinfo=datetime.timezone.utc)
                  for s in stations]
         range1 = (min(times), max(times))
         self.assertEqual(range1, range2)

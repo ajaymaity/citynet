@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 
 from django.apps import AppConfig
 from django.contrib.gis.geos import Point
-from twisted.test.test_sob import objects
 from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
 from cityback.historical_analysis.apps import HistoricAnalysis
@@ -78,32 +77,34 @@ class RealTimeProcessing():
                 station['position']['lat'],
                 srid=4326  # WGS 84
             )
-            station_object, created = DublinBikesStation.objects.update_or_create(
-                station_number=station['number'],
-                defaults=dict(
-                    position=point,
-                    name=station['name'],
-                    address=station['address'],
-                    bonus=station['bonus'],
-                    contract_name=station['contract_name'],
-                    banking=station['banking']
-                )
-            )
+            station_object, created = (
+                DublinBikesStation.objects.update_or_create(
+                    station_number=station['number'],
+                    defaults=dict(
+                        position=point,
+                        name=station['name'],
+                        address=station['address'],
+                        bonus=station['bonus'],
+                        contract_name=station['contract_name'],
+                        banking=station['banking']
+                    )
+                ))
             last_update = station['last_update']
             last_update = (
                 RealTimeProcessing.getDateTimeFromTimeStampMS(last_update)
                 if last_update is not None else timestamp.now())
-            obj, created = DublinBikesStationRealTimeUpdate.objects.get_or_create(
-                parent_station=station_object,
-                timestamp=timestamp.replace(tzinfo=timezone.utc),
-                defaults=dict(
-                    station_last_update=last_update,
-                    status=station['status'],
-                    available_bikes=station['available_bikes'],
-                    available_bike_stands=station['available_bike_stands'],
-                    bike_stands=station['bike_stands'],
-                )
-            )
+            obj, created = (
+                DublinBikesStationRealTimeUpdate.objects.get_or_create(
+                    parent_station=station_object,
+                    timestamp=timestamp.replace(tzinfo=timezone.utc),
+                    defaults=dict(
+                        station_last_update=last_update,
+                        status=station['status'],
+                        available_bikes=station['available_bikes'],
+                        available_bike_stands=station['available_bike_stands'],
+                        bike_stands=station['bike_stands'],
+                    )
+                ))
 
             # print("created", created, "obj", obj)
 
@@ -125,18 +126,3 @@ class RealTimeProcessing():
         """
         _, end = HistoricAnalysis.getBikesTimeRange()
         return HistoricAnalysis.getBikesAtTime(end)
-    pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-

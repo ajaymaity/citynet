@@ -16,8 +16,8 @@ class Command(BaseCommand):
         time_delta = 60
 
         start, end = HistoricAnalysis.getBikesTimeRange()
-        start, end = HistoricAnalysis.floorTime(start, time_delta), \
-                     HistoricAnalysis.floorTime(end, time_delta)
+        start, end = (HistoricAnalysis.floorTime(start, time_delta),
+                      HistoricAnalysis.floorTime(end, time_delta))
 
         num_dates = (end - start) // datetime.timedelta(seconds=time_delta) + 1
         date_list = [start + datetime.timedelta(seconds=(time_delta * x))
