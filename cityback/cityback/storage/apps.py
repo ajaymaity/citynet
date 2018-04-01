@@ -228,6 +228,8 @@ def getCompressedBikeUpdates(stations, time_delta_s=3600, length_limit=4000):
         return None, None
     # import time
     # stopwatch_start = time.time()
+    print(type(stations))
+    print(stations)
     assert type(stations) == list
     assert type(length_limit) == int
 

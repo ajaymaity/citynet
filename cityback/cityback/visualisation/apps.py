@@ -2,8 +2,8 @@
 import json
 
 from django.apps import AppConfig
-
-from cityback.storage.apps import getLatestStationsFromDB
+from cityback.storage.apps import (getLatestStationsFromDB,
+                                   getBikesDistinctTimes)
 
 
 class VisualisationConfig(AppConfig):
@@ -53,6 +53,14 @@ def getLatestStationJSON():
 
     @:return json of the stations updates
     """
+    format = "%Y-%m-%d %H:%M"
     latestStations = getLatestStationsFromDB()
-    data = json.dumps({"rtstations": convertToGeoJson(latestStations)})
+    date_list = getBikesDistinctTimes(delta_s=60)
+    times = [d.strftime(format) for d in date_list]
+
+    data = {"type": "timeRange",
+            'nbIntervals': len(times),
+            'dateTimeOfIndex': times}
+    data = json.dumps({"rtstations": convertToGeoJson(latestStations),
+                       'timerange': data})
     return data
