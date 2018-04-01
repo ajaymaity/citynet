@@ -7,6 +7,8 @@ let draw;
 let deltaSlider = 21600;
 let iterator = 0;
 let polygonLabelMap = {};
+
+/* exported requestInProgress */
 let requestInProgress = false;
 
 

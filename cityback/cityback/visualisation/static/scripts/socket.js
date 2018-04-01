@@ -12,9 +12,26 @@ let dateTimeOfIndex = [];
 function onMessage(evt) {
     console.log('data_received');
     let svals = JSON.parse(evt.data);
+    let rtMode;
 
-    if ('stations' in svals) {
-        updateMap(svals.stations);
+    // Check if in rtMode
+    let slider = document.getElementById('slider');
+    let selector = document.getElementById('deltaS');
+    if (slider !== 'undefined' && slider.value === slider.max &&
+        selector !== 'undefined' && getCurrentDelta() === '60') {
+        document.getElementById('rt_updates').innerText = 'on';
+        document.getElementById('rt_updates').style.fontWeight = 'bold';
+        rtMode = true;
+    } else {
+        document.getElementById('rt_updates').innerText = 'off';
+        document.getElementById('rt_updates').style.fontWeight = 'normal';
+        rtMode = false;
+    }
+
+    // update real-time stations
+    if (rtMode && 'rtstations' in svals) {
+        updateMap(svals.rtstations);
+        getTimeRange();
     }
     if ('type' in svals) {
         // console.log('data=' + JSON.stringify(svals))
@@ -35,7 +52,8 @@ function onMessage(evt) {
             case 'chart':
                 console.log('Received Chart data!');
                 replaceChart(svals.labels, svals.occupancy,
-                    svals.selectionType, svals.selectionId, svals.time_delta_s);
+                    svals.selectionType, svals.selectionId,
+                    svals.time_delta_s);
                 break;
         }
     }
@@ -60,7 +78,8 @@ function setupWebSocket() {
     } else {
         prefix = 'wss';
     }
-    webSocket = new WebSocket(prefix + '://' + location.host + '/ws/rtStations');
+    webSocket = new WebSocket(
+        prefix + '://' + location.host + '/ws/rtStations');
     webSocket.onopen = function(event) {
         onOpen();
 };

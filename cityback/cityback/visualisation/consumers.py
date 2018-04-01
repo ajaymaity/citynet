@@ -5,8 +5,8 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
-from cityback.storage.apps import getBikesAtTime, \
-    getCompressedBikeUpdates, getBikesDistinctTimes, floorTime
+from cityback.storage.apps import floorTime, getBikesAtTime, \
+    getBikesDistinctTimes, getCompressedBikeUpdates
 from cityback.storage.apps import get_stations_from_polygon
 from cityback.visualisation.apps import convertToGeoJson
 
@@ -47,6 +47,7 @@ class RTStationsConsumer(WebsocketConsumer):
         times, occupancy = getCompressedBikeUpdates(
             stations=[station_id],
             time_delta_s=time_delta_s)
+        print("len of times =", len(times))
         if not times or len(times) == 0:
             return
         data = json.dumps({"type": "chart",

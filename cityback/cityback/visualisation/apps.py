@@ -54,5 +54,5 @@ def getLatestStationJSON():
     @:return json of the stations updates
     """
     latestStations = getLatestStationsFromDB()
-    data = json.dumps({"stations": convertToGeoJson(latestStations)})
+    data = json.dumps({"rtstations": convertToGeoJson(latestStations)})
     return data

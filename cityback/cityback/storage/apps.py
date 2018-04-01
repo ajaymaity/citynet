@@ -222,26 +222,29 @@ def getBikesDistinctTimes(delta_s=60):
     return date_list
 
 
-def getCompressedBikeUpdates(stations, time_delta_s=3600):
+def getCompressedBikeUpdates(stations, time_delta_s=3600, length_limit=4000):
     """Get bike update average over the specified delta and stations."""
     if not stations:
         return None, None
     # import time
     # stopwatch_start = time.time()
+    assert type(stations) == list
+    assert type(length_limit) == int
 
     times = list(DublinBikesStationRealTimeUpdate.objects.raw('''
-        select
-         1 as id,
+        with t as (select
          avg(available_bikes::float / bike_stands::float) as avg_occupancy,
          date_floor(timestamp, '{} seconds') as rdate
         from storage_dublinbikesstationrealtimeupdate
         WHERE parent_station_id in ({})
         and bike_stands <> 0
         group by rdate
-        order by rdate
+        order by rdate DESC
+        limit {})
+        select 1 as id, * from t ORDER BY rdate ASC
         '''.format(
         time_delta_s,
-        ",".join([str(s) for s in stations]))
+        ",".join([str(s) for s in stations]), length_limit)
     ))
 
     # print("get compressed: {:.03f}s".format(time.time() - stopwatch_start))

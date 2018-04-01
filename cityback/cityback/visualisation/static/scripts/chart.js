@@ -30,11 +30,11 @@ let config = {
         responsive: true,
         title: {
             display: true,
-            text: 'Bike occupancy vs time charts',
+            text: '6-hour average station occupancy',
         },
         showTooltips: false,
         hover: false,
-        animation:{
+        animation: {
             duration: 0,
         },
         scales: {
@@ -138,9 +138,9 @@ function replaceChart(labels, occupancy, selectionType, selectionId,
     let hours = minutes / 60;
     let timeStr;
     if (hours >= 1) {
-        timeStr = hours + ' hour' + (hours == 1 ? '' : 's');
+        timeStr = hours + '-hour';
     } else {
-        timeStr = minutes + ' minute' + (minutes == 1 ? '' : 's');
+        timeStr = minutes + '-minute';
     }
 
     if (selectionType === 'station') {
@@ -149,15 +149,16 @@ function replaceChart(labels, occupancy, selectionType, selectionId,
 
     let newDataset = {
         id: selectionId,
-        label: 'Bike occupancy averaged for every ' + timeStr + ' for '
-        + (selectionType === 'polygon'?
+        label: (selectionType === 'polygon'?
             polygonLabelMap[selectionId] : 'Station ' + selectionId),
         backgroundColor: newColor,
         borderColor: newColor,
+        pointRadius: 1,
         data: [],
         fill: false,
     };
-
+    config.options.title.text = (`${timeStr} average station ` +
+        `occupancy`);
     console.log('drawing chart with data:');
 
     if (config.data.labels.length === 0) {
