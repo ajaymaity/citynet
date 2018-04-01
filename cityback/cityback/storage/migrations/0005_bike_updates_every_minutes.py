@@ -7,12 +7,12 @@ import numpy as np
 from django.db import migrations, models
 from django.db.models import Max, Min
 
-from cityback.storage.apps import floorTime
+from cityback.data_storage.apps import HistoricAnalysis
 
 
 def migrate_every_minutes(apps, schema_editor):
 
-    MyModel = apps.get_model('storage', 'dublinbikesstationrealtimeupdate')
+    MyModel = apps.get_model('data_storage', 'dublinbikesstationrealtimeupdate')
 
     time_delta = 60
     times = MyModel.objects.all().aggregate(
@@ -21,7 +21,8 @@ def migrate_every_minutes(apps, schema_editor):
     lastTime = times['station_last_update__max']
     if startTime is None or lastTime is None:
         return
-    start, end = floorTime(startTime, time_delta), floorTime(lastTime, time_delta)
+    start, end = HistoricAnalysis.floorTime(startTime, time_delta), \
+                 HistoricAnalysis.floorTime(lastTime, time_delta)
 
     num_dates = (end - start) // datetime.timedelta(seconds=time_delta) + 1
     date_list = [start + datetime.timedelta(seconds=(time_delta * x))
@@ -60,7 +61,7 @@ def migrate_every_minutes(apps, schema_editor):
         if i % 10000 == 0:
             print(i)
 
-        rounded_time = floorTime(data[0], time_delta)
+        rounded_time = HistoricAnalysis.floorTime(data[0], time_delta)
         try:
             idx = date_list.index(rounded_time)
             station_idx = list_stations_pk.index(data[3])
@@ -119,7 +120,7 @@ def migrate_every_minutes(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('storage', '0004_db_refactoring'),
+        ('data_storage', '0004_db_refactoring'),
     ]
 
     operations = [

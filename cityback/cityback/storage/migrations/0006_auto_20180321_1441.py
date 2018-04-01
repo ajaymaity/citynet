@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('storage', '0005_bike_updates_every_minutes'),
+        ('data_storage', '0005_bike_updates_every_minutes'),
     ]
 
     operations = [

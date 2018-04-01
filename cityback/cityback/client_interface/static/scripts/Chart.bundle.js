@@ -3465,7 +3465,7 @@ var baseConfig = {
     meridiemParse: defaultLocaleMeridiemParse
 };
 
-// internal storage for locale config files
+// internal data_storage for locale config files
 var locales = {};
 var localeFamilies = {};
 var globalLocale;
@@ -8256,7 +8256,7 @@ module.exports = function(Chart) {
 			var me = this;
 			if (me.request === null) {
 				// Skip animation frame requests until the active one is executed.
-				// This can happen when processing mouse events, e.g. 'mousemove'
+				// This can happen when scheduled_tasks mouse events, e.g. 'mousemove'
 				// and 'mouseout' events will trigger multiple renders.
 				me.request = helpers.requestAnimFrame.call(window, function() {
 					me.request = null;
@@ -11533,7 +11533,7 @@ module.exports = {
  */
 /**
  * @method IPlugin#beforeEvent
- * @desc Called before processing the specified `event`. If any plugin returns `false`,
+ * @desc Called before scheduled_tasks the specified `event`. If any plugin returns `false`,
  * the event will be discarded.
  * @param {Chart.Controller} chart - The chart instance.
  * @param {IEvent} event - The event object.

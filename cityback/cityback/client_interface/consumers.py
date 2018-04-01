@@ -5,9 +5,9 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
-from cityback.storage.apps import floorTime, getBikesAtTime, \
-    getBikesDistinctTimes, getCompressedBikeUpdates
-from cityback.storage.apps import get_stations_from_polygon
+from cityback.data_storage.apps import floorTime, getBikesAtTime, \
+    getBikesDistinctTimes, HistoricalAnalysis
+from cityback.data_storage.apps import get_stations_from_polygon
 from cityback.visualisation.apps import convertToGeoJson
 
 

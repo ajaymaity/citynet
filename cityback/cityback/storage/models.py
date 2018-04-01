@@ -1,4 +1,4 @@
-"""Bike storage models definition."""
+"""Bike data_storage models definition."""
 from django.contrib.gis.db import models
 
 

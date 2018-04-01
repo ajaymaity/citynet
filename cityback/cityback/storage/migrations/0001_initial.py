@@ -4,6 +4,7 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+# noinspection PyUnresolvedReferences,PyUnresolvedReferences
 class Migration(migrations.Migration):
 
     initial = True
@@ -34,7 +35,9 @@ class Migration(migrations.Migration):
                 ('available_bikes', models.IntegerField()),
                 ('available_bike_stands', models.IntegerField()),
                 ('bike_stands', models.IntegerField()),
-                ('parent_station', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='storage.DublinBikesStation')),
+                ('parent_station', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    to='data_storage.DublinBikesStation')),
             ],
         ),
     ]

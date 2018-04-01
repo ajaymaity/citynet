@@ -2,14 +2,14 @@
 import json
 
 from django.apps import AppConfig
-from cityback.storage.apps import (getLatestStationsFromDB,
-                                   getBikesDistinctTimes)
+from cityback.data_storage.apps import (getLatestStationsFromDB,
+                                        getBikesDistinctTimes)
 
 
 class VisualisationConfig(AppConfig):
     """Set up visualistion config."""
 
-    name = 'visualisation'
+    name = 'client_interface'
 
 
 def convertToGeoJson(data):

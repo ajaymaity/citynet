@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('storage', '0007_add_sql_floor_function'),
+        ('data_storage', '0007_add_sql_floor_function'),
     ]
 
     operations = [
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('time', models.DateTimeField(db_index=True, null=True)),
                 ('avg_available_bikes', models.IntegerField()),
-                ('parent_station', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='storage.DublinBikesStation')),
+                ('parent_station', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cityback.data_storage.DublinBikesStation')),
             ],
         ),
     ]

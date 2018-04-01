@@ -1,7 +1,7 @@
 """Rendering of views done in this module."""
 
 from django.shortcuts import render
-from cityback.storage.apps import getLatestStationsFromDB
+from cityback.data_storage.apps import getLatestStationsFromDB
 from cityback.visualisation.apps import convertToGeoJson
 import json
 
