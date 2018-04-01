@@ -36,6 +36,7 @@ function onMessage(evt) {
         slider.max = svals.timerange.nbIntervals - 1;
         slider.value = slider.max;
         dateTimeOfIndex = svals.timerange.dateTimeOfIndex;
+        slider.dispatchEvent(new Event('input'));
     }
     if ('type' in svals) {
         // console.log('data=' + JSON.stringify(svals))

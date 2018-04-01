@@ -5,7 +5,7 @@ let mapLoaded = false;
 let firstJson = undefined;
 let map;
 let draw;
-let deltaSlider = 21600;
+let deltaSlider = 60;
 let iterators = new Set();
 let stationsInChart = new Set();
 let polygonLabelMap = {};
@@ -311,12 +311,12 @@ function initMap() {
             // 'filter': ['in', 'FIPS', ''],
         });
         mapLoaded = true;
+        setupWebSocket();
+        setupSlider();
         if (firstJson !== undefined) {
             updateMap(firstJson, false);
         }
     });
-    setupWebSocket();
-    setupSlider();
 
 
     map.on('click', 'bikes', function(e) {
