@@ -1,13 +1,13 @@
-"""Tests related to the data_storage module."""
+"""Tests related to the storage module."""
 import datetime
 import json
 import os
 
 from django.test import TestCase
 
-from cityback.data_storage.apps import RealTimeProcessing
+from cityback.storage.apps import RealTimeProcessing
 from cityback.historical_analysis.apps import HistoricAnalysis
-from cityback.data_storage.models import (
+from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
 
 

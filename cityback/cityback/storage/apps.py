@@ -5,7 +5,7 @@ from django.apps import AppConfig
 from django.contrib.gis.geos import Point
 from twisted.test.test_sob import objects
 
-from cityback.data_storage.models import (
+from cityback.storage.models import (
     DublinBikesStation, DublinBikesStationRealTimeUpdate)
 from cityback.historical_analysis.apps import HistoricAnalysis
 
@@ -14,7 +14,7 @@ class StorageConfig(AppConfig):
     """TODO."""
 
     # noinspection PyUnresolvedReferences
-    name = 'data_storage'
+    name = 'storage'
 
 
 class RealTimeProcessing():

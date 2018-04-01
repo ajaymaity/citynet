@@ -8,7 +8,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from django.urls import path
 
 from cityback.rtdemo.consumers import ClientSocketConsumer
-from cityback.visualisation.consumers import RTStationsConsumer
+from cityback.client_interface.consumers import RTStationsConsumer
 
 application = ProtocolTypeRouter({
     # WebSocket chat handler

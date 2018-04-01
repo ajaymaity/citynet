@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                 ('bike_stands', models.IntegerField()),
                 ('parent_station', models.ForeignKey(
                     on_delete=django.db.models.deletion.CASCADE,
-                    to='data_storage.DublinBikesStation')),
+                    to='storage.DublinBikesStation')),
             ],
         ),
     ]

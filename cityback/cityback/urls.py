@@ -19,7 +19,7 @@ from django.conf.urls import url
 from django.contrib import admin
 
 from cityback.rtdemo.views import rtDemo
-from cityback.visualisation.views import rtStations
+from cityback.client_interface.views import rtStations
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls, name="admin"),

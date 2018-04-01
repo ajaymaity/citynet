@@ -1,6 +1,7 @@
 """Tests for Bikes Retrieval."""
 from django.test import TestCase
-from cityback.retrieval.data_retrieval import BikesRetrieval, DataRetrieval
+from cityback.data_retrieval.data_retrieval import (
+    BikesRetrieval, DataRetrieval)
 from unittest import mock
 from requests.models import Response
 import json
@@ -49,7 +50,7 @@ class GetStationsListFromContractTest(TestCase):
 class DataRetrievalTestCase(TestCase):
     """Stations list from contract testcase."""
 
-    @mock.patch('cityback.retrieval.data_retrieval.requests.get',
+    @mock.patch('cityback.data_retrieval.data_retrieval.requests.get',
                 side_effect=mocked_requests_get)
     def test_fetch(self, mock_get):
         """Test with dummy data."""

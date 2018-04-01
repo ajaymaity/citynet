@@ -6,7 +6,7 @@ This script downloads the lattest station update to a json file.
 """
 import datetime
 import time
-from cityback.retrieval.data_retrieval import BikesRetrieval
+from cityback.data_retrieval.data_retrieval import BikesRetrieval
 import json
 
 

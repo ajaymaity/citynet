@@ -7,12 +7,12 @@ import numpy as np
 from django.db import migrations, models
 from django.db.models import Max, Min
 
-from cityback.data_storage.apps import HistoricAnalysis
+from cityback.storage.apps import HistoricAnalysis
 
 
 def migrate_every_minutes(apps, schema_editor):
 
-    MyModel = apps.get_model('data_storage', 'dublinbikesstationrealtimeupdate')
+    MyModel = apps.get_model('storage', 'dublinbikesstationrealtimeupdate')
 
     time_delta = 60
     times = MyModel.objects.all().aggregate(
@@ -120,7 +120,7 @@ def migrate_every_minutes(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data_storage', '0004_db_refactoring'),
+        ('storage', '0004_db_refactoring'),
     ]
 
     operations = [

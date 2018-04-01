@@ -43,11 +43,13 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'django_nose',
     'cityback.storage',
-    'cityback.processing',
-    'cityback.retrieval',
+    'cityback.scheduled_tasks',
+    'cityback.data_retrieval',
     'channels',
     'cityback.rtdemo',
-    'cityback.visualisation'
+    'cityback.client_interface',
+    'cityback.historical_analysis',
+    'cityback.forecast_engine',
 ]
 
 MIDDLEWARE = [
@@ -152,6 +154,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+# noinspection PyUnresolvedReferences
 STATIC_ROOT = '/var/www/static/'
 
 CELERY_TIMEZONE = TIME_ZONE
@@ -196,10 +199,10 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 # Tell nose to measure coverage on the 'foo' and 'bar' apps
 NOSE_ARGS = [
     '--with-coverage',
-    '--cover-package=cityback.storage,cityback.retrieval,'
+    '--cover-package=cityback.storage,cityback.data_retrieval,'
     'cityback.rtdemo,'
-    'cityback.visualisation,'
+    'cityback.client_interface,'
     'cityback.scheduler,'
-    'cityback.processing',
+    'cityback.scheduled_tasks',
     '--cover-html'
 ]

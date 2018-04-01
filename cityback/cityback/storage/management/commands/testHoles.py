@@ -3,8 +3,8 @@ import datetime
 import numpy as np
 from django.core.management.base import BaseCommand
 import time
-from cityback.data_storage.apps import HistoricAnalysis
-from cityback.data_storage.models import DublinBikesStationRealTimeUpdate
+from cityback.storage.apps import HistoricAnalysis
+from cityback.storage.models import DublinBikesStationRealTimeUpdate
 # import ipdb
 
 

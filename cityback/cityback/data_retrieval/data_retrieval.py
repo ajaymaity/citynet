@@ -1,4 +1,4 @@
-"""Hello World file testing data retrieval for the Dublin bikes."""
+"""Hello World file testing data data_retrieval for the Dublin bikes."""
 
 import requests
 import logging
@@ -8,7 +8,7 @@ __all__ = ["DataRetrieval", "BikesRetrieval"]
 
 
 class DataRetrieval(object):
-    """Wrapper for data retrieval functionality."""
+    """Wrapper for data data_retrieval functionality."""
 
     def get_json_from_url(self, url):
         """Get the json response from a url, log if error."""
@@ -20,11 +20,6 @@ class DataRetrieval(object):
                     response.status_code, url))
             return None
         return response.json(encoding='utf-8')
-
-    def get_contracts(self):
-        """Retrieve the list of contracts from the API."""
-        url = self.BIKES_URL["contracts"].format(api_key=self.dbikes_apikey)
-        return self.get_json_from_url(url)
 
 
 class BikesRetrieval(DataRetrieval):
@@ -53,6 +48,11 @@ class BikesRetrieval(DataRetrieval):
         # stations = get_bike_stations
         # if stations.last_update is None:
         # update_bike_stations(self.get_static_data)
+
+    def get_contracts(self):
+        """Retrieve the list of contracts from the API."""
+        url = self.BIKES_URL["contracts"].format(api_key=self.dbikes_apikey)
+        return self.get_json_from_url(url)
 
     def get_stations_list_from_contract(self, contract):
         """Get the json of all the stations of a contract."""

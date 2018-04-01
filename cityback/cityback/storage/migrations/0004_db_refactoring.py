@@ -7,7 +7,7 @@ from django.contrib.gis.geos import Point
 
 def migrate_float_to_point(apps, schema_editor):
 
-    MyModel = apps.get_model('data_storage', 'dublinbikesstation')
+    MyModel = apps.get_model('storage', 'dublinbikesstation')
 
     for mm in MyModel.objects.all():
 
@@ -22,7 +22,7 @@ def migrate_float_to_point(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data_storage', '0003_add_sql_function'),
+        ('storage', '0003_add_sql_function'),
     ]
 
     operations = [

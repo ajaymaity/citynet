@@ -2,10 +2,10 @@
 import json
 
 from django.apps import AppConfig
-from cityback.data_storage.apps import (getLatestStationsFromDB,
-                                        getBikesDistinctTimes)
+from cityback.storage.apps import HistoricAnalysis, RealTimeProcessing
 
 
+# noinspection PyUnresolvedReferences
 class VisualisationConfig(AppConfig):
     """Set up visualistion config."""
 
@@ -52,8 +52,8 @@ def getLatestStationJSON():
     @:return json of the stations updates
     """
     format = "%Y-%m-%d %H:%M"
-    latestStations = getLatestStationsFromDB()
-    date_list = getBikesDistinctTimes(delta_s=60)
+    latestStations = RealTimeProcessing.getLatestStationsFromDB()
+    date_list = HistoricAnalysis.getBikesDistinctTimes(delta_s=60)
     times = [d.strftime(format) for d in date_list]
 
     data = {'nbIntervals': len(times),

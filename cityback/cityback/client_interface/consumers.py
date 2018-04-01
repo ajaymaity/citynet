@@ -5,10 +5,8 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
-from cityback.data_storage.apps import floorTime, getBikesAtTime, \
-    getBikesDistinctTimes, HistoricalAnalysis
-from cityback.data_storage.apps import get_stations_from_polygon
-from cityback.visualisation.apps import convertToGeoJson
+from cityback.historical_analysis.apps import HistoricAnalysis
+from cityback.client_interface.conversion import convertToGeoJson
 
 
 class RTStationsConsumer(WebsocketConsumer):
@@ -18,7 +16,7 @@ class RTStationsConsumer(WebsocketConsumer):
 
     def send_time_range(self, delta_s=60):
         """Send time range to the js client."""
-        date_list = getBikesDistinctTimes(delta_s=delta_s)
+        date_list = HistoricAnalysis.getBikesDistinctTimes(delta_s=delta_s)
         times = [d.strftime(self.format) for d in date_list]
 
         data = {"type": "timeRange",
@@ -35,16 +33,17 @@ class RTStationsConsumer(WebsocketConsumer):
         if delta_s is None:
             return
         delta_s = int(delta_s)
-        dateTime = floorTime(datetime.datetime.strptime(
+        dateTime = HistoricAnalysis.floorTime(datetime.datetime.strptime(
                 dateTime, "%Y-%m-%d %H:%M").replace(
                 tzinfo=datetime.timezone.utc), delta_s)
         data = {"type": "mapAtTime",
-                "value": convertToGeoJson(getBikesAtTime(dateTime, delta_s))}
+                "value": convertToGeoJson(HistoricAnalysis.getBikesAtTime(
+                    dateTime, delta_s))}
         self.send(text_data=json.dumps(data))
 
     def send_historic_chart(self, station_id, time_delta_s=3600):
         """Tmp function to get first chart."""
-        times, occupancy = getCompressedBikeUpdates(
+        times, occupancy = HistoricAnalysis.getCompressedBikeUpdates(
             stations=[station_id],
             time_delta_s=time_delta_s)
         print("len of times =", len(times))
@@ -100,8 +99,9 @@ class RTStationsConsumer(WebsocketConsumer):
     def get_polygon_data(self, polygon_dict, delta_s):
         """Get updated chart from selected polygon."""
         print("deltaS ", delta_s)
-        stations_list = get_stations_from_polygon(polygon_dict['polygon'])
-        times, occupancy = getCompressedBikeUpdates(
+        stations_list = HistoricAnalysis.get_stations_from_polygon(
+            polygon_dict['polygon'])
+        times, occupancy = HistoricAnalysis.getCompressedBikeUpdates(
             stations=stations_list,
             time_delta_s=delta_s)
         if not times or len(times) == 0:

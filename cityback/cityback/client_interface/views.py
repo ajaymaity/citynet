@@ -1,14 +1,14 @@
 """Rendering of views done in this module."""
 
 from django.shortcuts import render
-from cityback.data_storage.apps import getLatestStationsFromDB
-from cityback.visualisation.apps import convertToGeoJson
+from cityback.storage.apps import RealTimeProcessing
+from cityback.client_interface.conversion import convertToGeoJson
 import json
 
 
 def rtStations(request):
     """Render Dublin bikes station average value per minute."""
-    latestStations = getLatestStationsFromDB()
+    latestStations = RealTimeProcessing.getLatestStationsFromDB()
     # latestStations = []
     return render(
         request, "rtStations.html", {

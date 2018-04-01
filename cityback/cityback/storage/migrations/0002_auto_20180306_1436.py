@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 def migrate_str_to_datetime(apps, schema_editor):
 
-    MyModel = apps.get_model('data_storage', 'dublinbikesstationrealtimeupdate')
+    MyModel = apps.get_model('storage', 'dublinbikesstationrealtimeupdate')
 
     for mm in MyModel.objects.all():
 
@@ -20,7 +20,7 @@ def migrate_str_to_datetime(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('data_storage', '0001_initial'),
+        ('storage', '0001_initial'),
     ]
 
     operations = [

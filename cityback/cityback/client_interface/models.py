@@ -2,7 +2,7 @@
 
 from django.db import models  # NOQA
 
-from cityback.data_storage.models import DublinBikesStation
+from cityback.storage.models import DublinBikesStation
 
 
 # Create your models here.
