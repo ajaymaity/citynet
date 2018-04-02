@@ -62,63 +62,9 @@ window.onload = function() {
     window.myLine = new Chart(ctx, config);
 };
 
-document.getElementById('randomizeData').addEventListener('click', function() {
-    config.data.datasets.forEach(function(dataset) {
-        dataset.data = dataset.data.map(function() {
-            return randomValue();
-        });
-    });
-
-    window.myLine.update();
-});
 
 let colorNames = Object.keys(window.chartColors);
-document.getElementById('addDataset').addEventListener('click', function() {
-    let colorName = colorNames[config.data.datasets.length % colorNames.length];
-    let newColor = window.chartColors[colorName];
-    let newDataset = {
-        label: 'Dataset ' + config.data.datasets.length,
-        backgroundColor: newColor,
-        borderColor: newColor,
-        data: [],
-        fill: false,
-    };
 
-    for (let index = 0; index < config.data.labels.length; ++index) {
-        newDataset.data.push(randomValue());
-    }
-
-    config.data.datasets.push(newDataset);
-    window.myLine.update();
-});
-
-document.getElementById('addData').addEventListener('click', function() {
-    if (config.data.datasets.length > 0) {
-        let month = MONTHS[config.data.labels.length % MONTHS.length];
-        config.data.labels.push(month);
-
-        config.data.datasets.forEach(function(dataset) {
-            dataset.data.push(randomValue());
-        });
-
-        window.myLine.update();
-    }
-});
-
-document.getElementById('removeDataset').addEventListener('click', function() {
-    config.data.datasets.splice(0, 1);
-    window.myLine.update();
-});
-
-document.getElementById('removeData').addEventListener('click', function() {
-    config.data.labels.splice(-1, 1); // remove the label first
-
-    config.data.datasets.forEach(function(dataset) {
-        dataset.data.pop();
-    });
-
-    window.myLine.update();
-});
 
 /* exported replaceChart */
 /**
@@ -213,4 +159,14 @@ function removeAllDatasetsAndLabelsFromChart() {
     while (config.data.labels.length) {
         config.data.labels.pop();
     }
+}
+
+
+/* exported getForecastData */
+/**
+ * Ask for forecast data
+ */
+function getForecastData() {
+   console.log('starting forecast');
+
 }

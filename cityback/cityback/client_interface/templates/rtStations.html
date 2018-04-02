@@ -58,20 +58,14 @@
                 <option value="86400">24 hours</option>
             </select>
         </div>
-        <div>Real-time updates are <span id="rt_updates">off</span></div>
+      <div>Real-time updates are <span id="rt_updates">off</span></div>
+      <div>Enable forecast visualisation<input id='forecast' type='checkbox'></div>
     </div>
 
     <div class="aftermap">
         <div style="width:75%;">
             <canvas id="canvas"></canvas>
         </div>
-        <br>
-        <br>
-        <button id="randomizeData">Randomize Data</button>
-        <button id="addDataset">Add Dataset</button>
-        <button id="removeDataset">Remove Dataset</button>
-        <button id="addData">Add Data</button>
-        <button id="removeData">Remove Data</button>
     </div>
 </div>
 <script type="text/javascript" src="static/scripts/socket.js"></script>

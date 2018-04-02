@@ -124,6 +124,9 @@ function setupSlider() {
     document.getElementById('deltaS').addEventListener('change', function() {
         getDeltaDependentFunction();
     });
+    document.getElementById('forecast').addEventListener('change', function() {
+        getForecastData();
+    });
 }
 
 
