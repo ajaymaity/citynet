@@ -7,6 +7,7 @@ from channels.generic.websocket import WebsocketConsumer
 
 from cityback.historical_analysis.apps import HistoricAnalysis
 from cityback.client_interface.conversion import convertToGeoJson
+from cityback.forecast_engine.apps import forecast_occupancy
 
 
 class RTStationsConsumer(WebsocketConsumer):
@@ -95,6 +96,11 @@ class RTStationsConsumer(WebsocketConsumer):
                     self.send_historic_chart(
                         int(text_data["stationId"]),
                         int(text_data['deltaS']))
+                if text_data['type'] == "getForecast":
+                    self.send_forecast_chart(
+                        text_data["start"],
+                        int(text_data['length']),
+                        [int(s) for s in text_data['stations']])
 
     def get_polygon_data(self, polygon_dict, delta_s):
         """Get updated chart from selected polygon."""
@@ -131,3 +137,25 @@ class RTStationsConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_discard)(
             "stationUpdateGroup", self.channel_name)
         print("Disconnected Client to RTstations")
+
+    def send_forecast_chart(self, start, length, stations):
+        """Send the bikes at specific time to the js client."""
+        startTime = datetime.datetime.strptime(
+            start, "%Y-%m-%d %H:%M").replace(
+            tzinfo=datetime.timezone.utc)
+
+        print("stations=", stations)
+        stations_list, forecasts = forecast_occupancy(length, stations,
+                                                      startTime)
+        date_list = [startTime + datetime.timedelta(minutes=x + 1)
+                     for x in range(length)]
+        data = json.dumps({"type": "multichart",
+                           "selectionType": "forecast",
+                           "selectionsId": stations_list,
+                           "labels": [t.strftime(self.format)
+                                      for t in date_list],
+                           # "station":
+                           "occupancy": forecasts,
+                           "time_delta_s": 60})
+        print("Send forecast data")
+        self.send(text_data=data)

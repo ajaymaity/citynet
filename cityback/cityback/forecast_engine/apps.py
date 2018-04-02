@@ -56,8 +56,9 @@ def create_stations_average_occupancy():
                 parent_station_id=station_id, time=group,
                 avg_occupancy=avg_occupancy))
 
-            print(group, avg_occupancy)
-        print("Distinct times: ", total_times)
+            # print(group, avg_occupancy)
+        print("Station_id={}, Distinct times: {}".format(
+            station_id, total_times))
 
     DublinBikesStationAverage.objects.all().delete()
     DublinBikesStationAverage.objects.bulk_create(avg_stations, 1000)
@@ -76,16 +77,11 @@ def forecast_occupancy(forecast_minutes, station_list, start_datetime=None):
     if start_datetime is None:
         _, end = HistoricAnalysis.getBikesTimeRange()
         start_datetime = end
-    start_time = start_datetime.time()
     end_time = start_datetime + datetime.timedelta(minutes=forecast_minutes)
 
-    # Too long forecast requested, not supported yet.
-    if forecast_minutes > 24 * 60 or start_datetime.day != end_time.day:
-        return None
     end_time = end_time.time()
 
-    avg_stations = DublinBikesStationAverage.objects.filter(
-        time__gte=start_time, time__lte=end_time).filter(
+    avg_stations = DublinBikesStationAverage.objects.all().filter(
         parent_station__in=station_list).order_by(
         "parent_station__station_number", "time")
 
@@ -95,6 +91,7 @@ def forecast_occupancy(forecast_minutes, station_list, start_datetime=None):
     ).order_by("parent_station__station_number")
 
     predictions = []
+    stations_list = []
     stopwatch_start = time.time()
 
     for station in stations_at_start:
@@ -105,16 +102,20 @@ def forecast_occupancy(forecast_minutes, station_list, start_datetime=None):
         else:
             last_occup = 100. * float(bikes) / b_stands
 
-        avg_occups = avg_stations.filter(parent_station=station.parent_station)
+        avg_occups = list(avg_stations.filter(
+            parent_station=station.parent_station).order_by('time'))
         print("at start", last_occup)
 
         station_predictions = []
         previous_avg = 0.
-        for idx, station_avg in enumerate(avg_occups):
+        for idx in range(forecast_minutes + 1):
+            ptime = start_datetime + datetime.timedelta(minutes=idx)
+            min_idx = ptime.hour * 60 + ptime.minute
             if idx == 0:
-                previous_avg = station_avg.avg_occupancy
+                previous_avg = avg_occups[min_idx].avg_occupancy
             else:
-                delta_avg = station_avg.avg_occupancy - previous_avg
+                delta_avg = avg_occups[min_idx].avg_occupancy - previous_avg
+                previous_avg = avg_occups[min_idx].avg_occupancy
                 prediction = last_occup + delta_avg
                 if prediction > 100.:
                     prediction = 100.
@@ -122,9 +123,8 @@ def forecast_occupancy(forecast_minutes, station_list, start_datetime=None):
                     prediction = 0.
                 last_occup = prediction
                 station_predictions.append(prediction)
-
-        predictions.append((station.parent_station.station_number,
-                            station_predictions))
+        stations_list.append(station.parent_station_id)
+        predictions.append(station_predictions)
 
     print("forecast time: {}s".format(time.time() - stopwatch_start))
-    return predictions
+    return stations_list, predictions

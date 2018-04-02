@@ -92,28 +92,49 @@ function replaceChart(labels, occupancy, selectionType, selectionId,
         timeStr = minutes + '-minute';
     }
 
+    let label;
     if (selectionType === 'station') {
         stationsInChart.add(String(selectionId));
+        label = 'Station ' + selectionId;
+    } else if (selectionType === 'polygon') {
+        label = polygonLabelMap[selectionId];
+    } else if (selectionType === 'forecast') {
+        label = 'Forecast ' + selectionId;
     }
-
     let newDataset = {
         id: selectionId,
-        label: (selectionType === 'polygon'?
-            polygonLabelMap[selectionId] : 'Station ' + selectionId),
+        label: label,
         backgroundColor: newColor,
         borderColor: newColor,
         pointRadius: 1,
         data: [],
         fill: false,
     };
-    config.options.title.text = (`${timeStr} average station ` +
-        `occupancy`);
+    config.options.title.text = (`${timeStr} average station occupancy`);
     console.log('drawing chart with data:');
 
-    if (config.data.labels.length === 0) {
+    let extraData = [];
+    if (config.data.labels.length === 0 ) {
         for (let index = 0; index < labels.length; ++index) {
             config.data.labels.push(labels[index]);
         }
+    } else if (config.data.labels[0] !== labels[0]) {
+        let index;
+        for (index = 0; index < config.data.labels.length; ++index) {
+            if (config.data.labels[index] === labels[0]) {
+               break;
+            } else {
+                extraData.push(null);
+            }
+        }
+        for (let idx2 = 0; idx2 < labels.length; ++idx2) {
+            if (idx2 + index >= config.data.labels.length) {
+                config.data.labels.push(labels[idx2]);
+            }
+        }
+    }
+    for (let index = 0; index < extraData.length; ++index) {
+        newDataset.data.push(extraData[index]);
     }
 
     for (let index = 0; index < occupancy.length; ++index) {
@@ -168,5 +189,11 @@ function removeAllDatasetsAndLabelsFromChart() {
  */
 function getForecastData() {
    console.log('starting forecast');
-
+    let slider = document.getElementById('slider');
+    if (slider === 'undefined') return;
+    let pos = slider.value;
+    if (! pos in dateTimeOfIndex) return;
+    let startTime = dateTimeOfIndex[pos];
+    let length = 5000;
+    requestForecast(startTime, length, Array.from(stationsInChart));
 }

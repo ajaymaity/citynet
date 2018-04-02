@@ -59,6 +59,14 @@ function onMessage(evt) {
                     svals.selectionType, svals.selectionId,
                     svals.time_delta_s);
                 break;
+            case 'multichart':
+                console.log('Received multi Chart data!');
+                for (let i=0; i < svals.selectionsId.length; i++) {
+                    replaceChart(svals.labels, svals.occupancy[i],
+                        svals.selectionType, svals.selectionsId[i],
+                        svals.time_delta_s);
+                }
+                break;
         }
     }
     hideLoadingScreen();
@@ -109,6 +117,7 @@ function getTimeRange() {
     ));
 }
 
+/* exported getChartData */
 /**
  * Request for the chart values for the current time delta
  */
@@ -133,4 +142,21 @@ function getDeltaDependentFunction() {
 function onOpen() {
     console.log('Connected to webSocket!');
     getDeltaDependentFunction();
+}
+
+/* exported requestForecast */
+/**
+ * Request for the chart forecast data
+ * @param {String} startTime
+ * @param {int} length
+ * @param {Array} stations
+ */
+function requestForecast(startTime, length, stations) {
+    webSocket.send(JSON.stringify({
+        type: 'getForecast',
+        start: startTime,
+        length: length,
+        stations: stations,
+        }
+    ));
 }

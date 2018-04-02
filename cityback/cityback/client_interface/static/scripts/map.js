@@ -68,7 +68,6 @@ function updateMap(geoStation, rtMode) {
  */
 function applyDeltaSliderUpdates() {
     removeAllDatasetsAndLabelsFromChart();
-    showLoadingScreen();
     let type = 'draw.update';
     let allPolygons = draw.getAll();
     for (let elementId of stationsInChart) {
@@ -104,6 +103,7 @@ function setupSlider() {
                 let deltaS = el.options[el.selectedIndex].value;
                 if (deltaSlider != deltaS) {
                     deltaSlider = deltaS;
+                    showLoadingScreen();
                     applyDeltaSliderUpdates();
                 }
                 // update the map
@@ -125,7 +125,11 @@ function setupSlider() {
         getDeltaDependentFunction();
     });
     document.getElementById('forecast').addEventListener('change', function() {
-        getForecastData();
+        if (this.checked) {
+            getForecastData();
+        } else {
+            applyDeltaSliderUpdates();
+        }
     });
 }
 
